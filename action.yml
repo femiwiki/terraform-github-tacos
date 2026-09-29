@@ -1,0 +1,109 @@
+---
+name: terraform-github-tacos
+description: >-
+  Plan OpenTofu or Terraform in a pull request, apply it once a GitHub
+  environment approves, and only then merge.
+author: femiwiki
+branding:
+  icon: check-circle
+  color: orange
+inputs:
+  step:
+    description: >-
+      Which part of the flow this call is: plan, changes, pending, apply, gate
+      or merge. The README says which job each one goes in.
+    required: true
+  workspace:
+    description: The workspace this job plans or applies. Used by plan, changes and apply.
+    default: ""
+  changes:
+    description: Whether the plan has changes, "true" or "false". Used by changes.
+    default: ""
+  plan-json:
+    description: Path to the plan as JSON, such as `tofu show -json` writes. Used by changes.
+    default: ""
+  workspaces:
+    description: >-
+      A JSON list of workspaces to apply, taking the place of the ones found in
+      this run. Used by pending, for a workflow_dispatch run.
+    default: ""
+  needs:
+    description: The gate's `toJSON(needs)`. Used by gate.
+    default: ""
+  may-skip:
+    description: Jobs among `needs` that may be skipped, separated by spaces. Used by gate.
+    default: apply
+  merge-method:
+    description: squash, merge or rebase. Used by merge.
+    default: squash
+  github-token:
+    description: The token to call the GitHub API with.
+    default: ${{ github.token }}
+outputs:
+  apply:
+    description: From changes, "true" when the plan has something to apply.
+    value: ${{ steps.changes.outputs.apply }}
+  workspaces:
+    description: From pending, the JSON list of workspaces waiting for approval.
+    value: ${{ steps.pending.outputs.workspaces }}
+  approver:
+    description: From apply, who approved the deployment.
+    value: ${{ steps.apply.outputs.approver }}
+runs:
+  using: composite
+  steps:
+    - name: Unknown step
+      if: >-
+        !contains(fromJSON('["plan","changes","pending","apply","gate","merge"]'), inputs.step)
+      shell: bash
+      env:
+        STEP: ${{ inputs.step }}
+      run: |
+        echo "::error::step must be plan, changes, pending, apply, gate or merge, not '$STEP'."
+        exit 1
+
+    - if: inputs.step == 'plan'
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        WORKSPACE: ${{ inputs.workspace }}
+      run: '"$GITHUB_ACTION_PATH/scripts/plan.sh"'
+
+    - id: changes
+      if: inputs.step == 'changes'
+      shell: bash
+      env:
+        WORKSPACE: ${{ inputs.workspace }}
+        CHANGES: ${{ inputs.changes }}
+        PLAN_JSON: ${{ inputs.plan-json }}
+      run: '"$GITHUB_ACTION_PATH/scripts/changes.sh"'
+
+    - id: pending
+      if: inputs.step == 'pending'
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        WORKSPACES: ${{ inputs.workspaces }}
+      run: '"$GITHUB_ACTION_PATH/scripts/pending.sh"'
+
+    - id: apply
+      if: inputs.step == 'apply'
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        WORKSPACE: ${{ inputs.workspace }}
+      run: '"$GITHUB_ACTION_PATH/scripts/apply.sh"'
+
+    - if: inputs.step == 'gate'
+      shell: bash
+      env:
+        NEEDS: ${{ inputs.needs }}
+        MAY_SKIP: ${{ inputs.may-skip }}
+      run: '"$GITHUB_ACTION_PATH/scripts/gate.sh"'
+
+    - if: inputs.step == 'merge'
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        METHOD: ${{ inputs.merge-method }}
+      run: '"$GITHUB_ACTION_PATH/scripts/merge.sh"'
