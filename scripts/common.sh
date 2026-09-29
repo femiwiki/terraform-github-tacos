@@ -25,3 +25,22 @@ require_current() {
     exit 1
   fi
 }
+
+# Resource counts of a plan in JSON, such as `tofu show -json` writes
+plan_counts() {
+  if [ -z "${1:-}" ] || [ ! -f "$1" ]; then
+    echo '{"create":0,"update":0,"delete":0,"moved":0,"imported":0}'
+    return
+  fi
+  jq -c '[.resource_changes[]?] | {
+    create: map(select(.change.actions | index("create"))) | length,
+    update: map(select(.change.actions == ["update"])) | length,
+    delete: map(select(.change.actions | index("delete"))) | length,
+    moved: map(select(.previous_address)) | length,
+    imported: map(select(.change.importing)) | length}' "$1"
+}
+
+# A Markdown table of plan_counts
+counts_table() {
+  echo "$1" | jq -r '"| Add | Change | Destroy | Move | Import |\n|---|---|---|---|---|\n| \(.create) | \(.update) | \(.delete) | \(.moved) | \(.imported) |"'
+}

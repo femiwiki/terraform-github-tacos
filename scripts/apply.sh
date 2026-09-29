@@ -31,5 +31,5 @@ if [ "$EVENT" = pull_request ]; then
   echo "Still $PLANNED, up to date with $base."
 fi
 
-summary "### ${WORKSPACE:-Apply}" "" \
+summary "### ${WORKSPACE:-Apply} approval" "" \
   "Approved by @$approver for $subject at \`${PLANNED:-$GITHUB_SHA}\`."

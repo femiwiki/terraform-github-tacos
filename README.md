@@ -25,11 +25,12 @@ Call the action with `step` set to the job it runs in. See
 | `changes` | plan, after planning | Marks the workspace as having changes to apply. |
 | `pending` | one job after the plans | Cancels older runs of the pull request that still wait for approval, lists the workspaces to apply, and refuses an environment without required reviewers. |
 | `apply` | apply, first step | Refuses to apply when the pull request moved, merged, or fell behind, and records who approved. |
+| `result` | apply, last step, with `if: always()` | Writes what the apply changed and whether it succeeded. |
 | `gate` | the required check | Fails unless every job it needs succeeded. The apply job may be skipped. |
 | `merge` | after the gate | Merges the pull request. |
 
 Each step writes a job summary, so the run page shows what was planned, who can
-approve, who approved and what happened.
+approve, who approved, and what the apply changed.
 
 The apply job's environment has the same name as the workspace.
 
