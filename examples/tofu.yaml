@@ -1,0 +1,124 @@
+---
+# A workflow using terraform-github-tacos with one workspace per directory.
+# Copy it to .github/workflows/, adjust the workspace list and credentials, and
+# pin femiwiki/terraform-github-tacos to a commit SHA as the other actions are.
+name: tofu
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      workspace:
+        description: The workspace to apply from this branch, once its environment approves.
+        required: true
+        type: choice
+        options: &workspaces [network, dns]
+permissions: {}
+jobs:
+  plan:
+    name: ${{ matrix.workspace }} plan
+    if: github.event_name == 'pull_request'
+    strategy:
+      fail-fast: false
+      matrix:
+        workspace: *workspaces
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: femiwiki/terraform-github-tacos@main
+        with:
+          step: plan
+          workspace: ${{ matrix.workspace }}
+
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
+        with:
+          persist-credentials: false
+
+      - uses: dflook/tofu-plan@c7416238983bdd94c5486fb856bb7358f2bcc935  # v3.1.0
+        id: plan
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          path: ${{ matrix.workspace }}
+
+      - uses: femiwiki/terraform-github-tacos@main
+        with:
+          step: changes
+          workspace: ${{ matrix.workspace }}
+          changes: ${{ steps.plan.outputs.changes }}
+          plan-json: ${{ steps.plan.outputs.json_plan_path }}
+
+  pending:
+    needs: plan
+    if: >-
+      !cancelled() && (github.event_name == 'workflow_dispatch'
+      || (needs.plan.result == 'success' && github.event.pull_request.head.repo.full_name == github.repository))
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      checks: read
+    outputs:
+      workspaces: ${{ steps.pending.outputs.workspaces }}
+    steps:
+      - uses: femiwiki/terraform-github-tacos@main
+        id: pending
+        with:
+          step: pending
+          workspaces: ${{ inputs.workspace && format('["{0}"]', inputs.workspace) || '' }}
+
+  apply:
+    name: ${{ matrix.workspace }} apply
+    needs: pending
+    if: needs.pending.outputs.workspaces != '[]'
+    strategy:
+      fail-fast: false
+      matrix:
+        workspace: ${{ fromJSON(needs.pending.outputs.workspaces) }}
+    runs-on: ubuntu-latest
+    environment: ${{ matrix.workspace }}
+    permissions:
+      actions: read
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: femiwiki/terraform-github-tacos@main
+        with:
+          step: apply
+          workspace: ${{ matrix.workspace }}
+
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
+        with:
+          persist-credentials: false
+
+      - uses: dflook/tofu-apply@e3e5dfc8f935d4b152c767801046f63abf8a77d3  # v3.1.0
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          path: ${{ matrix.workspace }}
+          auto_approve: ${{ github.event_name == 'workflow_dispatch' }}
+
+  # Make this the one required check
+  gate:
+    name: ${{ github.event_name == 'pull_request' && 'tofu gate' || 'tofu gate (pull requests only)' }}
+    needs: [plan, pending, apply]
+    if: always() && github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - uses: femiwiki/terraform-github-tacos@main
+        with:
+          step: gate
+          needs: ${{ toJSON(needs) }}
+
+  merge:
+    needs: [apply, gate]
+    if: needs.apply.result == 'success' && needs.gate.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: femiwiki/terraform-github-tacos@main
+        with:
+          step: merge
