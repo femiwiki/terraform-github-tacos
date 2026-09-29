@@ -83,6 +83,7 @@ jobs:
       pull-requests: write
     steps:
       - uses: femiwiki/terraform-github-tacos@main
+        id: approver
         with:
           step: apply
           workspace: ${{ matrix.workspace }}
@@ -92,11 +93,21 @@ jobs:
           persist-credentials: false
 
       - uses: dflook/tofu-apply@e3e5dfc8f935d4b152c767801046f63abf8a77d3  # v3.1.0
+        id: apply
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           path: ${{ matrix.workspace }}
           auto_approve: ${{ github.event_name == 'workflow_dispatch' }}
+
+      - uses: femiwiki/terraform-github-tacos@main
+        if: always()
+        with:
+          step: result
+          workspace: ${{ matrix.workspace }}
+          outcome: ${{ steps.apply.outcome }}
+          plan-json: ${{ steps.apply.outputs.json_plan_path }}
+          approver: ${{ steps.approver.outputs.approver }}
 
   # Make this the one required check
   gate:

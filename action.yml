@@ -10,8 +10,8 @@ branding:
 inputs:
   step:
     description: >-
-      Which part of the flow this call is: plan, changes, pending, apply, gate
-      or merge. The README says which job each one goes in.
+      Which part of the flow this call is: plan, changes, pending, apply,
+      result, gate or merge. The README says which job each one goes in.
     required: true
   workspace:
     description: The workspace this job plans or applies. Used by plan, changes and apply.
@@ -20,7 +20,13 @@ inputs:
     description: Whether the plan has changes, "true" or "false". Used by changes.
     default: ""
   plan-json:
-    description: Path to the plan as JSON, such as `tofu show -json` writes. Used by changes.
+    description: Path to the plan as JSON, such as `tofu show -json` writes. Used by changes and result.
+    default: ""
+  outcome:
+    description: The apply step's outcome, `steps.<id>.outcome`. Used by result.
+    default: ""
+  approver:
+    description: Who approved, the apply step's `approver` output. Used by result.
     default: ""
   workspaces:
     description: >-
@@ -49,17 +55,21 @@ outputs:
   approver:
     description: From apply, who approved the deployment.
     value: ${{ steps.apply.outputs.approver }}
+  result:
+    description: >-
+      From result, one of applied, no-changes, failed, cancelled or skipped.
+    value: ${{ steps.result.outputs.result }}
 runs:
   using: composite
   steps:
     - name: Unknown step
       if: >-
-        !contains(fromJSON('["plan","changes","pending","apply","gate","merge"]'), inputs.step)
+        !contains(fromJSON('["plan","changes","pending","apply","result","gate","merge"]'), inputs.step)
       shell: bash
       env:
         STEP: ${{ inputs.step }}
       run: |
-        echo "::error::step must be plan, changes, pending, apply, gate or merge, not '$STEP'."
+        echo "::error::step must be plan, changes, pending, apply, result, gate or merge, not '$STEP'."
         exit 1
 
     - if: inputs.step == 'plan'
@@ -93,6 +103,16 @@ runs:
         GH_TOKEN: ${{ inputs.github-token }}
         WORKSPACE: ${{ inputs.workspace }}
       run: '"$GITHUB_ACTION_PATH/scripts/apply.sh"'
+
+    - id: result
+      if: inputs.step == 'result'
+      shell: bash
+      env:
+        WORKSPACE: ${{ inputs.workspace }}
+        OUTCOME: ${{ inputs.outcome }}
+        PLAN_JSON: ${{ inputs.plan-json }}
+        APPROVER: ${{ inputs.approver }}
+      run: '"$GITHUB_ACTION_PATH/scripts/result.sh"'
 
     - if: inputs.step == 'gate'
       shell: bash
