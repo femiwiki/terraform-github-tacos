@@ -21,13 +21,20 @@ Call the action with `step` set to the job it runs in. See
 
 | `step` | Job | What it does |
 |---|---|---|
-| `plan` | plan, before planning | Refuses a branch that is behind its base. |
+| `plan` | plan, before planning | With `require-up-to-date`, refuses a branch that is behind its base. |
 | `changes` | plan, after planning | Marks the workspace as having changes to apply. |
 | `pending` | one job after the plans | Cancels older runs of the pull request that still wait for approval, lists the workspaces to apply, and refuses an environment without required reviewers. |
-| `apply` | apply, first step | Refuses to apply when the pull request moved, merged, or fell behind, and records who approved. |
+| `apply` | apply, first step | Refuses to apply when the pull request moved or merged, or with `require-up-to-date` fell behind, and records who approved. |
 | `result` | apply, last step, with `if: always()` | Writes what the apply changed and whether it succeeded. |
 | `gate` | the required check | Fails unless every job it needs succeeded. The apply job may be skipped. |
 | `merge` | after the gate | Merges the pull request. |
+
+A pull request behind its base may be planned and applied unless
+`require-up-to-date` is `"true"`. The plan runs on the merge commit, and the
+apply job should make a fresh plan and apply it only when it matches the
+approved one, as `dflook/tofu-apply` does without `plan_path` or
+`auto_approve`. A change on the base to the same workspace then stops the
+apply, and a change to another workspace does not.
 
 Each step writes a job summary, so the run page shows what was planned, who can
 approve, who approved, and what the apply changed.

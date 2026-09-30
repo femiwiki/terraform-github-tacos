@@ -27,8 +27,12 @@ if [ "$EVENT" = pull_request ]; then
     echo "::error::#$PR targets $base rather than $DEFAULT_BRANCH. An apply runs before the merge, so a plan from a stacked branch carries whatever is below it. Merge the branch underneath first, retarget this one at $DEFAULT_BRANCH, then plan again."
     exit 1
   fi
-  require_current "$base" "$head" "approve the new run"
-  echo "Still $PLANNED, up to date with $base."
+  if [ "$REQUIRE_UP_TO_DATE" = true ]; then
+    require_current "$base" "$head" "approve the new run"
+    echo "Still $PLANNED, up to date with $base."
+  else
+    echo "Still $PLANNED."
+  fi
 fi
 
 summary "### ${WORKSPACE:-Apply} approval" "" \
