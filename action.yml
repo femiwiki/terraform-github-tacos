@@ -22,6 +22,11 @@ inputs:
   plan-json:
     description: Path to the plan as JSON, such as `tofu show -json` writes. Used by changes and result.
     default: ""
+  plan-text:
+    description: >-
+      Path to the plan as text, such as dflook's `text_plan_path`. Shown folded
+      in the job summary. Used by changes and result.
+    default: ""
   outcome:
     description: The apply step's outcome, `steps.<id>.outcome`. Used by result.
     default: ""
@@ -86,6 +91,7 @@ runs:
         WORKSPACE: ${{ inputs.workspace }}
         CHANGES: ${{ inputs.changes }}
         PLAN_JSON: ${{ inputs.plan-json }}
+        PLAN_TEXT: ${{ inputs.plan-text }}
       run: '"$GITHUB_ACTION_PATH/scripts/changes.sh"'
 
     - id: pending
@@ -111,6 +117,7 @@ runs:
         WORKSPACE: ${{ inputs.workspace }}
         OUTCOME: ${{ inputs.outcome }}
         PLAN_JSON: ${{ inputs.plan-json }}
+        PLAN_TEXT: ${{ inputs.plan-text }}
         APPROVER: ${{ inputs.approver }}
       run: '"$GITHUB_ACTION_PATH/scripts/result.sh"'
 

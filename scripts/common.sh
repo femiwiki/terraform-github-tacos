@@ -44,3 +44,19 @@ plan_counts() {
 counts_table() {
   echo "$1" | jq -r '"| Add | Change | Destroy | Move | Import |\n|---|---|---|---|---|\n| \(.create) | \(.update) | \(.delete) | \(.moved) | \(.imported) |"'
 }
+
+# The plan as text, folded, and cut short of the 1 MiB a step summary may hold
+plan_text() {
+  local path=${1:-} limit=900000 size
+  if [ -z "$path" ] || [ ! -f "$path" ]; then
+    return
+  fi
+  size=$(wc -c < "$path")
+  summary "<details><summary>Plan</summary>" "" '```'
+  head -c "$limit" "$path" | awk 1 >> "$GITHUB_STEP_SUMMARY"
+  summary '```' ""
+  if [ "$size" -gt "$limit" ]; then
+    summary "Cut at $limit of $size bytes. The job log has the whole plan." ""
+  fi
+  summary "</details>" ""
+}
