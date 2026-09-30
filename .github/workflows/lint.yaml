@@ -35,3 +35,18 @@ jobs:
       - uses: dflook/tofu-validate@1b67c8ac7ef50109c9ca019fd9cd4a4b6fd62915  # v3.1.0
         with:
           path: .
+
+  docs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
+        with:
+          persist-credentials: false
+
+      - uses: chaotic-ground/wikven/actions/bake@79c58df9b0fd9a92143c3cd76e0e677f9de10d45  # v1.2.0
+        with:
+          source: docs
+          output: dist
