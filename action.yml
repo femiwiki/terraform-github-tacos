@@ -39,6 +39,13 @@ inputs:
   may-skip:
     description: Jobs among `needs` that may be skipped, separated by spaces. Used by gate.
     default: apply
+  require-up-to-date:
+    description: >-
+      "true" to refuse a pull request behind its base when planning and
+      applying. Off by default: the apply makes a fresh plan and applies it
+      only when it matches the approved one, so a change on the base to the
+      same workspace stops it anyway. Used by plan and apply.
+    default: "false"
   merge-method:
     description: squash, merge or rebase. Used by merge.
     default: squash
@@ -77,6 +84,7 @@ runs:
       env:
         GH_TOKEN: ${{ inputs.github-token }}
         WORKSPACE: ${{ inputs.workspace }}
+        REQUIRE_UP_TO_DATE: ${{ inputs.require-up-to-date }}
       run: '"$GITHUB_ACTION_PATH/scripts/plan.sh"'
 
     - id: changes
@@ -102,6 +110,7 @@ runs:
       env:
         GH_TOKEN: ${{ inputs.github-token }}
         WORKSPACE: ${{ inputs.workspace }}
+        REQUIRE_UP_TO_DATE: ${{ inputs.require-up-to-date }}
       run: '"$GITHUB_ACTION_PATH/scripts/apply.sh"'
 
     - id: result
