@@ -20,6 +20,7 @@ echo "apply=$apply" >> "$GITHUB_OUTPUT"
 
 summary "### $WORKSPACE plan" "" \
   "$(counts_table "$counts")" ""
+plan_text "$PLAN_TEXT"
 if [ "$apply" = true ]; then
   summary "Waiting for the \`$WORKSPACE\` environment to approve the apply."
 else

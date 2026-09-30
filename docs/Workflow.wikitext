@@ -86,6 +86,7 @@ jobs:
           workspace: ${{ matrix.workspace }}
           changes: ${{ steps.plan.outputs.changes }}
           plan-json: ${{ steps.plan.outputs.json_plan_path }}
+          plan-text: ${{ steps.plan.outputs.text_plan_path }}
 
   pending:
     needs: plan
@@ -145,6 +146,7 @@ jobs:
           workspace: ${{ matrix.workspace }}
           outcome: ${{ steps.apply.outcome }}
           plan-json: ${{ steps.apply.outputs.json_plan_path }}
+          plan-text: ${{ steps.apply.outputs.text_plan_path }}
           approver: ${{ steps.approver.outputs.approver }}
 
   # Make this the one required check

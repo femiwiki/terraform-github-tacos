@@ -20,6 +20,7 @@ summary "### $WORKSPACE apply" "" "$line" ""
 if [ -n "$PLAN_JSON" ] && [ -f "$PLAN_JSON" ]; then
   summary "$(counts_table "$counts")" ""
 fi
+plan_text "$PLAN_TEXT"
 if [ -n "$APPROVER" ]; then
   summary "Approved by @$APPROVER."
 fi
