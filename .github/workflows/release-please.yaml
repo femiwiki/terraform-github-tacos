@@ -1,0 +1,23 @@
+---
+# Opened with the Femiwiki PAT app's token rather than GITHUB_TOKEN, so the
+# release pull request runs its required checks like any other.
+name: Release Please
+on:
+  push:
+    branches:
+      - main
+permissions: {}
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: peter-murray/workflow-application-token-action@d17e3a9a36850ea89f35db16c1067dd2b68ee343  # v4.0.1
+        id: app-token
+        with:
+          application_id: ${{ vars.PAT_APPLICATION_ID }}
+          application_private_key: ${{ secrets.PAT_APPLICATION_PRIVATE_KEY }}
+
+      - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7  # v5.0.0
+        with:
+          token: ${{ steps.app-token.outputs.token }}
