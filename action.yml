@@ -10,22 +10,27 @@ branding:
 inputs:
   step:
     description: >-
-      Which part of the flow this call is: plan, changes, pending, apply,
-      result, gate or merge. The README says which job each one goes in.
+      Which part of the flow this call is: plan, changes, cost, pending,
+      apply, result, gate or merge. The README says which job each one goes in.
     required: true
   workspace:
-    description: The workspace this job plans or applies. Used by plan, changes and apply.
+    description: The workspace this job plans or applies. Used by plan, changes, cost and apply.
     default: ""
   changes:
     description: Whether the plan has changes, "true" or "false". Used by changes.
     default: ""
   plan-json:
-    description: Path to the plan as JSON, such as `tofu show -json` writes. Used by changes and result.
+    description: Path to the plan as JSON, such as `tofu show -json` writes. Used by changes, cost and result.
     default: ""
   plan-text:
     description: >-
       Path to the plan as text, such as dflook's `text_plan_path`. Shown folded
       in the job summary. Used by changes and result.
+    default: ""
+  infracost-api-key:
+    description: >-
+      An Infracost API key. Without one, cost does nothing. Only price lookups
+      are sent to Infracost, never the plan. Used by cost.
     default: ""
   outcome:
     description: The apply step's outcome, `steps.<id>.outcome`. Used by result.
@@ -76,12 +81,12 @@ runs:
   steps:
     - name: Unknown step
       if: >-
-        !contains(fromJSON('["plan","changes","pending","apply","result","gate","merge"]'), inputs.step)
+        !contains(fromJSON('["plan","changes","cost","pending","apply","result","gate","merge"]'), inputs.step)
       shell: bash
       env:
         STEP: ${{ inputs.step }}
       run: |
-        echo "::error::step must be plan, changes, pending, apply, result, gate or merge, not '$STEP'."
+        echo "::error::step must be plan, changes, cost, pending, apply, result, gate or merge, not '$STEP'."
         exit 1
 
     - if: inputs.step == 'plan'
@@ -101,6 +106,15 @@ runs:
         PLAN_JSON: ${{ inputs.plan-json }}
         PLAN_TEXT: ${{ inputs.plan-text }}
       run: '"$GITHUB_ACTION_PATH/scripts/changes.sh"'
+
+    - if: inputs.step == 'cost'
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        WORKSPACE: ${{ inputs.workspace }}
+        PLAN_JSON: ${{ inputs.plan-json }}
+        INFRACOST_API_KEY: ${{ inputs.infracost-api-key }}
+      run: '"$GITHUB_ACTION_PATH/scripts/cost.sh"'
 
     - id: pending
       if: inputs.step == 'pending'

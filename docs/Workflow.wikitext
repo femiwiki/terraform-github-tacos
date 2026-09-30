@@ -8,6 +8,8 @@ Your workflow calls the action once in each job, with <code>step</code> set to t
 |-
 | <code>changes</code> || plan, after planning || Marks the workspace as having changes to apply.
 |-
+| <code>cost</code> || plan, after planning, optional || With <code>infracost-api-key</code>, writes what the plan does to the monthly bill, estimated by [https://www.infracost.io/ Infracost], and comments on the pull request when the total changes. A failed estimate does not fail the plan.
+|-
 | <code>pending</code> || one job after the plans || Cancels older runs of the pull request that still wait for approval, lists the workspaces to apply, and refuses an environment without required reviewers.
 |-
 | <code>apply</code> || apply, first step || Refuses to apply when the pull request moved or merged, or with <code>require-up-to-date</code> fell behind, and records who approved.
@@ -28,6 +30,8 @@ Each step writes a job summary, so the run page shows what was planned, who can 
 ! <code>step</code> !! Permissions
 |-
 | <code>plan</code> || <code>pull-requests: read</code>
+|-
+| <code>cost</code> || <code>pull-requests: write</code>
 |-
 | <code>pending</code> || <code>actions: write</code>, <code>checks: read</code>
 |-
@@ -87,6 +91,13 @@ jobs:
           changes: ${{ steps.plan.outputs.changes }}
           plan-json: ${{ steps.plan.outputs.json_plan_path }}
           plan-text: ${{ steps.plan.outputs.text_plan_path }}
+
+      - uses: femiwiki/terraform-github-tacos@v0.2.0  # x-release-please-version
+        with:
+          step: cost
+          workspace: ${{ matrix.workspace }}
+          plan-json: ${{ steps.plan.outputs.json_plan_path }}
+          infracost-api-key: ${{ secrets.INFRACOST_API_KEY }}
 
   pending:
     needs: plan
