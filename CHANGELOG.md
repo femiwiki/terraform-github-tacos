@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/femiwiki/terraform-github-tacos/compare/v0.1.0...v0.2.0) (2026-09-30)
+
+
+### Features
+
+* show the whole plan in the job summary ([#19](https://github.com/femiwiki/terraform-github-tacos/issues/19)) ([5be74d0](https://github.com/femiwiki/terraform-github-tacos/commit/5be74d03c418dbaa47ef2631085b2d8c6367d128))
+
 ## 0.1.0 (2026-09-30)
 
 
