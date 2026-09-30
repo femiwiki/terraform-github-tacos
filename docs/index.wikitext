@@ -1,0 +1,8 @@
+terraform-github-tacos plans OpenTofu or Terraform in a pull request, applies it when a GitHub environment approves, then merges. It does what Terraform Cloud's VCS workflow does, with GitHub Actions alone.
+
+The flow applies before the merge. Approving the deployment is the apply, and the pull request merges once the apply has succeeded, so the default branch never holds a change that was not applied.
+
+The repository has two parts:
+
+* [[Workflow|A GitHub Action]], called once per job of your workflow.
+* [[Module|An OpenTofu module]] that creates the environments the apply waits on.
