@@ -1,0 +1,18 @@
+---
+extensions:
+  - SyntaxHighlight_GeSHi
+skins:
+  - Citizen
+config:
+  Sitename: terraform-github-tacos
+  DefaultSkin: citizen
+  WikvenSiteUrl: https://femiwiki.github.io/terraform-github-tacos/
+  SifterSearchBundlePath: /terraform-github-tacos/pagefind/
+  WikvenFooterUrl: https://github.com/femiwiki/terraform-github-tacos
+  WikvenEditUrl: https://github.com/femiwiki/terraform-github-tacos/edit/main/docs/$1
+  WikvenHistoryUrl: https://github.com/femiwiki/terraform-github-tacos/commits/main/docs/$1
+  WikvenViewSourceUrl: https://github.com/femiwiki/terraform-github-tacos/blob/main/docs/$1
+  WikvenRepositories:
+    Citizen:
+      repository: https://github.com/StarCitizenTools/mediawiki-skins-Citizen.git
+      reference: v3.23.0

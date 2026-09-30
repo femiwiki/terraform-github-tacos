@@ -1,7 +1,43 @@
----
-# A workflow using terraform-github-tacos with one workspace per directory.
-# Copy it to .github/workflows/, adjust the workspace list and credentials, and
-# pin femiwiki/terraform-github-tacos to a commit SHA as the other actions are.
+Your workflow calls the action once in each job, with <code>step</code> set to the job it runs in. The apply job's environment has the same name as the workspace.
+
+== Steps ==
+{| class="wikitable"
+! <code>step</code> !! Job !! What it does
+|-
+| <code>plan</code> || plan, before planning || Refuses a branch that is behind its base.
+|-
+| <code>changes</code> || plan, after planning || Marks the workspace as having changes to apply.
+|-
+| <code>pending</code> || one job after the plans || Cancels older runs of the pull request that still wait for approval, lists the workspaces to apply, and refuses an environment without required reviewers.
+|-
+| <code>apply</code> || apply, first step || Refuses to apply when the pull request moved, merged, or fell behind, and records who approved.
+|-
+| <code>result</code> || apply, last step, with <code>if: always()</code> || Writes what the apply changed and whether it succeeded.
+|-
+| <code>gate</code> || the required check || Fails unless every job it needs succeeded. The apply job may be skipped.
+|-
+| <code>merge</code> || after the gate || Merges the pull request.
+|}
+
+Each step writes a job summary, so the run page shows what was planned, who can approve, who approved, and what the apply changed.
+
+== Permissions ==
+{| class="wikitable"
+! <code>step</code> !! Permissions
+|-
+| <code>plan</code> || <code>pull-requests: read</code>
+|-
+| <code>pending</code> || <code>actions: write</code>, <code>checks: read</code>
+|-
+| <code>apply</code> || <code>actions: read</code>, <code>pull-requests: read</code>
+|-
+| <code>merge</code> || <code>contents: write</code>, <code>pull-requests: write</code>
+|}
+
+== A whole workflow ==
+This workflow has one workspace per directory, <code>network</code> and <code>dns</code>. Put it in <code>.github/workflows/</code>, change the workspace list and add your credentials. Make the gate job's name, <code>tofu gate</code>, a required status check of the default branch.
+
+<syntaxhighlight lang="yaml" copy>
 name: tofu
 on:
   pull_request:
@@ -26,7 +62,7 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: femiwiki/terraform-github-tacos@main
+      - uses: femiwiki/terraform-github-tacos@v0.1.0  # x-release-please-version
         with:
           step: plan
           workspace: ${{ matrix.workspace }}
@@ -42,7 +78,7 @@ jobs:
         with:
           path: ${{ matrix.workspace }}
 
-      - uses: femiwiki/terraform-github-tacos@main
+      - uses: femiwiki/terraform-github-tacos@v0.1.0  # x-release-please-version
         with:
           step: changes
           workspace: ${{ matrix.workspace }}
@@ -61,7 +97,7 @@ jobs:
     outputs:
       workspaces: ${{ steps.pending.outputs.workspaces }}
     steps:
-      - uses: femiwiki/terraform-github-tacos@main
+      - uses: femiwiki/terraform-github-tacos@v0.1.0  # x-release-please-version
         id: pending
         with:
           step: pending
@@ -82,7 +118,7 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: femiwiki/terraform-github-tacos@main
+      - uses: femiwiki/terraform-github-tacos@v0.1.0  # x-release-please-version
         id: approver
         with:
           step: apply
@@ -100,7 +136,7 @@ jobs:
           path: ${{ matrix.workspace }}
           auto_approve: ${{ github.event_name == 'workflow_dispatch' }}
 
-      - uses: femiwiki/terraform-github-tacos@main
+      - uses: femiwiki/terraform-github-tacos@v0.1.0  # x-release-please-version
         if: always()
         with:
           step: result
@@ -117,7 +153,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions: {}
     steps:
-      - uses: femiwiki/terraform-github-tacos@main
+      - uses: femiwiki/terraform-github-tacos@v0.1.0  # x-release-please-version
         with:
           step: gate
           needs: ${{ toJSON(needs) }}
@@ -130,6 +166,7 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      - uses: femiwiki/terraform-github-tacos@main
+      - uses: femiwiki/terraform-github-tacos@v0.1.0  # x-release-please-version
         with:
           step: merge
+</syntaxhighlight>
