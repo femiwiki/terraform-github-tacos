@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/femiwiki/terraform-github-tacos/compare/v0.2.1...v0.2.2) (2026-10-01)
+
+
+### Bug Fixes
+
+* tell a merged pull request by its state ([#34](https://github.com/femiwiki/terraform-github-tacos/issues/34)) ([4dd4ea6](https://github.com/femiwiki/terraform-github-tacos/commit/4dd4ea61e38662c0c65e87f8d039138c568aea5c))
+
 ## [0.2.1](https://github.com/femiwiki/terraform-github-tacos/compare/v0.2.0...v0.2.1) (2026-10-01)
 
 
