@@ -10,32 +10,35 @@ concurrency:
   group: pages
   cancel-in-progress: true
 jobs:
-  deploy:
+  # The site is kept on gh-pages, so that publish can lay the open pull
+  # requests' previews over it without baking it again
+  bake:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
-      contents: read
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
+      contents: write
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
         with:
           persist-credentials: false
           fetch-depth: 0
 
-      - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d  # v6.0.0
-
       - uses: chaotic-ground/wikven/actions/bake@79c58df9b0fd9a92143c3cd76e0e677f9de10d45  # v1.2.0
         with:
           source: docs
           output: dist
 
-      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9  # v5.0.0
+      - uses: JamesIves/github-pages-deploy-action@fa24774553152dd7873cd16ebd8d959b010c5445  # v4.9.0
         with:
-          path: dist
+          branch: gh-pages
+          folder: dist
+          clean: true
 
-      - id: deploy
-        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128  # v5.0.0
+  publish:
+    needs: bake
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+      deployments: write
+    uses: ./.github/workflows/publish.yml
