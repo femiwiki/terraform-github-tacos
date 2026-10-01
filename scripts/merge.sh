@@ -9,7 +9,7 @@ if [ -z "$PR" ]; then
   echo "Not a pull request, so there is nothing to merge."
   exit 0
 fi
-if [ "$(gh pr view "$PR" --repo "$REPO" --json merged --jq .merged)" = true ]; then
+if [ "$(gh pr view "$PR" --repo "$REPO" --json state --jq .state)" = MERGED ]; then
   echo "#$PR is already merged"
   summary "### Merge" "" "#$PR was already merged."
   exit 0
