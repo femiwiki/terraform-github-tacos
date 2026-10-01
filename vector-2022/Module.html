@@ -486,7 +486,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 					<div id="mw-content-text" class="mw-body-content"><div class="mw-content-ltr mw-parser-output" lang="en" dir="ltr"><p>The module creates one GitHub environment per workspace, each with required reviewers. The action's <code>pending</code> step refuses an environment without them, so an apply never starts unapproved.
 </p>
 <div class="mw-highlight mw-highlight-lang-hcl mw-content-ltr mw-highlight-copy" dir="ltr"><pre><span></span><span class="kr">module</span><span class="w"> </span><span class="nv">&quot;tacos&quot;</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="na">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;github.com/femiwiki/terraform-github-tacos&quot;</span>
+<span class="w">  </span><span class="na">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;github.com/femiwiki/terraform-github-tacos?ref=v0.2.1&quot;</span><span class="c1">  # x-release-please-version</span>
 
 <span class="w">  </span><span class="na">repository</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;infra&quot;</span>
 <span class="w">  </span><span class="na">environments</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;network&quot;, &quot;dns&quot;</span><span class="p">]</span>
@@ -554,7 +554,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 			
 <footer id="footer" class="mw-footer" >
 	<ul id="footer-info">
-	<li id="footer-info-lastmod"> This page was last edited on 30 September 2026, at 13:11.</li>
+	<li id="footer-info-lastmod"> This page was last edited on 1 October 2026, at 23:51.</li>
 </ul>
 
 	<ul id="footer-places">
