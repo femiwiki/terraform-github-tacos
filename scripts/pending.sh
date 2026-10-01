@@ -20,7 +20,17 @@ fi
 if [ -n "$WORKSPACES" ]; then
   workspaces=$(echo "$WORKSPACES" | jq -c .)
 else
-  workspaces=$(gh api "repos/$REPO/actions/runs/$GITHUB_RUN_ID/jobs?filter=latest" --paginate --jq '.jobs[].id' \
+  # "Re-run failed jobs" copies the other jobs into the new attempt without
+  # their annotations, so read them from the attempt that ran each job. A copy
+  # keeps the name and start time of the job it came from.
+  started=$(gh api "repos/$REPO/actions/runs/$GITHUB_RUN_ID/attempts/$GITHUB_RUN_ATTEMPT" --jq .run_started_at)
+  workspaces=$(gh api "repos/$REPO/actions/runs/$GITHUB_RUN_ID/jobs?filter=all" --paginate \
+    --jq '.jobs[] | {id, name, attempt: .run_attempt, started_at}' \
+    | jq -rs --argjson attempt "$GITHUB_RUN_ATTEMPT" --arg started "$started" '
+      group_by([.name, .started_at])[] | select(any(.attempt == $attempt)) | min_by(.attempt)
+      | if .attempt == $attempt and .started_at != null and .started_at < $started
+        then error("\(.name) was copied from an earlier attempt that is not listed, so its changes are unknown. Re-run all jobs.")
+        else .id end' \
     | while read -r job; do
         gh api "repos/$REPO/check-runs/$job/annotations" --paginate \
           --jq ".[] | select(.annotation_level == \"notice\" and .title == \"$MARKER\") | .message"
