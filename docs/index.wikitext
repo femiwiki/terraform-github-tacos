@@ -1,10 +1,44 @@
-terraform-github-tacos plans OpenTofu or Terraform in a pull request, applies it when a GitHub environment approves, then merges. It does what Terraform Cloud's VCS workflow does, with GitHub Actions alone.
+<div class="tacos-hero">
+<div class="tacos-hero-title">terraform-github-tacos</div>
+<div class="tacos-hero-lead">Plan OpenTofu in the pull request. Approve the deployment to apply it. The pull request merges after.</div>
+<div class="tacos-hero-actions">
+<span class="tacos-button tacos-button-primary">[[Workflow|Get started]]</span>
+<span class="tacos-button">[https://github.com/femiwiki/terraform-github-tacos GitHub]</span>
+</div>
+</div>
 
-The flow applies before the merge. Approving the deployment is the apply, and the pull request merges once the apply has succeeded, so the default branch never holds a change that was not applied.
+It does what Terraform Cloud's VCS workflow does, with GitHub Actions alone. There is no server to run, and the state stays in your own backend.
 
-The repository has two parts:
+== How it works ==
+<div class="tacos-steps">
+<div class="tacos-step">
+<div class="tacos-step-name">Plan</div>
+Every pull request plans each workspace it changes, and the plan is posted on the pull request.
+</div>
+<div class="tacos-step">
+<div class="tacos-step-name">Approve</div>
+The apply job waits on the workspace's GitHub environment until a required reviewer approves it.
+</div>
+<div class="tacos-step">
+<div class="tacos-step-name">Apply</div>
+The apply makes a fresh plan and goes ahead only when it matches the one that was approved.
+</div>
+<div class="tacos-step">
+<div class="tacos-step-name">Merge</div>
+By default the pull request merges once the apply has succeeded, so the default branch holds only what was applied.
+</div>
+</div>
 
-* [[Workflow|A GitHub Action]], called once per job of your workflow.
-* [[Module|An OpenTofu module]] that creates the environments the apply waits on.
+== What is in it ==
+<div class="tacos-cards">
+<div class="tacos-card">
+<div class="tacos-card-name">[[Workflow|A GitHub Action]]</div>
+Called once in each job of your workflow, with <code>step</code> naming the job.
+</div>
+<div class="tacos-card">
+<div class="tacos-card-name">[[Module|An OpenTofu module]]</div>
+Creates the environments the apply waits on, with their required reviewers.
+</div>
+</div>
 
 Terraform Cloud also estimates what a run costs. This project leaves that to tools made for it, such as the [https://github.com/apps/infracost Infracost GitHub app], which comments the estimate on the pull request beside the plan.

@@ -1,0 +1,1 @@
+A GitHub Action and an OpenTofu module that plan in the pull request and apply on environment approval. MIT licensed.
