@@ -16,7 +16,7 @@ Your workflow calls the action once in each job, with <code>step</code> set to t
 |-
 | <code>gate</code> || the required check || Fails unless every job it needs succeeded. The apply job may be skipped.
 |-
-| <code>merge</code> || after the gate || Merges the pull request.
+| <code>merge</code> || after the gate || Merges the pull request. When this run has nothing to apply, merges only if an earlier run of it was approved.
 |}
 
 A pull request behind its base may be planned and applied unless <code>require-up-to-date</code> is <code>"true"</code>. The plan runs on the merge commit, and the apply job should make a fresh plan and apply it only when it matches the approved one, as <code>dflook/tofu-apply</code> does without <code>plan_path</code> or <code>auto_approve</code>. A change on the base to the same workspace then stops the apply, and a change to another workspace does not.
@@ -33,7 +33,7 @@ Each step writes a job summary, so the run page shows what was planned, who can 
 |-
 | <code>apply</code> || <code>actions: read</code>, <code>pull-requests: read</code>
 |-
-| <code>merge</code> || <code>contents: write</code>, <code>pull-requests: write</code>
+| <code>merge</code> || <code>actions: read</code>, <code>contents: write</code>, <code>pull-requests: write</code>
 |}
 
 == A whole workflow ==
@@ -163,10 +163,13 @@ jobs:
           needs: ${{ toJSON(needs) }}
 
   merge:
-    needs: [apply, gate]
-    if: needs.apply.result == 'success' && needs.gate.result == 'success'
+    needs: [pending, apply, gate]
+    if: >-
+      !cancelled() && needs.gate.result == 'success'
+      && (needs.apply.result == 'success' || needs.pending.outputs.workspaces == '[]')
     runs-on: ubuntu-latest
     permissions:
+      actions: read
       contents: write
       pull-requests: write
     steps:
