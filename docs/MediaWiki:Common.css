@@ -1,0 +1,78 @@
+/* The landing page draws its own title */
+.page-Main_Page .mw-first-heading {
+	display: none;
+}
+
+.tacos-hero {
+	margin: var(--space-xl) 0;
+}
+
+.tacos-hero-title {
+	font-size: var(--font-size-xxx-large);
+	font-weight: 700;
+	line-height: 1.2;
+	color: var(--color-emphasized);
+}
+
+.tacos-hero-lead {
+	margin-top: var(--space-md);
+	font-size: var(--font-size-x-large);
+	line-height: 1.4;
+	color: var(--color-subtle);
+}
+
+.tacos-hero-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-sm);
+	margin-top: var(--space-lg);
+}
+
+.tacos-button a {
+	display: inline-block;
+	padding: var(--space-sm) var(--space-lg);
+	border: 1px solid var(--border-color-base);
+	border-radius: var(--border-radius-medium);
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.tacos-button-primary a {
+	border-color: var(--color-progressive);
+	background-color: var(--color-progressive);
+	color: var(--color-surface-0);
+}
+
+.tacos-steps,
+.tacos-cards {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+	gap: var(--space-md);
+	margin: var(--space-md) 0;
+}
+
+.tacos-step,
+.tacos-card {
+	padding: var(--space-md);
+	border: 1px solid var(--border-color-base);
+	border-radius: var(--border-radius-medium);
+	background-color: var(--color-surface-1);
+}
+
+.tacos-steps {
+	counter-reset: tacos-step;
+}
+
+.tacos-step-name::before {
+	counter-increment: tacos-step;
+	content: counter(tacos-step) ". ";
+	color: var(--color-progressive);
+}
+
+.tacos-step-name,
+.tacos-card-name {
+	margin-bottom: var(--space-xs);
+	font-size: var(--font-size-large);
+	font-weight: 700;
+	color: var(--color-emphasized);
+}
