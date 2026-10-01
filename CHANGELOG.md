@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.1](https://github.com/femiwiki/terraform-github-tacos/compare/v0.2.0...v0.2.1) (2026-10-01)
+
+
+### Bug Fixes
+
+* merge a pull request that an earlier run applied ([#31](https://github.com/femiwiki/terraform-github-tacos/issues/31)) ([a2492b7](https://github.com/femiwiki/terraform-github-tacos/commit/a2492b75e27789f59e2cf130c4a07b3702a204e0)), closes [#29](https://github.com/femiwiki/terraform-github-tacos/issues/29)
+* read plan annotations from the attempt that ran each job ([#28](https://github.com/femiwiki/terraform-github-tacos/issues/28)) ([50f27b8](https://github.com/femiwiki/terraform-github-tacos/commit/50f27b8d3fa4dca0578f119f5c5c40ce06147425)), closes [#27](https://github.com/femiwiki/terraform-github-tacos/issues/27)
+
 ## [0.2.0](https://github.com/femiwiki/terraform-github-tacos/compare/v0.1.0...v0.2.0) (2026-09-30)
 
 
