@@ -6,3 +6,5 @@ The repository has two parts:
 
 * [[Workflow|A GitHub Action]], called once per job of your workflow.
 * [[Module|An OpenTofu module]] that creates the environments the apply waits on.
+
+Terraform Cloud also estimates what a run costs. This project leaves that to tools made for it, such as the [https://github.com/apps/infracost Infracost GitHub app], which comments the estimate on the pull request beside the plan.
