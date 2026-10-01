@@ -76,3 +76,9 @@
 	font-weight: 700;
 	color: var(--color-emphasized);
 }
+
+/* Citizen tints links, buttons and surfaces from this hue; it is the logo's teal */
+:root {
+	--color-progressive-oklch__h: 202.6;
+	--color-progressive-oklch__c: 0.1;
+}
