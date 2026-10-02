@@ -418,6 +418,11 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <td><code>merge</code></td>
 <td>after the gate</td>
 <td>Merges the pull request. When this run has nothing to apply, merges only if an earlier run of it was approved.
+</td></tr>
+<tr>
+<td><code>collapse</code></td>
+<td>plan, last step, with <code>if: always()</code></td>
+<td>Hides, as outdated, every plan comment of <code>dflook/tofu-plan</code> or <code>dflook/terraform-plan</code> but the newest of each workspace. Comments starting with <code>**&lt;workspace> apply: </code> are hidden the same way.
 </td></tr></tbody></table>
 <p>A pull request behind its base may be planned and applied unless <code>require-up-to-date</code> is <code>"true"</code>. The plan runs on the merge commit, and the apply job should make a fresh plan and apply it only when it matches the approved one, as <code>dflook/tofu-apply</code> does without <code>plan_path</code> or <code>auto_approve</code>. A change on the base to the same workspace then stops the apply, and a change to another workspace does not.
 </p><p>Each step writes a job summary, so the run page shows what was planned, who can approve, who approved, and what the apply changed.
@@ -443,6 +448,10 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <tr>
 <td><code>merge</code></td>
 <td><code>actions: read</code>, <code>contents: write</code>, <code>pull-requests: write</code>
+</td></tr>
+<tr>
+<td><code>collapse</code></td>
+<td><code>pull-requests: write</code>
 </td></tr></tbody></table>
 </div></section><section id="citizen-section-3" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="A_whole_workflow">A whole workflow</h2></div><div class="citizen-section-body">
 <p>This workflow has one workspace per directory, <code>network</code> and <code>dns</code>. Put it in <code>.github/workflows/</code>, change the workspace list and add your credentials. Make the gate job's name, <code>tofu gate</code>, a required status check of the default branch.
@@ -494,6 +503,11 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <span class="w">          </span><span class="nt">changes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ steps.plan.outputs.changes }}</span>
 <span class="w">          </span><span class="nt">plan-json</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ steps.plan.outputs.json_plan_path }}</span>
 <span class="w">          </span><span class="nt">plan-text</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ steps.plan.outputs.text_plan_path }}</span>
+
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">femiwiki/terraform-github-tacos@v0.2.3</span><span class="w">  </span><span class="c1"># x-release-please-version</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">always()</span>
+<span class="w">        </span><span class="nt">with</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">step</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">collapse</span>
 
 <span class="w">  </span><span class="nt">pending</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">needs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">plan</span>
@@ -603,7 +617,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 	<div class="citizen-menu__content">
 		
 		<ul class="citizen-menu__content-list">
-			<li id="lm-time" class="mw-list-item"><a data-mw="interface" id="citizen-lastmod-relative" href="https://github.com/femiwiki/terraform-github-tacos/commits/main/docs/Workflow.wikitext" title="This page was last edited on 2 October 2026, at 13:31." data-timestamp="1790947860"><span class="citizen-ui-icon mw-ui-icon-history mw-ui-icon-wikimedia-history"></span><span>2 October 2026</span></a></li>
+			<li id="lm-time" class="mw-list-item"><a data-mw="interface" id="citizen-lastmod-relative" href="https://github.com/femiwiki/terraform-github-tacos/commits/main/docs/Workflow.wikitext" title="This page was last edited on 2 October 2026, at 23:35." data-timestamp="1790984102"><span class="citizen-ui-icon mw-ui-icon-history mw-ui-icon-wikimedia-history"></span><span>2 October 2026</span></a></li>
 			
 		</ul>
 		
@@ -689,7 +703,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 					<div class="page-info">
 		    <section id="footer-info-lastmod" class="page-info__item">
 		        <div class="page-info__label">Last modified</div>
-		        <div class="page-info__text"> This page was last edited on 2 October 2026, at 13:31.</div>
+		        <div class="page-info__text"> This page was last edited on 2 October 2026, at 23:35.</div>
 		    </section>
 		</div>
 </footer>		</div>
