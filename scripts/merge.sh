@@ -17,18 +17,20 @@ fi
 # A run with nothing to apply merges only what a person approved applying
 # before, in an earlier run of this pull request
 workflow=$(gh api "repos/$REPO/actions/runs/$GITHUB_RUN_ID" --jq .workflow_id)
-branch=$(jq -r .pull_request.head.ref "$GITHUB_EVENT_PATH")
-shas=$(gh api "repos/$REPO/pulls/$PR/commits" --paginate --jq '.[].sha' | jq -Rsc 'split("\n")')
+# This run first, since a runs listing missed it once (infra#1039); then by
+# commit, as a branch name can be reused by a later pull request
+runs="$GITHUB_RUN_ID $(gh api "repos/$REPO/pulls/$PR/commits" --paginate --jq '.[].sha' | while read -r sha; do
+  gh api "repos/$REPO/actions/workflows/$workflow/runs?event=pull_request&head_sha=$sha" --paginate --jq '.workflow_runs[].id'
+done)"
 approved=false
-for run in $(gh api "repos/$REPO/actions/workflows/$workflow/runs?event=pull_request&branch=$branch" --paginate \
-  --jq ".workflow_runs[] | select(.head_sha | IN(${shas}[])) | .id"); do
+for run in $runs; do
   if [ "$(gh api "repos/$REPO/actions/runs/$run/approvals" --jq 'map(select(.state == "approved")) | length')" -gt 0 ]; then
     approved=true
     break
   fi
 done
 if [ "$approved" = false ]; then
-  echo "::notice::#$PR was never applied, so it is left for a person to merge"
+  echo "::notice::#$PR was never applied, so it is left for a person to merge. Runs checked: $runs"
   summary "### Merge" "" "#$PR was never applied, so it is left for a person to merge."
   exit 0
 fi
