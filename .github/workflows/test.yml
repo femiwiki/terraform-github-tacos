@@ -25,8 +25,8 @@ jobs:
       - run: npm test
 
   # Runs the action itself, which the unit tests cannot: whether action.yml
-  # finds the script and passes it the inputs
-  gate:
+  # finds each script and passes it the inputs
+  action:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
@@ -51,3 +51,31 @@ jobs:
       - name: The gate failed on a failed job
         if: steps.failing.outcome != 'failure'
         run: exit 1
+
+      - name: Write a plan with one resource to create
+        run: |
+          echo '{"resource_changes": [{"change": {"actions": ["create"]}}]}' > "$RUNNER_TEMP/plan.json"
+
+      - id: changes
+        uses: ./
+        with:
+          step: changes
+          workspace: test
+          changes: "true"
+          plan-json: ${{ runner.temp }}/plan.json
+
+      - id: result
+        uses: ./
+        with:
+          step: result
+          workspace: test
+          outcome: success
+          plan-json: ${{ runner.temp }}/plan.json
+
+      - name: The outputs came through
+        env:
+          APPLY: ${{ steps.changes.outputs.apply }}
+          RESULT: ${{ steps.result.outputs.result }}
+        run: |
+          echo "apply=$APPLY result=$RESULT"
+          [ "$APPLY" = true ] && [ "$RESULT" = applied ]
