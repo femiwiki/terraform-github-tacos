@@ -11,7 +11,7 @@ inputs:
   step:
     description: >-
       Which part of the flow this call is: plan, changes, pending, apply,
-      result, gate or merge. The README says which job each one goes in.
+      result, gate, merge or collapse. The README says which job each one goes in.
     required: true
   workspace:
     description: The workspace this job plans or applies. Used by plan, changes and apply.
@@ -76,12 +76,12 @@ runs:
   steps:
     - name: Unknown step
       if: >-
-        !contains(fromJSON('["plan","changes","pending","apply","result","gate","merge"]'), inputs.step)
+        !contains(fromJSON('["plan","changes","pending","apply","result","gate","merge","collapse"]'), inputs.step)
       shell: bash
       env:
         STEP: ${{ inputs.step }}
       run: |
-        echo "::error::step must be plan, changes, pending, apply, result, gate or merge, not '$STEP'."
+        echo "::error::step must be plan, changes, pending, apply, result, gate, merge or collapse, not '$STEP'."
         exit 1
 
     - if: inputs.step == 'plan'
@@ -147,3 +147,14 @@ runs:
         GH_TOKEN: ${{ inputs.github-token }}
         METHOD: ${{ inputs.merge-method }}
       run: '"$GITHUB_ACTION_PATH/scripts/merge.sh"'
+
+    - if: inputs.step == 'collapse'
+      uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3  # v9.0.0
+      env:
+        ACTION_PATH: ${{ github.action_path }}
+        PR: ${{ github.event.pull_request.number }}
+      with:
+        github-token: ${{ inputs.github-token }}
+        script: |
+          const { default: collapse } = await import(`${process.env.ACTION_PATH}/scripts/collapse.ts`)
+          await collapse({ github, core, env: process.env })
