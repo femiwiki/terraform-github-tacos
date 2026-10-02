@@ -131,11 +131,15 @@ runs:
       run: '"$GITHUB_ACTION_PATH/scripts/result.sh"'
 
     - if: inputs.step == 'gate'
-      shell: bash
+      uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3  # v9.0.0
       env:
+        ACTION_PATH: ${{ github.action_path }}
         NEEDS: ${{ inputs.needs }}
         MAY_SKIP: ${{ inputs.may-skip }}
-      run: '"$GITHUB_ACTION_PATH/scripts/gate.sh"'
+      with:
+        script: |
+          const { default: gate } = await import(`${process.env.ACTION_PATH}/scripts/gate.ts`)
+          await gate({ core, env: process.env })
 
     - if: inputs.step == 'merge'
       shell: bash
