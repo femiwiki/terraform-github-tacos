@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/femiwiki/terraform-github-tacos/compare/v0.2.3...v0.3.0) (2026-10-02)
+
+
+### Features
+
+* add a collapse step that hides outdated plan comments ([#46](https://github.com/femiwiki/terraform-github-tacos/issues/46)) ([4e5ec39](https://github.com/femiwiki/terraform-github-tacos/commit/4e5ec396b6029f9841b4ea6585eaa7da8f1a957d)), closes [#5](https://github.com/femiwiki/terraform-github-tacos/issues/5)
+
 ## [0.2.3](https://github.com/femiwiki/terraform-github-tacos/compare/v0.2.2...v0.2.3) (2026-10-02)
 
 
