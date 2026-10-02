@@ -11,10 +11,15 @@ jobs:
     permissions:
       contents: read
 
+  test:
+    uses: ./.github/workflows/test.yml
+    permissions:
+      contents: read
+
   # The one check branch protection requires. What has to pass is the
   # workflows called above, so adding a check does not touch femiwiki/infra.
   required:
-    needs: [lint]
+    needs: [lint, test]
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 5
