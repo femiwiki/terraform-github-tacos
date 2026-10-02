@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.3](https://github.com/femiwiki/terraform-github-tacos/compare/v0.2.2...v0.2.3) (2026-10-02)
+
+
+### Bug Fixes
+
+* count this run's own approval when deciding to merge ([#42](https://github.com/femiwiki/terraform-github-tacos/issues/42)) ([2804b14](https://github.com/femiwiki/terraform-github-tacos/commit/2804b14c67c13f7a03c03c1a10a78722395d6bb9))
+
 ## [0.2.2](https://github.com/femiwiki/terraform-github-tacos/compare/v0.2.1...v0.2.2) (2026-10-01)
 
 
