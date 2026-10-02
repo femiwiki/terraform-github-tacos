@@ -17,6 +17,8 @@ Your workflow calls the action once in each job, with <code>step</code> set to t
 | <code>gate</code> || the required check || Fails unless every job it needs succeeded. The apply job may be skipped.
 |-
 | <code>merge</code> || after the gate || Merges the pull request. When this run has nothing to apply, merges only if an earlier run of it was approved.
+|-
+| <code>collapse</code> || plan, last step, with <code>if: always()</code> || Hides, as outdated, every plan comment of <code>dflook/tofu-plan</code> or <code>dflook/terraform-plan</code> but the newest of each workspace. Comments starting with <code>**&lt;workspace&gt; apply: </code> are hidden the same way.
 |}
 
 A pull request behind its base may be planned and applied unless <code>require-up-to-date</code> is <code>"true"</code>. The plan runs on the merge commit, and the apply job should make a fresh plan and apply it only when it matches the approved one, as <code>dflook/tofu-apply</code> does without <code>plan_path</code> or <code>auto_approve</code>. A change on the base to the same workspace then stops the apply, and a change to another workspace does not.
@@ -34,6 +36,8 @@ Each step writes a job summary, so the run page shows what was planned, who can 
 | <code>apply</code> || <code>actions: read</code>, <code>pull-requests: read</code>
 |-
 | <code>merge</code> || <code>actions: read</code>, <code>contents: write</code>, <code>pull-requests: write</code>
+|-
+| <code>collapse</code> || <code>pull-requests: write</code>
 |}
 
 == A whole workflow ==
@@ -87,6 +91,11 @@ jobs:
           changes: ${{ steps.plan.outputs.changes }}
           plan-json: ${{ steps.plan.outputs.json_plan_path }}
           plan-text: ${{ steps.plan.outputs.text_plan_path }}
+
+      - uses: femiwiki/terraform-github-tacos@v0.2.3  # x-release-please-version
+        if: always()
+        with:
+          step: collapse
 
   pending:
     needs: plan

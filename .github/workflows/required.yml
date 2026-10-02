@@ -15,6 +15,7 @@ jobs:
     uses: ./.github/workflows/test.yml
     permissions:
       contents: read
+      pull-requests: read
 
   # The one check branch protection requires. What has to pass is the
   # workflows called above, so adding a check does not touch femiwiki/infra.
