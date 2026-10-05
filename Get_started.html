@@ -8,7 +8,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <script>(RLQ=window.RLQ||[]).push(function(){mw.loader.impl(function(){return["user.options@12s5i",function($,jQuery,require,module){mw.user.tokens.set({"patrolToken":"+\\","watchToken":"+\\","csrfToken":"+\\"});
 }];});});</script>
 
-<script src="./assets/startup-static.js"></script><script src="./assets/modules-static.js"></script><script>mw.loader.load(["ext.pygments.view","site","mediawiki.page.ready","skins.citizen.scripts","ext.Wikven.citizenSearchShortcuts","ext.Wikven.pinnableState","ext.Wikven.appearance","ext.Wikven.citizenSkins"]);</script>
+<script src="./assets/startup-static.js"></script><script src="./assets/modules-static.js"></script><script>mw.loader.load(["ext.pygments.view","site","mediawiki.page.ready","mediawiki.toc","skins.citizen.scripts","ext.Wikven.citizenSearchShortcuts","ext.Wikven.pinnableState","ext.Wikven.appearance","ext.Wikven.citizenSkins","skins.citizen.toc"]);</script>
 <meta name="ResourceLoaderDynamicStyles" content="">
 
 <meta name="generator" content="MediaWiki 1.46.0">
@@ -393,7 +393,24 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 				<div id="contentSub"><div id="mw-content-subtitle"></div></div>
 				
 				
-				<div id="mw-content-text" class="mw-body-content"><div class="mw-content-ltr mw-parser-output" lang="en" dir="ltr"><section id="citizen-section-0" class="citizen-section"><p>This workflow has one workspace per directory, <code>network</code> and <code>dns</code>. Put it in <code>.github/workflows/</code>, change the workspace list and add your credentials. Make the gate job's name, <code>tofu gate</code>, a required status check of the default branch.
+				<div id="mw-content-text" class="mw-body-content"><div class="mw-content-ltr mw-parser-output" lang="en" dir="ltr"><section id="citizen-section-0" class="citizen-section"><p>This page takes one change to production: planned in a pull request, merged, approved and applied. The example repository has two workspaces, one per directory, <code>network</code> and <code>dns</code>, and keeps their state in a remote backend.
+</p>
+<meta property="mw:PageProp/toc"/>
+</section><section id="citizen-section-1" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="Create_the_environments">Create the environments</h2></div><div class="citizen-section-body">
+<p>Each workspace applies in a GitHub environment of the same name, and its required reviewers are who can approve the apply. The module creates them:
+</p>
+<div class="mw-highlight mw-highlight-lang-hcl mw-content-ltr mw-highlight-copy" dir="ltr"><pre><span></span><span class="kr">module</span><span class="w"> </span><span class="nv">"tacos"</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"github.com/femiwiki/terraform-github-tacos?ref=v0.4.0"</span><span class="c1">  # x-release-please-version</span>
+
+<span class="w">  </span><span class="na">repository</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s2">"infra"</span>
+<span class="w">  </span><span class="na">environments</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">"network", "dns"</span><span class="p">]</span>
+<span class="w">  </span><span class="na">reviewer_teams</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="nv">github_team.deployer.id</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+<p>See <a href="./Approvals.html" title="Approvals">Approvals</a> for who can approve and the permissions each job needs.
+</p>
+</div></section><section id="citizen-section-2" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="Add_the_workflow">Add the workflow</h2></div><div class="citizen-section-body">
+<p>Put this workflow in <code>.github/workflows/</code>, change the workspace list and add your credentials.
 </p>
 <div class="mw-highlight mw-highlight-lang-yaml mw-content-ltr mw-highlight-copy" dir="ltr"><pre><span></span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tofu</span>
 <span class="nt">on</span><span class="p">:</span>
@@ -526,8 +543,21 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <span class="w">          </span><span class="nt">step</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gate</span>
 <span class="w">          </span><span class="nt">needs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ toJSON(needs) }}</span>
 </pre></div>
+<p>Then make the gate job's name, <code>tofu gate</code>, a required status check of the default branch, so a pull request whose plan fails cannot merge.
+</p>
+</div></section><section id="citizen-section-3" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="Open_a_pull_request">Open a pull request</h2></div><div class="citizen-section-body">
+<p>Change a file in <code>network</code> and open a pull request. Each workspace is planned, and its plan is commented on the pull request. Nothing is applied yet.
+</p>
+</div></section><section id="citizen-section-4" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="Merge_and_approve">Merge and approve</h2></div><div class="citizen-section-body">
+<p>Merge the pull request. The run for the push plans every workspace again, and the <code>network apply</code> job waits for its environment. A reviewer opens the run and approves the deployment under "Review deployments".
+</p><p>The apply makes a fresh plan and applies it only when it matches the one that was approved. The job summary shows who approved and what changed.
+</p>
+</div></section><section id="citizen-section-5" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="Next">Next</h2></div><div class="citizen-section-body">
+<ul><li><a href="./Runs.html" title="Runs">Runs</a> says what each step of the workflow does.</li>
+<li><a href="./Auto_apply.html" title="Auto apply">Auto apply</a> skips the approval for chosen workspaces.</li>
+<li><a href="./Apply-before-merge.html" title="Apply-before-merge">Apply-before-merge</a> applies a pull request before it merges.</li></ul>
 
-</section></div>
+</div></section></div>
 <div class="printfooter" data-nosnippet="">Retrieved from "<a dir="ltr" href="https://femiwiki.github.io/terraform-github-tacos/Get_started.html">https://femiwiki.github.io/terraform-github-tacos/Get_started.html</a>"</div></div>
 			</div>
 			
@@ -545,13 +575,115 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 	<div class="citizen-menu__content">
 		
 		<ul class="citizen-menu__content-list">
-			<li id="lm-time" class="mw-list-item"><a data-mw="interface" id="citizen-lastmod-relative" href="https://github.com/femiwiki/terraform-github-tacos/commits/main/docs/Get%20started.wikitext" title="This page was last edited on 5 October 2026, at 08:42." data-timestamp="1791189726"><span class="citizen-ui-icon mw-ui-icon-history mw-ui-icon-wikimedia-history"></span><span>5 October 2026</span></a></li>
+			<li id="lm-time" class="mw-list-item"><a data-mw="interface" id="citizen-lastmod-relative" href="https://github.com/femiwiki/terraform-github-tacos/commits/main/docs/Get%20started.wikitext" title="This page was last edited on 5 October 2026, at 09:06." data-timestamp="1791191167"><span class="citizen-ui-icon mw-ui-icon-history mw-ui-icon-wikimedia-history"></span><span>5 October 2026</span></a></li>
 			
 		</ul>
 		
 	</div></nav>
 
 			
+			
+			
+<div id="citizen-toc" class="citizen-toc citizen-dropdown citizen-page-aside__panel citizen-page-aside__panel--toc">
+	<details class="citizen-dropdown-details">
+		<summary
+			class="citizen-dropdown-summary" 
+			title="Contents"
+			aria-details="mw-panel-toc">
+			<span class="citizen-ui-icon mw-ui-icon-wikimedia-listBullet"></span>
+			<span>Contents</span>
+		</summary>
+	</details>
+	<nav id="mw-panel-toc" class="citizen-toc-card citizen-menu__card" aria-labelledby="mw-panel-toc-label">
+		<div class="citizen-menu__card-content">
+			<a class="citizen-toc-top citizen-toc-link cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" title="Back to top" href="#top" role="button">
+				<div class="citizen-ui-icon mw-ui-icon-wikimedia-arrowUp"></div>
+				<div class="citizen-toc-text">Back to top</div>
+			</a>
+			<div id="mw-panel-toc-label" class="citizen-menu__heading">Contents</div>
+			<div class="citizen-toc-contents" id="mw-panel-toc-list">
+				<div class="citizen-toc-indicator"></div>
+				<ul class="citizen-toc-list">
+					<li id="toc-Create_the_environments"
+			class="citizen-toc-list-item citizen-toc-level-1">
+			<a class="citizen-toc-link cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" href="#Create_the_environments" role="button">
+				<div class="citizen-toc-content">
+					<div class="citizen-toc-text">
+						<span class="citizen-toc-numb">1</span>
+						<span class="citizen-toc-heading">Create the environments</span>
+					</div>
+					
+				</div>
+			</a>
+			
+			<ul id="toc-Create_the_environments-sublist" class="citizen-toc-list">
+			</ul>
+		</li>
+		<li id="toc-Add_the_workflow"
+			class="citizen-toc-list-item citizen-toc-level-1">
+			<a class="citizen-toc-link cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" href="#Add_the_workflow" role="button">
+				<div class="citizen-toc-content">
+					<div class="citizen-toc-text">
+						<span class="citizen-toc-numb">2</span>
+						<span class="citizen-toc-heading">Add the workflow</span>
+					</div>
+					
+				</div>
+			</a>
+			
+			<ul id="toc-Add_the_workflow-sublist" class="citizen-toc-list">
+			</ul>
+		</li>
+		<li id="toc-Open_a_pull_request"
+			class="citizen-toc-list-item citizen-toc-level-1">
+			<a class="citizen-toc-link cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" href="#Open_a_pull_request" role="button">
+				<div class="citizen-toc-content">
+					<div class="citizen-toc-text">
+						<span class="citizen-toc-numb">3</span>
+						<span class="citizen-toc-heading">Open a pull request</span>
+					</div>
+					
+				</div>
+			</a>
+			
+			<ul id="toc-Open_a_pull_request-sublist" class="citizen-toc-list">
+			</ul>
+		</li>
+		<li id="toc-Merge_and_approve"
+			class="citizen-toc-list-item citizen-toc-level-1">
+			<a class="citizen-toc-link cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" href="#Merge_and_approve" role="button">
+				<div class="citizen-toc-content">
+					<div class="citizen-toc-text">
+						<span class="citizen-toc-numb">4</span>
+						<span class="citizen-toc-heading">Merge and approve</span>
+					</div>
+					
+				</div>
+			</a>
+			
+			<ul id="toc-Merge_and_approve-sublist" class="citizen-toc-list">
+			</ul>
+		</li>
+		<li id="toc-Next"
+			class="citizen-toc-list-item citizen-toc-level-1">
+			<a class="citizen-toc-link cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" href="#Next" role="button">
+				<div class="citizen-toc-content">
+					<div class="citizen-toc-text">
+						<span class="citizen-toc-numb">5</span>
+						<span class="citizen-toc-heading">Next</span>
+					</div>
+					
+				</div>
+			</a>
+			
+			<ul id="toc-Next-sublist" class="citizen-toc-list">
+			</ul>
+		</li>
+	</ul>
+			</div>		</div>
+	</nav>
+</div>
+
 </aside>
 
 			<footer class="citizen-page-footer">
@@ -559,7 +691,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 					<div class="page-info">
 		    <section id="footer-info-lastmod" class="page-info__item">
 		        <div class="page-info__label">Last modified</div>
-		        <div class="page-info__text"> This page was last edited on 5 October 2026, at 08:42.</div>
+		        <div class="page-info__text"> This page was last edited on 5 October 2026, at 09:06.</div>
 		    </section>
 		</div>
 </footer>		</div>
