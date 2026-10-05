@@ -11,7 +11,8 @@ if [ "$EVENT" != pull_request ]; then
   echo "Not a pull request, so there is no base to compare with."
   exit 0
 fi
-base=$(jq -r .pull_request.base.ref "$GITHUB_EVENT_PATH")
-head=$(gh api "repos/$REPO/pulls/$PR" --jq .head.sha)
+pr=$(gh api -H "X-GitHub-Api-Version: $STACK_API" "repos/$REPO/pulls/$PR")
+base=$(echo "$pr" | jq -r '.stack.base.ref // .base.ref')
+head=$(echo "$pr" | jq -r .head.sha)
 require_current "$base" "$head" "plan again"
 echo "Up to date with $base."

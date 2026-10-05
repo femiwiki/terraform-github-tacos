@@ -9,6 +9,9 @@ PR=$(jq -r '.pull_request.number // empty' "$GITHUB_EVENT_PATH")
 PLANNED=$(jq -r '.pull_request.head.sha // empty' "$GITHUB_EVENT_PATH")
 DEFAULT_BRANCH=$(jq -r '.repository.default_branch' "$GITHUB_EVENT_PATH")
 
+# The REST API version whose pull requests carry their native stack
+STACK_API=2026-03-10
+
 # The annotation the changes step leaves and the pending step looks for
 MARKER="Changes to apply"
 

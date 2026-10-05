@@ -18,7 +18,7 @@ echo "approver=$approver" >> "$GITHUB_OUTPUT"
 subject=$GITHUB_REF_NAME
 if [ "$EVENT" = pull_request ]; then
   subject="#$PR"
-  pr=$(gh api "repos/$REPO/pulls/$PR")
+  pr=$(gh api -H "X-GitHub-Api-Version: $STACK_API" "repos/$REPO/pulls/$PR")
   if [ "$(echo "$pr" | jq .merged)" = true ]; then
     echo "::error::#$PR has merged, so there is no pull request left to apply. Apply $DEFAULT_BRANCH with workflow_dispatch instead."
     exit 1
@@ -28,9 +28,11 @@ if [ "$EVENT" = pull_request ]; then
     echo "::error::#$PR is at $head now, not $PLANNED, which this run planned. Approve the run for $head instead."
     exit 1
   fi
-  base=$(echo "$pr" | jq -r .base.ref)
+  # A native stack merges into its base all at once, and pending has checked
+  # that applying from this pull request is safe
+  base=$(echo "$pr" | jq -r '.stack.base.ref // .base.ref')
   if [ "$base" != "$DEFAULT_BRANCH" ]; then
-    echo "::error::#$PR targets $base rather than $DEFAULT_BRANCH. An apply runs before the merge, so a plan from a stacked branch carries whatever is below it. Merge the branch underneath first, retarget this one at $DEFAULT_BRANCH, then plan again."
+    echo "::error::#$PR targets $base rather than $DEFAULT_BRANCH, outside a native stack. An apply runs before the merge, so a plan from a stacked branch carries whatever is below it. Merge the branch underneath first, retarget this one at $DEFAULT_BRANCH, then plan again."
     exit 1
   fi
   if [ "$REQUIRE_UP_TO_DATE" = true ]; then

@@ -5,6 +5,8 @@ export const fakeCore = () => {
   const written = {
     headings: [] as string[],
     tables: [] as unknown[][][],
+    raw: [] as string[],
+    notices: [] as string[],
     failed: undefined as string | undefined,
   }
   const summary = {
@@ -14,6 +16,10 @@ export const fakeCore = () => {
     },
     addTable(rows: unknown[][]) {
       written.tables.push(rows)
+      return summary
+    },
+    addRaw(text: string) {
+      written.raw.push(text)
       return summary
     },
     async write() {
@@ -26,6 +32,9 @@ export const fakeCore = () => {
       written.failed = message
     },
     info() {},
+    notice(message: string) {
+      written.notices.push(message)
+    },
   }
   // Only the parts the steps use are here
   return { core: core as unknown as typeof Core, written }
