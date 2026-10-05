@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Before applying. Approval can come long after the plan, so check again what
-# the plan step checked, and record who approved.
+# the plan step checked, and record who approved. An auto-apply workspace has
+# no approval, and the person who started the run stands in.
 # shellcheck source=scripts/common.sh
 source "$(dirname "$0")/common.sh"
 
@@ -9,9 +10,9 @@ if [ "$EVENT" = pull_request ] && [ "$APPLY_BEFORE_MERGE" != true ]; then
   exit 1
 fi
 
-approver=$(gh api "repos/$REPO/actions/runs/$GITHUB_RUN_ID/approvals" \
+approved=$(gh api "repos/$REPO/actions/runs/$GITHUB_RUN_ID/approvals" \
   --jq '[.[] | select(.state == "approved") | .user.login] | last // empty' || true)
-approver=${approver:-$GITHUB_ACTOR}
+approver=${approved:-$GITHUB_ACTOR}
 echo "approver=$approver" >> "$GITHUB_OUTPUT"
 
 subject=$GITHUB_REF_NAME
@@ -49,5 +50,10 @@ elif [ "$EVENT" = push ]; then
   echo "Still the head of $GITHUB_REF_NAME, $GITHUB_SHA."
 fi
 
+if [ -n "$approved" ]; then
+  line="Approved by @$approver"
+else
+  line="Applied without an approval, in a run @$approver started,"
+fi
 summary "### ${WORKSPACE:-Apply} approval" "" \
-  "Approved by @$approver for $subject at \`${PLANNED:-$GITHUB_SHA}\`."
+  "$line for $subject at \`${PLANNED:-$GITHUB_SHA}\`."

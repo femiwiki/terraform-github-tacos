@@ -6,7 +6,7 @@ source "$(dirname "$0")/common.sh"
 if [ "$EVENT" = pull_request ] && [ "$APPLY_BEFORE_MERGE" != true ]; then
   echo "A pull request is applied after it merges, by the run for the push to $DEFAULT_BRANCH."
   echo "workspaces=[]" >> "$GITHUB_OUTPUT"
-  summary "### Waiting for approval" "" "Nothing to apply until the merge. The run for the push to \`$DEFAULT_BRANCH\` applies it."
+  summary "### To apply" "" "Nothing to apply until the merge. The run for the push to \`$DEFAULT_BRANCH\` applies it."
   exit 0
 fi
 
@@ -54,23 +54,39 @@ else
       done | sort -u | jq -Rnc '[inputs | select(length > 0)]')
 fi
 
-summary "### Waiting for approval" ""
+summary "### To apply" ""
 if [ "$workspaces" = '[]' ]; then
   summary "Nothing to apply."
 else
   summary "| Environment | Who can approve |" "|---|---|"
 fi
 # A job naming an environment that does not exist creates it without any
-# protection, and the apply would then run without asking anyone
+# protection, and the apply would then run without asking anyone. Only a
+# workspace listed in auto-apply may go without required reviewers.
 for w in $(echo "$workspaces" | jq -r '.[]'); do
-  reviewers=$(gh api "repos/$REPO/environments/$w" \
-    --jq '[.protection_rules[]? | select(.type == "required_reviewers") | .reviewers[] | .reviewer.slug // .reviewer.login] | join(", ")' 2>/dev/null || true)
-  if [ -z "$reviewers" ]; then
-    echo "::error::the $w environment has no required reviewers, so nothing would stop its apply."
-    summary "| \`$w\` | **nobody, so this run stops here** |"
+  # A 404 still prints its body, so drop the output with the failure
+  environment=$(gh api "repos/$REPO/environments/$w" 2> /dev/null) || environment=
+  if [ -z "$environment" ]; then
+    echo "::error::the $w environment does not exist, and the apply job would create it with nobody to approve."
+    summary "| \`$w\` | **no environment, so this run stops here** |"
     exit 1
   fi
-  summary "| \`$w\` | $reviewers |"
+  reviewers=$(echo "$environment" \
+    | jq -r '[.protection_rules[]? | select(.type == "required_reviewers") | .reviewers[] | .reviewer.slug // .reviewer.login] | join(", ")')
+  if [[ " $AUTO_APPLY " == *" $w "* ]]; then
+    if [ -n "$reviewers" ]; then
+      echo "::warning::$w is listed in auto-apply, but its environment has required reviewers, so it waits for them."
+      summary "| \`$w\` | $reviewers |"
+    else
+      summary "| \`$w\` | nobody, it applies automatically |"
+    fi
+  elif [ -z "$reviewers" ]; then
+    echo "::error::the $w environment has no required reviewers, so nothing would stop its apply. List $w in auto-apply if it should apply without an approval."
+    summary "| \`$w\` | **nobody, so this run stops here** |"
+    exit 1
+  else
+    summary "| \`$w\` | $reviewers |"
+  fi
 done
 echo "workspaces=$workspaces" >> "$GITHUB_OUTPUT"
 echo "Applying $workspaces"

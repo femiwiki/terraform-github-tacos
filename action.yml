@@ -2,7 +2,7 @@
 name: terraform-github-tacos
 description: >-
   Plan OpenTofu or Terraform in a pull request, plan again once it merges, and
-  apply when a GitHub environment approves.
+  apply, by default once a GitHub environment approves.
 author: femiwiki
 branding:
   icon: check-circle
@@ -37,6 +37,13 @@ inputs:
     description: >-
       A JSON list of workspaces to apply, taking the place of the ones found in
       this run. Used by pending, for a workflow_dispatch run.
+    default: ""
+  auto-apply:
+    description: >-
+      Workspaces that apply without an approval, separated by spaces, like
+      HCP Terraform's auto apply. Their environments have no required
+      reviewers; any other workspace's environment must have some. Used by
+      pending.
     default: ""
   needs:
     description: The gate's `toJSON(needs)`. Used by gate.
@@ -115,6 +122,7 @@ runs:
       env:
         GH_TOKEN: ${{ inputs.github-token }}
         WORKSPACES: ${{ inputs.workspaces }}
+        AUTO_APPLY: ${{ inputs.auto-apply }}
         APPLY_BEFORE_MERGE: ${{ inputs.apply-before-merge }}
       run: '"$GITHUB_ACTION_PATH/scripts/pending.sh"'
 

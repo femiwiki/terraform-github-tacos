@@ -18,22 +18,31 @@ if [ "$(gh pr view "$PR" --repo "$REPO" --json state --jq .state)" = MERGED ]; t
   summary "### Merge" "" "#$PR was already merged."
   exit 0
 fi
-# A run with nothing to apply merges only what a person approved applying
-# before, in an earlier run of this pull request
+# A run with nothing to apply merges only what an earlier run of this pull
+# request applied: one a person approved, or that applied an auto-apply
+# workspace, which leaves a successful deployment and no approval
 workflow=$(gh api "repos/$REPO/actions/runs/$GITHUB_RUN_ID" --jq .workflow_id)
+shas=$(gh api "repos/$REPO/pulls/$PR/commits" --paginate --jq '.[].sha')
 # This run first, since a runs listing missed it once (infra#1039); then by
 # commit, as a branch name can be reused by a later pull request
-runs="$GITHUB_RUN_ID $(gh api "repos/$REPO/pulls/$PR/commits" --paginate --jq '.[].sha' | while read -r sha; do
+runs="$GITHUB_RUN_ID $(for sha in $shas; do
   gh api "repos/$REPO/actions/workflows/$workflow/runs?event=pull_request&head_sha=$sha" --paginate --jq '.workflow_runs[].id'
 done)"
-approved=false
+statuses=$(for sha in $shas; do
+  gh api "repos/$REPO/deployments?sha=$sha" --paginate --jq '.[].statuses_url' || exit 1
+done) || { echo "::error::could not list deployments; the merge step needs deployments: read."; exit 1; }
+deployed=$(for url in $statuses; do
+  gh api "$url" --paginate --jq '.[] | select(.state == "success") | .log_url'
+done | sed -nE 's|.*/actions/runs/([0-9]+)/.*|\1|p')
+applied=false
 for run in $runs; do
-  if [ "$(gh api "repos/$REPO/actions/runs/$run/approvals" --jq 'map(select(.state == "approved")) | length')" -gt 0 ]; then
-    approved=true
+  if [[ " $(echo "$deployed" | tr '\n' ' ') " == *" $run "* ]] \
+    || [ "$(gh api "repos/$REPO/actions/runs/$run/approvals" --jq 'map(select(.state == "approved")) | length')" -gt 0 ]; then
+    applied=true
     break
   fi
 done
-if [ "$approved" = false ]; then
+if [ "$applied" = false ]; then
   echo "::notice::#$PR was never applied, so it is left for a person to merge. Runs checked: $runs"
   summary "### Merge" "" "#$PR was never applied, so it is left for a person to merge."
   exit 0

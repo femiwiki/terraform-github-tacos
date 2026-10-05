@@ -106,3 +106,57 @@ jobs:
       - uses: ./
         with:
           step: merge
+
+  # This repository's preview environment has no required reviewers, so it
+  # stands in for an auto-apply workspace
+  auto-apply:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
+        with:
+          persist-credentials: false
+
+      - id: unlisted
+        uses: ./
+        continue-on-error: true
+        with:
+          step: pending
+          apply-before-merge: "true"
+          workspaces: '["preview"]'
+
+      - name: pending refused an environment without reviewers
+        if: steps.unlisted.outcome != 'failure'
+        run: exit 1
+
+      - id: listed
+        uses: ./
+        with:
+          step: pending
+          apply-before-merge: "true"
+          workspaces: '["preview"]'
+          auto-apply: preview
+
+      - name: pending let it through once listed
+        env:
+          WORKSPACES: ${{ steps.listed.outputs.workspaces }}
+        run: |
+          echo "workspaces=$WORKSPACES"
+          [ "$WORKSPACES" = '["preview"]' ]
+
+      - id: missing
+        uses: ./
+        continue-on-error: true
+        with:
+          step: pending
+          apply-before-merge: "true"
+          workspaces: '["no-such-environment"]'
+          auto-apply: no-such-environment
+
+      - name: pending refused a missing environment even when listed
+        if: steps.missing.outcome != 'failure'
+        run: exit 1
