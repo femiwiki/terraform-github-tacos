@@ -301,16 +301,16 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 		<ul id="toc-A_whole_workflow-sublist" class="vector-toc-list">
 		</ul>
 	</li>
-	<li id="toc-Applying_before_the_merge"
+	<li id="toc-Apply-before-merge"
 		class="vector-toc-list-item vector-toc-level-1 vector-toc-list-item-expanded">
-		<a class="vector-toc-link" href="#Applying_before_the_merge">
+		<a class="vector-toc-link" href="#Apply-before-merge">
 			<div class="vector-toc-text">
 				<span class="vector-toc-numb">5</span>
-				<span>Applying before the merge</span>
+				<span>Apply-before-merge</span>
 			</div>
 		</a>
 		
-		<ul id="toc-Applying_before_the_merge-sublist" class="vector-toc-list">
+		<ul id="toc-Apply-before-merge-sublist" class="vector-toc-list">
 		</ul>
 	</li>
 	<li id="toc-From_v0.3.0"
@@ -532,7 +532,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 					
 					
 					<div id="mw-content-text" class="mw-body-content"><div class="mw-content-ltr mw-parser-output" lang="en" dir="ltr"><p>Your workflow calls the action once in each job, with <code>step</code> set to the job it runs in. The apply job's environment has the same name as the workspace.
-</p><p>By default it follows HCP Terraform's order: a pull request only plans, and once it merges, the push to the default branch plans again and applies when the environment approves, or at once for a workspace in <code>auto-apply</code>. With <code>apply-before-merge</code> set to <code>"true"</code> on the <code>pending</code>, <code>apply</code> and <code>merge</code> steps, a pull request is applied first and merges once the apply succeeds.
+</p><p>By default it applies after the merge, in HCP Terraform's order: a pull request only plans, and once it merges, the push to the default branch plans again and applies when the environment approves, or at once for a workspace in <code>auto-apply</code>. With <code>apply-before-merge</code> set to <code>"true"</code> on the <code>pending</code>, <code>apply</code> and <code>merge</code> steps, a pull request is applied first and merges once the apply succeeds.
 </p>
 <meta property="mw:PageProp/toc" />
 <div class="mw-heading mw-heading2"><h2 id="Steps">Steps</h2></div>
@@ -757,9 +757,18 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <span class="w">          </span><span class="nt">step</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gate</span>
 <span class="w">          </span><span class="nt">needs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ toJSON(needs) }}</span>
 </pre></div>
-<div class="mw-heading mw-heading2"><h2 id="Applying_before_the_merge">Applying before the merge</h2></div>
-<p>With <code>apply-before-merge</code>, the pull request's own run waits for the approval, applies, and merges. The default branch then holds only what was applied, and a pull request that does not merge after its apply leaves production ahead of it, so the <code>merge</code> job fails.
-</p><p>A pull request behind its base may be planned and applied unless <code>require-up-to-date</code> is <code>"true"</code>. The plan runs on the merge commit, so a change on the base to the same workspace makes the fresh plan differ and stops the apply, and a change to another workspace does not.
+<div class="mw-heading mw-heading2"><h2 id="Apply-before-merge">Apply-before-merge</h2></div>
+<p>With <code>apply-before-merge</code>, the pull request's own run waits for the approval, applies, and merges. The default branch then holds only what was applied, and a pull request that does not merge after its apply leaves production ahead of it, so the <code>merge</code> job fails. This is the order <a rel="nofollow" class="external text" href="https://www.runatlantis.io/">Atlantis</a> and <a rel="nofollow" class="external text" href="https://github.com/diggerhq/digger">digger</a> use, and it is usually called apply-before-merge.
+</p>
+<style data-mw-deduplicate="TemplateStyles:r10">.mw-parser-output .tacos-note{margin:1em 0;padding:0.5em 1em;border-left:4px solid var(--color-progressive);background-color:var(--color-surface-2)}</style><div class="tacos-note">
+<p><b>Other names</b>
+</p>
+<ul><li>Terrateam calls the two orders <a rel="nofollow" class="external text" href="https://docs.terrateam.io/getting-started/plan-and-apply">pre-merge and post-merge</a>.</li>
+<li><a rel="nofollow" class="external text" href="https://terramate.io/rethinking-iac/mastering-terraform-workflows-apply-before-merge-vs-apply-after-merge">Terramate</a> and <a rel="nofollow" class="external text" href="https://cloudposse.com/blog/apply-after-merge">Cloud Posse</a> call the default order apply-after-merge, and Terramate also merge-before-apply.</li>
+<li>After Atlantis, it is also called the Atlantis-style workflow, as in <a rel="nofollow" class="external text" href="https://feedback.spacelift.io/p/stack-locking-doesnt-support-atlantis-style-apply-before-merge-workflow">Spacelift's feedback board</a>.</li></ul>
+</div>
+<p><br />
+A pull request behind its base may be planned and applied unless <code>require-up-to-date</code> is <code>"true"</code>. The plan runs on the merge commit, so a change on the base to the same workspace makes the fresh plan differ and stops the apply, and a change to another workspace does not.
 </p>
 <div class="mw-highlight mw-highlight-lang-yaml mw-content-ltr mw-highlight-copy" dir="ltr"><pre><span></span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tofu</span>
 <span class="nt">on</span><span class="p">:</span>
@@ -921,7 +930,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 			
 <footer id="footer" class="mw-footer" >
 	<ul id="footer-info">
-	<li id="footer-info-lastmod"> This page was last edited on 5 October 2026, at 02:06.</li>
+	<li id="footer-info-lastmod"> This page was last edited on 5 October 2026, at 08:25.</li>
 </ul>
 
 	<ul id="footer-places">
