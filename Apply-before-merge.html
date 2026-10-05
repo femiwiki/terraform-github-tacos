@@ -8,7 +8,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <script>(RLQ=window.RLQ||[]).push(function(){mw.loader.impl(function(){return["user.options@12s5i",function($,jQuery,require,module){mw.user.tokens.set({"patrolToken":"+\\","watchToken":"+\\","csrfToken":"+\\"});
 }];});});</script>
 
-<script src="./assets/startup-static.js"></script><script src="./assets/modules-static.js"></script><script>mw.loader.load(["ext.pygments.view","site","mediawiki.page.ready","skins.citizen.scripts","ext.Wikven.citizenSearchShortcuts","ext.Wikven.pinnableState","ext.Wikven.appearance","ext.Wikven.citizenSkins"]);</script>
+<script src="./assets/startup-static.js"></script><script src="./assets/modules-static.js"></script><script>mw.loader.load(["ext.pygments.view","site","mediawiki.page.ready","skins.citizen.scripts","ext.Wikven.citizenSearchShortcuts","ext.Wikven.pinnableState","ext.Wikven.appearance","ext.Wikven.citizenSkins","skins.citizen.toc"]);</script>
 <meta name="ResourceLoaderDynamicStyles" content="">
 
 <meta name="generator" content="MediaWiki 1.46.0">
@@ -467,6 +467,7 @@ A pull request behind its base may be planned and applied unless <code>require-u
 <span class="w">    </span><span class="nt">permissions</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">actions</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">write</span>
 <span class="w">      </span><span class="nt">checks</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">read</span>
+<span class="w">      </span><span class="nt">pull-requests</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">read</span>
 <span class="w">    </span><span class="nt">outputs</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">workspaces</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ steps.pending.outputs.workspaces }}</span>
 <span class="w">    </span><span class="nt">steps</span><span class="p">:</span>
@@ -551,8 +552,11 @@ A pull request behind its base may be planned and applied unless <code>require-u
 <span class="w">          </span><span class="nt">step</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">merge</span>
 <span class="w">          </span><span class="nt">apply-before-merge</span><span class="p">:</span><span class="w"> </span><span class="s">"true"</span>
 </pre></div>
-
-</section></div>
+</section><section id="citizen-section-1" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="Stacked_pull_requests">Stacked pull requests</h2></div><div class="citizen-section-body">
+<p>In a <a rel="nofollow" class="external text" href="https://docs.github.com/en/pull-requests/get-started/about-stacked-prs">native stack</a>, which GitHub has in public preview, approving a pull request does what merging it does: the bottom one applies and merges alone, and one higher up applies its own plan, which carries every pull request below it, and merges the whole stack. Higher up, <code>pending</code> fails when that plan changes more than one workspace, since their applies run side by side and one may need what another has yet to apply. Apply such a stack from the bottom: once the lowest pull request merges, GitHub retargets the next one at the default branch, and its next run plans it from there.
+</p><p>A pull request that targets another pull request's branch without being in a native stack is never applied.
+</p>
+</div></section></div>
 <div class="printfooter" data-nosnippet="">Retrieved from "<a dir="ltr" href="https://femiwiki.github.io/terraform-github-tacos/Apply-before-merge.html">https://femiwiki.github.io/terraform-github-tacos/Apply-before-merge.html</a>"</div></div>
 			</div>
 			
@@ -570,13 +574,55 @@ A pull request behind its base may be planned and applied unless <code>require-u
 	<div class="citizen-menu__content">
 		
 		<ul class="citizen-menu__content-list">
-			<li id="lm-time" class="mw-list-item"><a data-mw="interface" id="citizen-lastmod-relative" href="https://github.com/femiwiki/terraform-github-tacos/commits/main/docs/Apply-before-merge.wikitext" title="This page was last edited on 5 October 2026, at 08:42." data-timestamp="1791189726"><span class="citizen-ui-icon mw-ui-icon-history mw-ui-icon-wikimedia-history"></span><span>5 October 2026</span></a></li>
+			<li id="lm-time" class="mw-list-item"><a data-mw="interface" id="citizen-lastmod-relative" href="https://github.com/femiwiki/terraform-github-tacos/commits/main/docs/Apply-before-merge.wikitext" title="This page was last edited on 5 October 2026, at 08:58." data-timestamp="1791190688"><span class="citizen-ui-icon mw-ui-icon-history mw-ui-icon-wikimedia-history"></span><span>5 October 2026</span></a></li>
 			
 		</ul>
 		
 	</div></nav>
 
 			
+			
+			
+<div id="citizen-toc" class="citizen-toc citizen-dropdown citizen-page-aside__panel citizen-page-aside__panel--toc">
+	<details class="citizen-dropdown-details">
+		<summary
+			class="citizen-dropdown-summary" 
+			title="Contents"
+			aria-details="mw-panel-toc">
+			<span class="citizen-ui-icon mw-ui-icon-wikimedia-listBullet"></span>
+			<span>Contents</span>
+		</summary>
+	</details>
+	<nav id="mw-panel-toc" class="citizen-toc-card citizen-menu__card" aria-labelledby="mw-panel-toc-label">
+		<div class="citizen-menu__card-content">
+			<a class="citizen-toc-top citizen-toc-link cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" title="Back to top" href="#top" role="button">
+				<div class="citizen-ui-icon mw-ui-icon-wikimedia-arrowUp"></div>
+				<div class="citizen-toc-text">Back to top</div>
+			</a>
+			<div id="mw-panel-toc-label" class="citizen-menu__heading">Contents</div>
+			<div class="citizen-toc-contents" id="mw-panel-toc-list">
+				<div class="citizen-toc-indicator"></div>
+				<ul class="citizen-toc-list">
+					<li id="toc-Stacked_pull_requests"
+			class="citizen-toc-list-item citizen-toc-level-1">
+			<a class="citizen-toc-link cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" href="#Stacked_pull_requests" role="button">
+				<div class="citizen-toc-content">
+					<div class="citizen-toc-text">
+						<span class="citizen-toc-numb">1</span>
+						<span class="citizen-toc-heading">Stacked pull requests</span>
+					</div>
+					
+				</div>
+			</a>
+			
+			<ul id="toc-Stacked_pull_requests-sublist" class="citizen-toc-list">
+			</ul>
+		</li>
+	</ul>
+			</div>		</div>
+	</nav>
+</div>
+
 </aside>
 
 			<footer class="citizen-page-footer">
@@ -584,7 +630,7 @@ A pull request behind its base may be planned and applied unless <code>require-u
 					<div class="page-info">
 		    <section id="footer-info-lastmod" class="page-info__item">
 		        <div class="page-info__label">Last modified</div>
-		        <div class="page-info__text"> This page was last edited on 5 October 2026, at 08:42.</div>
+		        <div class="page-info__text"> This page was last edited on 5 October 2026, at 08:58.</div>
 		    </section>
 		</div>
 </footer>		</div>

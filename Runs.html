@@ -415,12 +415,12 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <tr>
 <td><code>pending</code></td>
 <td>one job after the plans</td>
-<td>Lists the workspaces to apply, and refuses an environment that is missing, or has no required reviewers unless its workspace is in <code>auto-apply</code>. Cancels older runs of the same branch that still wait for approval, unless one of their jobs is running. On a pull request it lists nothing, unless <code>apply-before-merge</code>.
+<td>Lists the workspaces to apply, and refuses an environment that is missing, or has no required reviewers unless its workspace is in <code>auto-apply</code>. Cancels older runs of the same branch that still wait for approval, unless one of their jobs is running. On a pull request it lists nothing, unless <code>apply-before-merge</code>, and then fails a pull request high in a <a href="./Apply-before-merge.html#Stacked_pull_requests" title="Apply-before-merge">stack</a> that changes more than one workspace.
 </td></tr>
 <tr>
 <td><code>apply</code></td>
 <td>apply, first step</td>
-<td>Records who approved, or that nobody had to. On a push, refuses unless the commit is still the head of the branch. On a pull request, refuses unless <code>apply-before-merge</code>, and then refuses when the pull request moved or merged, or with <code>require-up-to-date</code> fell behind.
+<td>Records who approved, or that nobody had to. On a push, refuses unless the commit is still the head of the branch. On a pull request, refuses unless <code>apply-before-merge</code>, and then refuses when the pull request moved or merged, targets another branch outside a native stack, or with <code>require-up-to-date</code> fell behind.
 </td></tr>
 <tr>
 <td><code>result</code></td>
@@ -435,7 +435,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <tr>
 <td><code>merge</code></td>
 <td>after the gate, with <code>apply-before-merge</code></td>
-<td>Merges the pull request. When this run has nothing to apply, merges only if an earlier run of it was approved or applied an auto-apply workspace. Fails when the pull request has not merged 2 minutes after the apply, since production is then ahead of the default branch. Does nothing without <code>apply-before-merge</code>.
+<td>Merges the pull request through the async merge API, which also merges every pull request below it in a stack. When this run has nothing to apply, merges only if an earlier run of it was approved or applied an auto-apply workspace. Fails when the pull request has not merged 2 minutes after the apply, since production is then ahead of the default branch. Does nothing without <code>apply-before-merge</code>.
 </td></tr>
 <tr>
 <td><code>collapse</code></td>
@@ -464,7 +464,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 	<div class="citizen-menu__content">
 		
 		<ul class="citizen-menu__content-list">
-			<li id="lm-time" class="mw-list-item"><a data-mw="interface" id="citizen-lastmod-relative" href="https://github.com/femiwiki/terraform-github-tacos/commits/main/docs/Runs.wikitext" title="This page was last edited on 5 October 2026, at 08:42." data-timestamp="1791189726"><span class="citizen-ui-icon mw-ui-icon-history mw-ui-icon-wikimedia-history"></span><span>5 October 2026</span></a></li>
+			<li id="lm-time" class="mw-list-item"><a data-mw="interface" id="citizen-lastmod-relative" href="https://github.com/femiwiki/terraform-github-tacos/commits/main/docs/Runs.wikitext" title="This page was last edited on 5 October 2026, at 08:58." data-timestamp="1791190688"><span class="citizen-ui-icon mw-ui-icon-history mw-ui-icon-wikimedia-history"></span><span>5 October 2026</span></a></li>
 			
 		</ul>
 		
@@ -520,7 +520,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 					<div class="page-info">
 		    <section id="footer-info-lastmod" class="page-info__item">
 		        <div class="page-info__label">Last modified</div>
-		        <div class="page-info__text"> This page was last edited on 5 October 2026, at 08:42.</div>
+		        <div class="page-info__text"> This page was last edited on 5 October 2026, at 08:58.</div>
 		    </section>
 		</div>
 </footer>		</div>
