@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.4.0](https://github.com/femiwiki/terraform-github-tacos/compare/v0.3.0...v0.4.0) (2026-10-05)
+
+
+### ⚠ BREAKING CHANGES
+
+* a v0.3.0 workflow no longer applies its pull requests. Add apply-before-merge: "true" to the pending, apply and merge steps to keep applying before the merge.
+
+### Features
+
+* apply after the merge by default ([#50](https://github.com/femiwiki/terraform-github-tacos/issues/50)) ([cc13623](https://github.com/femiwiki/terraform-github-tacos/commit/cc13623af122863e9bfb1d8040826c4a85a24819))
+
 ## [0.3.0](https://github.com/femiwiki/terraform-github-tacos/compare/v0.2.3...v0.3.0) (2026-10-02)
 
 
