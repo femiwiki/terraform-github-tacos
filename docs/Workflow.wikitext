@@ -1,27 +1,31 @@
 Your workflow calls the action once in each job, with <code>step</code> set to the job it runs in. The apply job's environment has the same name as the workspace.
 
+By default it follows HCP Terraform's order: a pull request only plans, and once it merges, the push to the default branch plans again and applies when the environment approves. With <code>apply-before-merge</code> set to <code>"true"</code> on the <code>pending</code>, <code>apply</code> and <code>merge</code> steps, a pull request is applied first and merges once the apply succeeds.
+
 == Steps ==
 {| class="wikitable"
 ! <code>step</code> !! Job !! What it does
 |-
-| <code>plan</code> || plan, before planning || With <code>require-up-to-date</code>, refuses a branch that is behind its base.
+| <code>plan</code> || plan, before planning || With <code>require-up-to-date</code>, refuses a pull request that is behind its base.
 |-
 | <code>changes</code> || plan, after planning || Marks the workspace as having changes to apply.
 |-
-| <code>pending</code> || one job after the plans || Cancels older runs of the pull request that still wait for approval, lists the workspaces to apply, and refuses an environment without required reviewers.
+| <code>pending</code> || one job after the plans || Lists the workspaces to apply, and refuses an environment without required reviewers. Cancels older runs of the same branch that still wait for approval, unless one of their jobs is running. On a pull request it lists nothing, unless <code>apply-before-merge</code>.
 |-
-| <code>apply</code> || apply, first step || Refuses to apply when the pull request moved or merged, or with <code>require-up-to-date</code> fell behind, and records who approved.
+| <code>apply</code> || apply, first step || Records who approved. On a push, refuses unless the commit is still the head of the branch. On a pull request, refuses unless <code>apply-before-merge</code>, and then refuses when the pull request moved or merged, or with <code>require-up-to-date</code> fell behind.
 |-
 | <code>result</code> || apply, last step, with <code>if: always()</code> || Writes what the apply changed and whether it succeeded.
 |-
 | <code>gate</code> || the required check || Fails unless every job it needs succeeded. The apply job may be skipped.
 |-
-| <code>merge</code> || after the gate || Merges the pull request. When this run has nothing to apply, merges only if an earlier run of it was approved.
+| <code>merge</code> || after the gate, with <code>apply-before-merge</code> || Merges the pull request. When this run has nothing to apply, merges only if an earlier run of it was approved. Fails when the pull request has not merged 2 minutes after the apply, since production is then ahead of the default branch. Does nothing without <code>apply-before-merge</code>.
 |-
 | <code>collapse</code> || plan, last step, with <code>if: always()</code> || Hides, as outdated, every plan comment of <code>dflook/tofu-plan</code> or <code>dflook/terraform-plan</code> but the newest of each workspace. Comments starting with <code>**&lt;workspace&gt; apply: </code> are hidden the same way.
 |}
 
-A pull request behind its base may be planned and applied unless <code>require-up-to-date</code> is <code>"true"</code>. The plan runs on the merge commit, and the apply job should make a fresh plan and apply it only when it matches the approved one, as <code>dflook/tofu-apply</code> does without <code>plan_path</code> or <code>auto_approve</code>. A change on the base to the same workspace then stops the apply, and a change to another workspace does not.
+The apply job should make a fresh plan and apply it only when it matches the approved one, as <code>dflook/tofu-apply</code> does without <code>plan_path</code> or <code>auto_approve</code>. On a push, dflook's plan updates the merged pull request's plan comment with the plan of the default branch, and the apply compares against that comment.
+
+Only the newest commit of the default branch applies, since its plan carries the changes of every commit before it that has not been applied. So the push run has to plan every workspace that has changes: a workflow that plans only the workspaces a pull request changes should plan them all on a push. A change made since the plan, such as a <code>workflow_dispatch</code> apply, makes the fresh plan differ and stops the apply; "Re-run all jobs" plans again. A commit pushed to the default branch without a pull request has no plan comment, so apply it with <code>workflow_dispatch</code>.
 
 Each step writes a job summary, so the run page shows what was planned, who can approve, who approved, and what the apply changed.
 
@@ -33,7 +37,7 @@ Each step writes a job summary, so the run page shows what was planned, who can 
 |-
 | <code>pending</code> || <code>actions: write</code>, <code>checks: read</code>
 |-
-| <code>apply</code> || <code>actions: read</code>, <code>pull-requests: read</code>
+| <code>apply</code> || <code>actions: read</code>, <code>contents: read</code>, <code>pull-requests: read</code>
 |-
 | <code>merge</code> || <code>actions: read</code>, <code>contents: write</code>, <code>pull-requests: write</code>
 |-
@@ -42,6 +46,144 @@ Each step writes a job summary, so the run page shows what was planned, who can 
 
 == A whole workflow ==
 This workflow has one workspace per directory, <code>network</code> and <code>dns</code>. Put it in <code>.github/workflows/</code>, change the workspace list and add your credentials. Make the gate job's name, <code>tofu gate</code>, a required status check of the default branch.
+
+<syntaxhighlight lang="yaml" copy>
+name: tofu
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      workspace:
+        description: The workspace to apply from this branch, once its environment approves.
+        required: true
+        type: choice
+        options: &workspaces [network, dns]
+permissions: {}
+jobs:
+  plan:
+    name: ${{ matrix.workspace }} plan
+    if: github.event_name != 'workflow_dispatch'
+    strategy:
+      fail-fast: false
+      matrix:
+        workspace: *workspaces
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: femiwiki/terraform-github-tacos@v0.3.0  # x-release-please-version
+        with:
+          step: plan
+          workspace: ${{ matrix.workspace }}
+
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
+        with:
+          persist-credentials: false
+
+      - uses: dflook/tofu-plan@c7416238983bdd94c5486fb856bb7358f2bcc935  # v3.1.0
+        id: plan
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          path: ${{ matrix.workspace }}
+
+      - uses: femiwiki/terraform-github-tacos@v0.3.0  # x-release-please-version
+        with:
+          step: changes
+          workspace: ${{ matrix.workspace }}
+          changes: ${{ steps.plan.outputs.changes }}
+          plan-json: ${{ steps.plan.outputs.json_plan_path }}
+          plan-text: ${{ steps.plan.outputs.text_plan_path }}
+
+      - uses: femiwiki/terraform-github-tacos@v0.3.0  # x-release-please-version
+        if: always()
+        with:
+          step: collapse
+
+  pending:
+    needs: plan
+    if: >-
+      !cancelled() && (github.event_name == 'workflow_dispatch'
+      || (github.event_name == 'push' && needs.plan.result == 'success'))
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      checks: read
+    outputs:
+      workspaces: ${{ steps.pending.outputs.workspaces }}
+    steps:
+      - uses: femiwiki/terraform-github-tacos@v0.3.0  # x-release-please-version
+        id: pending
+        with:
+          step: pending
+          workspaces: ${{ inputs.workspace && format('["{0}"]', inputs.workspace) || '' }}
+
+  apply:
+    name: ${{ matrix.workspace }} apply
+    needs: pending
+    if: >-
+      !cancelled() && needs.pending.result == 'success'
+      && needs.pending.outputs.workspaces != '[]'
+    strategy:
+      fail-fast: false
+      matrix:
+        workspace: ${{ fromJSON(needs.pending.outputs.workspaces) }}
+    runs-on: ubuntu-latest
+    environment: ${{ matrix.workspace }}
+    permissions:
+      actions: read
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: femiwiki/terraform-github-tacos@v0.3.0  # x-release-please-version
+        id: approver
+        with:
+          step: apply
+          workspace: ${{ matrix.workspace }}
+
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
+        with:
+          persist-credentials: false
+
+      - uses: dflook/tofu-apply@e3e5dfc8f935d4b152c767801046f63abf8a77d3  # v3.1.0
+        id: apply
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          path: ${{ matrix.workspace }}
+          auto_approve: ${{ github.event_name == 'workflow_dispatch' }}
+
+      - uses: femiwiki/terraform-github-tacos@v0.3.0  # x-release-please-version
+        if: always()
+        with:
+          step: result
+          workspace: ${{ matrix.workspace }}
+          outcome: ${{ steps.apply.outcome }}
+          plan-json: ${{ steps.apply.outputs.json_plan_path }}
+          plan-text: ${{ steps.apply.outputs.text_plan_path }}
+          approver: ${{ steps.approver.outputs.approver }}
+
+  # Make this the one required check
+  gate:
+    name: ${{ github.event_name == 'pull_request' && 'tofu gate' || 'tofu gate (pull requests only)' }}
+    needs: plan
+    if: always() && github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - uses: femiwiki/terraform-github-tacos@v0.3.0  # x-release-please-version
+        with:
+          step: gate
+          needs: ${{ toJSON(needs) }}
+</syntaxhighlight>
+
+== Applying before the merge ==
+With <code>apply-before-merge</code>, the pull request's own run waits for the approval, applies, and merges. The default branch then holds only what was applied, and a pull request that does not merge after its apply leaves production ahead of it, so the <code>merge</code> job fails.
+
+A pull request behind its base may be planned and applied unless <code>require-up-to-date</code> is <code>"true"</code>. The plan runs on the merge commit, so a change on the base to the same workspace makes the fresh plan differ and stops the apply, and a change to another workspace does not.
 
 <syntaxhighlight lang="yaml" copy>
 name: tofu
@@ -113,6 +255,7 @@ jobs:
         id: pending
         with:
           step: pending
+          apply-before-merge: "true"
           workspaces: ${{ inputs.workspace && format('["{0}"]', inputs.workspace) || '' }}
 
   apply:
@@ -135,6 +278,7 @@ jobs:
         with:
           step: apply
           workspace: ${{ matrix.workspace }}
+          apply-before-merge: "true"
 
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
         with:
@@ -185,4 +329,8 @@ jobs:
       - uses: femiwiki/terraform-github-tacos@v0.3.0  # x-release-please-version
         with:
           step: merge
+          apply-before-merge: "true"
 </syntaxhighlight>
+
+== From v0.3.0 ==
+v0.3.0 always applied before the merge. To keep that, add <code>apply-before-merge: "true"</code> to the <code>pending</code>, <code>apply</code> and <code>merge</code> steps. To apply after the merge instead, change the workflow to the first one above: add the <code>push</code> trigger, plan on pushes too, run <code>pending</code> on pushes and <code>workflow_dispatch</code> only, make the gate need only the plan jobs, and drop the <code>merge</code> job.

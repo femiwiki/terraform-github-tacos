@@ -1,8 +1,9 @@
 # terraform-github-tacos
 
-Plan OpenTofu or Terraform in a pull request, apply it when a GitHub
-environment approves, then merge. It does what Terraform Cloud's VCS workflow
-does, with GitHub Actions alone.
+Plan OpenTofu or Terraform in a pull request, plan again once it merges, and
+apply when a GitHub environment approves. It does what HCP Terraform's (formerly
+Terraform Cloud) VCS workflow does, with GitHub Actions alone. It can instead
+apply a pull request before it merges.
 
 This repository has a GitHub Action, `action.yml`, and an OpenTofu module at
 the root that creates the environments the apply waits on.
