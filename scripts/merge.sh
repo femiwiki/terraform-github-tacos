@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
-# An apply runs before the merge, so until the pull request lands the default
-# branch describes less than what is deployed, and the next apply from any
-# other branch takes production back to it.
+# With apply-before-merge, an apply runs before the merge, so until the pull
+# request lands the default branch describes less than what is deployed, and
+# the next apply from any other branch takes production back to it.
 # shellcheck source=scripts/common.sh
 source "$(dirname "$0")/common.sh"
 
+if [ "$APPLY_BEFORE_MERGE" != true ]; then
+  echo "Applies follow the merge, so there is nothing for this step to merge."
+  exit 0
+fi
 if [ -z "$PR" ]; then
   echo "Not a pull request, so there is nothing to merge."
   exit 0

@@ -4,6 +4,11 @@
 # shellcheck source=scripts/common.sh
 source "$(dirname "$0")/common.sh"
 
+if [ "$EVENT" = pull_request ] && [ "$APPLY_BEFORE_MERGE" != true ]; then
+  echo "::error::#$PR is applied after it merges, by the run for the push to $DEFAULT_BRANCH. Run the apply job on push rather than pull_request, or set apply-before-merge to \"true\" on the pending, apply and merge steps to apply before the merge."
+  exit 1
+fi
+
 approver=$(gh api "repos/$REPO/actions/runs/$GITHUB_RUN_ID/approvals" \
   --jq '[.[] | select(.state == "approved") | .user.login] | last // empty' || true)
 approver=${approver:-$GITHUB_ACTOR}
@@ -33,6 +38,15 @@ if [ "$EVENT" = pull_request ]; then
   else
     echo "Still $PLANNED."
   fi
+elif [ "$EVENT" = push ]; then
+  # Only the newest commit applies, since its plan carries every older one's
+  # changes; pending cancels the older runs that wait
+  head=$(gh api "repos/$REPO/commits/$GITHUB_REF_NAME" --jq .sha)
+  if [ "$head" != "$GITHUB_SHA" ]; then
+    echo "::error::$GITHUB_REF_NAME is at $head now, not $GITHUB_SHA, which this run planned. Approve the run for $head instead."
+    exit 1
+  fi
+  echo "Still the head of $GITHUB_REF_NAME, $GITHUB_SHA."
 fi
 
 summary "### ${WORKSPACE:-Apply} approval" "" \

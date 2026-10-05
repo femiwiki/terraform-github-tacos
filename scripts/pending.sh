@@ -3,14 +3,31 @@
 # shellcheck source=scripts/common.sh
 source "$(dirname "$0")/common.sh"
 
+if [ "$EVENT" = pull_request ] && [ "$APPLY_BEFORE_MERGE" != true ]; then
+  echo "A pull request is applied after it merges, by the run for the push to $DEFAULT_BRANCH."
+  echo "workspaces=[]" >> "$GITHUB_OUTPUT"
+  summary "### Waiting for approval" "" "Nothing to apply until the merge. The run for the push to \`$DEFAULT_BRANCH\` applies it."
+  exit 0
+fi
+
 # Each push leaves a run behind, and one still waiting for approval would apply
-# a plan of a commit the pull request no longer has. The apply step refuses that
-# too; this keeps it from being offered at all.
-if [ "$EVENT" = pull_request ]; then
+# a plan of a commit the branch no longer has at its head. The apply step
+# refuses that too; this keeps it from being offered at all.
+case "$EVENT" in
+  pull_request) branch=$(jq -r .pull_request.head.ref "$GITHUB_EVENT_PATH") ;;
+  push) branch=$GITHUB_REF_NAME ;;
+  *) branch= ;;
+esac
+if [ -n "$branch" ]; then
   workflow=$(gh api "repos/$REPO/actions/runs/$GITHUB_RUN_ID" --jq .workflow_id)
-  branch=$(jq -r .pull_request.head.ref "$GITHUB_EVENT_PATH")
-  gh api "repos/$REPO/actions/workflows/$workflow/runs?event=pull_request&status=waiting&branch=$branch" --paginate \
+  gh api "repos/$REPO/actions/workflows/$workflow/runs?event=$EVENT&status=waiting&branch=$branch" --paginate \
     --jq ".workflow_runs[] | select(.id < $GITHUB_RUN_ID) | .id" | while read -r run; do
+    # A run waiting on one workspace may be applying another, and cancelling
+    # it would stop that apply halfway
+    if [ "$(gh api "repos/$REPO/actions/runs/$run/jobs" --paginate --jq '.jobs[] | select(.status == "in_progress") | .id' | wc -l)" -gt 0 ]; then
+      echo "::warning::run $run waits on an older commit but is applying, so it is left alone"
+      continue
+    fi
     gh api --method POST "repos/$REPO/actions/runs/$run/cancel" > /dev/null \
       && echo "Cancelled run $run, which waited on an older commit" \
       || echo "::warning::could not cancel run $run"

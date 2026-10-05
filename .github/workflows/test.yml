@@ -67,3 +67,42 @@ jobs:
       - uses: ./
         with:
           step: collapse
+
+  # Without apply-before-merge, a pull request's run must not offer an apply
+  after-merge:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
+        with:
+          persist-credentials: false
+
+      - id: pending
+        uses: ./
+        with:
+          step: pending
+
+      - name: pending listed nothing to apply
+        env:
+          WORKSPACES: ${{ steps.pending.outputs.workspaces }}
+        run: |
+          echo "workspaces=$WORKSPACES"
+          [ "$WORKSPACES" = '[]' ]
+
+      - id: apply
+        uses: ./
+        continue-on-error: true
+        with:
+          step: apply
+          workspace: test
+
+      - name: apply refused the pull request
+        if: steps.apply.outcome != 'failure'
+        run: exit 1
+
+      - uses: ./
+        with:
+          step: merge
