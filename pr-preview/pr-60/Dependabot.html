@@ -395,26 +395,39 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 				<div id="contentSub"><div id="mw-content-subtitle"></div></div>
 				
 				
-				<div id="mw-content-text" class="mw-body-content"><div class="mw-content-ltr mw-parser-output" lang="en" dir="ltr"><section id="citizen-section-0" class="citizen-section"><p>A workflow run that Dependabot starts gets Dependabot secrets, not Actions secrets. With none set, every plan in a Dependabot pull request fails, usually on the state passphrase or the provider credentials. There are three ways out, and each trades something.
+				<div id="mw-content-text" class="mw-body-content"><div class="mw-content-ltr mw-parser-output" lang="en" dir="ltr"><section id="citizen-section-0" class="citizen-section"><p>A workflow run that Dependabot starts gets Dependabot secrets, not Actions secrets, so with none set every plan in a Dependabot pull request fails. A run started by a person's review of that pull request gets the Actions secrets, and the action handles it like a pull request run. So the way this page recommends is to skip the plans in Dependabot's own runs and plan when someone who can merge approves:
 </p>
-</section><section id="citizen-section-1" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="Copy_the_plan_secrets">Copy the plan secrets</h2></div><div class="citizen-section-body">
-<p>Set the secrets the plan jobs read as Dependabot secrets too, from the same source as the Actions ones:
-</p>
-<div class="mw-highlight mw-highlight-lang-hcl mw-content-ltr mw-highlight-copy" dir="ltr"><pre><span></span><span class="kr">resource</span><span class="w"> </span><span class="nc">"github_dependabot_secret"</span><span class="w"> </span><span class="nv">"plan"</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="na">for_each</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">local.plan_secrets</span>
+<div class="mw-highlight mw-highlight-lang-yaml mw-content-ltr mw-highlight-copy" dir="ltr"><pre><span></span><span class="nt">on</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">pull_request</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">pull_request_review</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">types</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">submitted</span><span class="p p-Indicator">]</span>
 
-<span class="w">  </span><span class="na">repository</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="s2">"infra"</span>
-<span class="w">  </span><span class="na">secret_name</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="nv">each.key</span>
-<span class="w">  </span><span class="na">plaintext_value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">each.value</span>
-<span class="p">}</span>
+<span class="nt">jobs</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">plan</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">>-</span>
+<span class="w">      </span><span class="no">(github.event_name == 'pull_request' &amp;&amp; github.actor != 'dependabot[bot]')</span>
+<span class="w">      </span><span class="no">|| (github.event_name == 'pull_request_review'</span>
+<span class="w">      </span><span class="no">&amp;&amp; github.event.review.state == 'approved'</span>
+<span class="w">      </span><span class="no">&amp;&amp; github.event.pull_request.user.login == 'dependabot[bot]'</span>
+<span class="w">      </span><span class="no">&amp;&amp; contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.review.author_association))</span>
+<span class="w">    </span><span class="c1"># ...</span>
+
+<span class="w">  </span><span class="nt">gate</span><span class="p">:</span>
+<span class="w">    </span><span class="c1"># The same condition as the plan, or Dependabot's own pull_request run</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tofu gate</span>
+<span class="w">    </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">>-</span>
+<span class="w">      </span><span class="no">always() &amp;&amp; (github.event_name == 'pull_request'</span>
+<span class="w">      </span><span class="no">|| (github.event_name == 'pull_request_review' &amp;&amp; needs.plan.result != 'skipped'))</span>
+<span class="w">    </span><span class="c1"># ...</span>
 </pre></div>
-<p>Dependabot pull requests are then planned like any other. The cost is that the updated dependency runs with those secrets before anyone has read the diff. A cooldown in <code>dependabot.yml</code> keeps a fresh release away for a few days, and secrets only the apply needs stay in the environments, behind their reviewers. Leave out a secret that can do much more than plan, such as a GitHub App key with administration rights, and skip that workspace's plan in Dependabot runs.
+<p>In Dependabot's own run the plans are skipped, so the gate fails and the pull request cannot merge. The approval starts a run that plans, and its gate, on the same head commit, replaces the failed one. A new commit from Dependabot fails the gate again until the next approval. Any other review starts a run with nothing to do and no gate.
+</p><p>Only people who can merge count, since anyone may review a public repository's pull request, and the plan runs the updated dependency with the secrets. Changes in that plan still wait for their environment's reviewers.
 </p>
-</div></section><section id="citizen-section-2" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="Push_a_commit">Push a commit</h2></div><div class="citizen-section-body">
-<p>A run started by anyone else's push uses the Actions secrets, so a person who has read the diff can push a commit to the Dependabot branch to have it planned. No secret is shared with Dependabot, but every Dependabot pull request needs that step, and Dependabot stops rebasing a branch someone else pushed to.
-</p>
-</div></section><section id="citizen-section-3" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="Skip_the_plans">Skip the plans</h2></div><div class="citizen-section-body">
-<p>Skip the plan jobs when <code>github.actor == 'dependabot[bot]'</code> and let the gate pass. Nothing is shared and nothing waits on a person, but an update is not planned before the merge. That is fine for updates that cannot change a plan, and wrong for an update to this action.
+</section><section id="citizen-section-1" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="Other_ways">Other ways</h2></div><div class="citizen-section-body">
+<ul><li><b>Copy the plan secrets</b> to Dependabot secrets, for example with <code>github_dependabot_secret</code>. Dependabot pull requests then plan by themselves, but the updated dependency runs with those secrets before anyone has read the diff. A cooldown in <code>dependabot.yml</code> keeps a fresh release away for a few days. Leave out secrets that can do much more than plan, such as a GitHub App key with administration rights.</li>
+<li><b>Push a commit</b> to the Dependabot branch after reading the diff. That run is the pusher's and gets the Actions secrets, but Dependabot stops rebasing a branch someone else pushed to.</li>
+<li><b>Skip the plans</b> for Dependabot and let the gate pass. Nothing is shared, but an update is not planned before the merge, which is wrong for an update to this action.</li></ul>
+<p>Re-running a Dependabot run does not help: it keeps Dependabot's secrets whoever re-runs it.
 </p>
 <style data-mw-deduplicate="TemplateStyles:r22">.mw-parser-output .tacos-prevnext{display:flex;margin-top:2em}.mw-parser-output .tacos-prevnext-next{margin-left:auto}</style><div class="tacos-prevnext"><div class="tacos-prevnext-prev">← <a href="./Approvals.html" title="Approvals">Approvals</a></div><div class="tacos-prevnext-next"><a href="./Module.html" title="Module">Module</a> →</div></div>
 <p><br/>
@@ -429,9 +442,9 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <div id="citizen-page-aside-lastmod" class="citizen-page-aside__panel citizen-page-aside__panel--lastmod" data-order="10">
 	<div id="citizen-page-aside-lastmod-heading" class="citizen-page-aside__heading">Last modified</div>
 	<div class="citizen-page-aside__body">
-<a class="citizen-page-aside__link cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" href="https://github.com/femiwiki/terraform-github-tacos/commits/main/docs/Dependabot.wikitext" title="This page was last edited on 5 October 2026, at 14:21.">
+<a class="citizen-page-aside__link cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" href="https://github.com/femiwiki/terraform-github-tacos/commits/main/docs/Dependabot.wikitext" title="This page was last edited on 5 October 2026, at 15:27.">
 	<span class="citizen-ui-icon mw-ui-icon-history mw-ui-icon-wikimedia-history"></span>
-	<time id="citizen-page-aside-lastmod-time" datetime="2026-10-05T14:21:05Z">5 October 2026</time>
+	<time id="citizen-page-aside-lastmod-time" datetime="2026-10-05T15:27:28Z">5 October 2026</time>
 </a>
 </div>
 </div>
@@ -465,49 +478,19 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 			<div class="citizen-toc-contents" id="mw-panel-toc-list">
 				<div class="citizen-toc-indicator"></div>
 				<ul class="citizen-toc-list">
-					<li id="toc-Copy_the_plan_secrets"
+					<li id="toc-Other_ways"
 			class="citizen-toc-list-item citizen-toc-level-1">
-			<a class="citizen-toc-link citizen-page-aside__link cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" href="#Copy_the_plan_secrets" role="button">
+			<a class="citizen-toc-link citizen-page-aside__link cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" href="#Other_ways" role="button">
 				<div class="citizen-toc-content">
 					<div class="citizen-toc-text">
 						<span class="citizen-toc-numb">1</span>
-						<span class="citizen-toc-heading">Copy the plan secrets</span>
+						<span class="citizen-toc-heading">Other ways</span>
 					</div>
 					
 				</div>
 			</a>
 			
-			<ul id="toc-Copy_the_plan_secrets-sublist" class="citizen-toc-list">
-			</ul>
-		</li>
-		<li id="toc-Push_a_commit"
-			class="citizen-toc-list-item citizen-toc-level-1">
-			<a class="citizen-toc-link citizen-page-aside__link cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" href="#Push_a_commit" role="button">
-				<div class="citizen-toc-content">
-					<div class="citizen-toc-text">
-						<span class="citizen-toc-numb">2</span>
-						<span class="citizen-toc-heading">Push a commit</span>
-					</div>
-					
-				</div>
-			</a>
-			
-			<ul id="toc-Push_a_commit-sublist" class="citizen-toc-list">
-			</ul>
-		</li>
-		<li id="toc-Skip_the_plans"
-			class="citizen-toc-list-item citizen-toc-level-1">
-			<a class="citizen-toc-link citizen-page-aside__link cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" href="#Skip_the_plans" role="button">
-				<div class="citizen-toc-content">
-					<div class="citizen-toc-text">
-						<span class="citizen-toc-numb">3</span>
-						<span class="citizen-toc-heading">Skip the plans</span>
-					</div>
-					
-				</div>
-			</a>
-			
-			<ul id="toc-Skip_the_plans-sublist" class="citizen-toc-list">
+			<ul id="toc-Other_ways-sublist" class="citizen-toc-list">
 			</ul>
 		</li>
 	</ul>
@@ -524,7 +507,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 					<div class="page-info">
 		    <section id="footer-info-lastmod" class="page-info__item">
 		        <div class="page-info__label">Last modified</div>
-		        <div class="page-info__text"> This page was last edited on 5 October 2026, at 14:21.</div>
+		        <div class="page-info__text"> This page was last edited on 5 October 2026, at 15:27.</div>
 		    </section>
 		</div>
 </footer>		</div>
