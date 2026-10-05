@@ -16,7 +16,7 @@ module "tacos" {
 |-
 | <code>plan</code> || <code>pull-requests: read</code>
 |-
-| <code>pending</code> || <code>actions: write</code>, <code>checks: read</code>
+| <code>pending</code> || <code>actions: write</code>, <code>checks: read</code>; also <code>pull-requests: read</code> with <code>apply-before-merge</code>
 |-
 | <code>apply</code> || <code>actions: read</code>, <code>contents: read</code>, <code>pull-requests: read</code>
 |-

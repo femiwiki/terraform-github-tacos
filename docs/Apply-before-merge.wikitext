@@ -71,6 +71,7 @@ jobs:
     permissions:
       actions: write
       checks: read
+      pull-requests: read
     outputs:
       workspaces: ${{ steps.pending.outputs.workspaces }}
     steps:
@@ -155,3 +156,8 @@ jobs:
           step: merge
           apply-before-merge: "true"
 </syntaxhighlight>
+
+== Stacked pull requests ==
+In a [https://docs.github.com/en/pull-requests/get-started/about-stacked-prs native stack], which GitHub has in public preview, approving a pull request does what merging it does: the bottom one applies and merges alone, and one higher up applies its own plan, which carries every pull request below it, and merges the whole stack. Higher up, <code>pending</code> fails when that plan changes more than one workspace, since their applies run side by side and one may need what another has yet to apply. Apply such a stack from the bottom: once the lowest pull request merges, GitHub retargets the next one at the default branch, and its next run plans it from there.
+
+A pull request that targets another pull request's branch without being in a native stack is never applied.

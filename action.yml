@@ -130,6 +130,19 @@ runs:
         APPLY_BEFORE_MERGE: ${{ inputs.apply-before-merge }}
       run: '"$GITHUB_ACTION_PATH/scripts/pending.sh"'
 
+    - if: inputs.step == 'pending' && inputs.apply-before-merge == 'true' && github.event_name == 'pull_request'
+      uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3  # v9.0.0
+      env:
+        ACTION_PATH: ${{ github.action_path }}
+        PR: ${{ github.event.pull_request.number }}
+        APPLY_BEFORE_MERGE: ${{ inputs.apply-before-merge }}
+        WORKSPACES: ${{ steps.pending.outputs.workspaces }}
+      with:
+        github-token: ${{ inputs.github-token }}
+        script: |
+          const { default: stack } = await import(`${process.env.ACTION_PATH}/scripts/stack.ts`)
+          await stack({ github, core, env: process.env })
+
     - id: apply
       if: inputs.step == 'apply'
       shell: bash
@@ -169,12 +182,18 @@ runs:
           await gate({ core, env: process.env })
 
     - if: inputs.step == 'merge'
-      shell: bash
+      uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3  # v9.0.0
       env:
-        GH_TOKEN: ${{ inputs.github-token }}
+        ACTION_PATH: ${{ github.action_path }}
+        PR: ${{ github.event.pull_request.number }}
+        DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         METHOD: ${{ inputs.merge-method }}
         APPLY_BEFORE_MERGE: ${{ inputs.apply-before-merge }}
-      run: '"$GITHUB_ACTION_PATH/scripts/merge.sh"'
+      with:
+        github-token: ${{ inputs.github-token }}
+        script: |
+          const { default: merge } = await import(`${process.env.ACTION_PATH}/scripts/merge.ts`)
+          await merge({ github, core, env: process.env })
 
     - if: inputs.step == 'collapse'
       uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3  # v9.0.0
