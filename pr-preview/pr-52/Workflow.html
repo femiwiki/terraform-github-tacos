@@ -80,7 +80,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 	</li>
 	<li class="citizen-siteStats__item" id="citizen-siteStats__item--edits" role="listitem">
 		<span class="citizen-ui-icon mw-ui-icon-edit mw-ui-icon-wikimedia-edit" title="edits"></span>
-		<span>18</span>
+		<span>19</span>
 		<span class="citizen-siteStats__label">edits</span>
 	</li>
 </ul>
@@ -603,15 +603,16 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 </pre></div>
 </div></section><section id="citizen-section-5" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="Apply-before-merge">Apply-before-merge</h2></div><div class="citizen-section-body">
 <p>With <code>apply-before-merge</code>, the pull request's own run waits for the approval, applies, and merges. The default branch then holds only what was applied, and a pull request that does not merge after its apply leaves production ahead of it, so the <code>merge</code> job fails. This is the order <a rel="nofollow" class="external text" href="https://www.runatlantis.io/">Atlantis</a> and <a rel="nofollow" class="external text" href="https://github.com/diggerhq/digger">digger</a> use, and it is usually called apply-before-merge.
-</p>
-<div class="tacos-note">
+</p><p>
+&lt;templatestyles src="Note/styles.css" /></p><div class="tacos-note">
 <p><b>Other names</b>
 </p>
 <ul><li>Terrateam calls the two orders <a rel="nofollow" class="external text" href="https://docs.terrateam.io/getting-started/plan-and-apply">pre-merge and post-merge</a>.</li>
 <li><a rel="nofollow" class="external text" href="https://terramate.io/rethinking-iac/mastering-terraform-workflows-apply-before-merge-vs-apply-after-merge">Terramate</a> and <a rel="nofollow" class="external text" href="https://cloudposse.com/blog/apply-after-merge">Cloud Posse</a> call the default order apply-after-merge, and Terramate also merge-before-apply.</li>
 <li>After Atlantis, it is also called the Atlantis-style workflow, as in <a rel="nofollow" class="external text" href="https://feedback.spacelift.io/p/stack-locking-doesnt-support-atlantis-style-apply-before-merge-workflow">Spacelift's feedback board</a>.</li></ul>
 </div>
-<p>A pull request behind its base may be planned and applied unless <code>require-up-to-date</code> is <code>"true"</code>. The plan runs on the merge commit, so a change on the base to the same workspace makes the fresh plan differ and stops the apply, and a change to another workspace does not.
+<p><br/>
+A pull request behind its base may be planned and applied unless <code>require-up-to-date</code> is <code>"true"</code>. The plan runs on the merge commit, so a change on the base to the same workspace makes the fresh plan differ and stops the apply, and a change to another workspace does not.
 </p>
 <div class="mw-highlight mw-highlight-lang-yaml mw-content-ltr mw-highlight-copy" dir="ltr"><pre><span></span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tofu</span>
 <span class="nt">on</span><span class="p">:</span>
@@ -780,7 +781,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 	<div class="citizen-menu__content">
 		
 		<ul class="citizen-menu__content-list">
-			<li id="lm-time" class="mw-list-item"><a data-mw="interface" id="citizen-lastmod-relative" href="https://github.com/femiwiki/terraform-github-tacos/commits/main/docs/Workflow.wikitext" title="This page was last edited on 5 October 2026, at 07:42." data-timestamp="1791186149"><span class="citizen-ui-icon mw-ui-icon-history mw-ui-icon-wikimedia-history"></span><span>5 October 2026</span></a></li>
+			<li id="lm-time" class="mw-list-item"><a data-mw="interface" id="citizen-lastmod-relative" href="https://github.com/femiwiki/terraform-github-tacos/commits/main/docs/Workflow.wikitext" title="This page was last edited on 5 October 2026, at 07:57." data-timestamp="1791187021"><span class="citizen-ui-icon mw-ui-icon-history mw-ui-icon-wikimedia-history"></span><span>5 October 2026</span></a></li>
 			
 		</ul>
 		
@@ -911,7 +912,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 					<div class="page-info">
 		    <section id="footer-info-lastmod" class="page-info__item">
 		        <div class="page-info__label">Last modified</div>
-		        <div class="page-info__text"> This page was last edited on 5 October 2026, at 07:42.</div>
+		        <div class="page-info__text"> This page was last edited on 5 October 2026, at 07:57.</div>
 		    </section>
 		</div>
 </footer>		</div>

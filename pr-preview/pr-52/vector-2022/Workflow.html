@@ -759,15 +759,16 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 </pre></div>
 <div class="mw-heading mw-heading2"><h2 id="Apply-before-merge">Apply-before-merge</h2></div>
 <p>With <code>apply-before-merge</code>, the pull request's own run waits for the approval, applies, and merges. The default branch then holds only what was applied, and a pull request that does not merge after its apply leaves production ahead of it, so the <code>merge</code> job fails. This is the order <a rel="nofollow" class="external text" href="https://www.runatlantis.io/">Atlantis</a> and <a rel="nofollow" class="external text" href="https://github.com/diggerhq/digger">digger</a> use, and it is usually called apply-before-merge.
-</p>
-<div class="tacos-note">
+</p><p>
+&lt;templatestyles src="Note/styles.css" /&gt;</p><div class="tacos-note">
 <p><b>Other names</b>
 </p>
 <ul><li>Terrateam calls the two orders <a rel="nofollow" class="external text" href="https://docs.terrateam.io/getting-started/plan-and-apply">pre-merge and post-merge</a>.</li>
 <li><a rel="nofollow" class="external text" href="https://terramate.io/rethinking-iac/mastering-terraform-workflows-apply-before-merge-vs-apply-after-merge">Terramate</a> and <a rel="nofollow" class="external text" href="https://cloudposse.com/blog/apply-after-merge">Cloud Posse</a> call the default order apply-after-merge, and Terramate also merge-before-apply.</li>
 <li>After Atlantis, it is also called the Atlantis-style workflow, as in <a rel="nofollow" class="external text" href="https://feedback.spacelift.io/p/stack-locking-doesnt-support-atlantis-style-apply-before-merge-workflow">Spacelift's feedback board</a>.</li></ul>
 </div>
-<p>A pull request behind its base may be planned and applied unless <code>require-up-to-date</code> is <code>"true"</code>. The plan runs on the merge commit, so a change on the base to the same workspace makes the fresh plan differ and stops the apply, and a change to another workspace does not.
+<p><br />
+A pull request behind its base may be planned and applied unless <code>require-up-to-date</code> is <code>"true"</code>. The plan runs on the merge commit, so a change on the base to the same workspace makes the fresh plan differ and stops the apply, and a change to another workspace does not.
 </p>
 <div class="mw-highlight mw-highlight-lang-yaml mw-content-ltr mw-highlight-copy" dir="ltr"><pre><span></span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tofu</span>
 <span class="nt">on</span><span class="p">:</span>
@@ -929,7 +930,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 			
 <footer id="footer" class="mw-footer" >
 	<ul id="footer-info">
-	<li id="footer-info-lastmod"> This page was last edited on 5 October 2026, at 07:42.</li>
+	<li id="footer-info-lastmod"> This page was last edited on 5 October 2026, at 07:57.</li>
 </ul>
 
 	<ul id="footer-places">
