@@ -21,7 +21,7 @@ The push to the default branch plans every workspace again, and the plan comment
 </div>
 <div class="tacos-step">
 <div class="tacos-step-name">Approve</div>
-The apply job waits on the workspace's GitHub environment until a required reviewer approves it.
+The apply job waits on the workspace's GitHub environment until a required reviewer approves it. A workspace set to auto apply skips this.
 </div>
 <div class="tacos-step">
 <div class="tacos-step-name">Apply</div>
