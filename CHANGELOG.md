@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.0](https://github.com/femiwiki/terraform-github-tacos/compare/v0.4.0...v0.5.0) (2026-10-05)
+
+
+### Features
+
+* apply and merge native stacked pull requests ([#54](https://github.com/femiwiki/terraform-github-tacos/issues/54)) ([8f7c6de](https://github.com/femiwiki/terraform-github-tacos/commit/8f7c6de6a9e2e4027439fc75ce1a36fc8e2f835f))
+* plan and apply a pull request from a run its review starts ([#61](https://github.com/femiwiki/terraform-github-tacos/issues/61)) ([7d1c93b](https://github.com/femiwiki/terraform-github-tacos/commit/7d1c93b495286ec031aefb5f8dca200e1c043686))
+
 ## [0.4.0](https://github.com/femiwiki/terraform-github-tacos/compare/v0.3.0...v0.4.0) (2026-10-05)
 
 
