@@ -1,0 +1,10 @@
+{
+	"panels": {
+		"tacos-nav": {
+			"module": "site",
+			"labelMsg": "navigation",
+			"placement": "sticky",
+			"order": 10
+		}
+	}
+}

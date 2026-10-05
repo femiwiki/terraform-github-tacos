@@ -21,4 +21,4 @@ config:
   WikvenRepositories:
     Citizen:
       repository: https://github.com/StarCitizenTools/mediawiki-skins-Citizen.git
-      reference: v3.23.0
+      reference: v3.24.0
