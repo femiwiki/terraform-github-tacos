@@ -1,8 +1,8 @@
 ---
 name: terraform-github-tacos
 description: >-
-  Plan OpenTofu or Terraform in a pull request, apply it once a GitHub
-  environment approves, and only then merge.
+  Plan OpenTofu or Terraform in a pull request, plan again once it merges, and
+  apply, by default once a GitHub environment approves.
 author: femiwiki
 branding:
   icon: check-circle
@@ -11,7 +11,7 @@ inputs:
   step:
     description: >-
       Which part of the flow this call is: plan, changes, pending, apply,
-      result, gate or merge. The README says which job each one goes in.
+      result, gate, merge or collapse. The README says which job each one goes in.
     required: true
   workspace:
     description: The workspace this job plans or applies. Used by plan, changes and apply.
@@ -38,6 +38,13 @@ inputs:
       A JSON list of workspaces to apply, taking the place of the ones found in
       this run. Used by pending, for a workflow_dispatch run.
     default: ""
+  auto-apply:
+    description: >-
+      Workspaces that apply without an approval, separated by spaces, like
+      HCP Terraform's auto apply. Their environments have no required
+      reviewers; any other workspace's environment must have some. Used by
+      pending.
+    default: ""
   needs:
     description: The gate's `toJSON(needs)`. Used by gate.
     default: ""
@@ -50,6 +57,13 @@ inputs:
       applying. Off by default: the apply makes a fresh plan and applies it
       only when it matches the approved one, so a change on the base to the
       same workspace stops it anyway. Used by plan and apply.
+    default: "false"
+  apply-before-merge:
+    description: >-
+      "true" to apply a pull request before it merges, approving the apply in
+      the pull request's run and merging once it succeeds. Off by default: the
+      pull request only plans, and the run for the push to the default branch
+      plans again and applies. Used by pending, apply and merge.
     default: "false"
   merge-method:
     description: squash, merge or rebase. Used by merge.
@@ -76,12 +90,12 @@ runs:
   steps:
     - name: Unknown step
       if: >-
-        !contains(fromJSON('["plan","changes","pending","apply","result","gate","merge"]'), inputs.step)
+        !contains(fromJSON('["plan","changes","pending","apply","result","gate","merge","collapse"]'), inputs.step)
       shell: bash
       env:
         STEP: ${{ inputs.step }}
       run: |
-        echo "::error::step must be plan, changes, pending, apply, result, gate or merge, not '$STEP'."
+        echo "::error::step must be plan, changes, pending, apply, result, gate, merge or collapse, not '$STEP'."
         exit 1
 
     - if: inputs.step == 'plan'
@@ -112,6 +126,8 @@ runs:
       env:
         GH_TOKEN: ${{ inputs.github-token }}
         WORKSPACES: ${{ inputs.workspaces }}
+        AUTO_APPLY: ${{ inputs.auto-apply }}
+        APPLY_BEFORE_MERGE: ${{ inputs.apply-before-merge }}
       run: '"$GITHUB_ACTION_PATH/scripts/pending.sh"'
 
     - id: apply
@@ -121,6 +137,7 @@ runs:
         GH_TOKEN: ${{ inputs.github-token }}
         WORKSPACE: ${{ inputs.workspace }}
         REQUIRE_UP_TO_DATE: ${{ inputs.require-up-to-date }}
+        APPLY_BEFORE_MERGE: ${{ inputs.apply-before-merge }}
       run: '"$GITHUB_ACTION_PATH/scripts/apply.sh"'
 
     - id: result
@@ -156,4 +173,16 @@ runs:
       env:
         GH_TOKEN: ${{ inputs.github-token }}
         METHOD: ${{ inputs.merge-method }}
+        APPLY_BEFORE_MERGE: ${{ inputs.apply-before-merge }}
       run: '"$GITHUB_ACTION_PATH/scripts/merge.sh"'
+
+    - if: inputs.step == 'collapse'
+      uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3  # v9.0.0
+      env:
+        ACTION_PATH: ${{ github.action_path }}
+        PR: ${{ github.event.pull_request.number }}
+      with:
+        github-token: ${{ inputs.github-token }}
+        script: |
+          const { default: collapse } = await import(`${process.env.ACTION_PATH}/scripts/collapse.ts`)
+          await collapse({ github, core, env: process.env })

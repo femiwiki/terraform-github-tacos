@@ -1,14 +1,4 @@
-The module creates one GitHub environment per workspace, each with required reviewers. The action's <code>pending</code> step refuses an environment without them, so an apply never starts unapproved.
-
-<syntaxhighlight lang="hcl" copy>
-module "tacos" {
-  source = "github.com/femiwiki/terraform-github-tacos?ref=v0.2.1"  # x-release-please-version
-
-  repository     = "infra"
-  environments   = ["network", "dns"]
-  reviewer_teams = [github_team.deployer.id]
-}
-</syntaxhighlight>
+The inputs and outputs of the module that [[Approvals]] uses.
 
 == Inputs ==
 {| class="wikitable"
@@ -17,6 +7,8 @@ module "tacos" {
 | <code>repository</code> || || The repository whose workflow plans and applies.
 |-
 | <code>environments</code> || || One environment per workspace, named after it.
+|-
+| <code>auto_apply</code> || <code>[]</code> || Environments that apply without an approval, like HCP Terraform's auto apply. List the same workspaces in the action's <code>auto-apply</code> input.
 |-
 | <code>reviewer_teams</code> || <code>[]</code> || IDs of the teams whose approval starts an apply.
 |-
@@ -27,7 +19,7 @@ module "tacos" {
 | <code>can_admins_bypass</code> || <code>false</code> || Whether repository administrators may start an apply without an approval.
 |}
 
-At least one reviewer team or user is required.
+At least one reviewer team or user is required, unless every environment is in <code>auto_apply</code>.
 
 == Outputs ==
 {| class="wikitable"

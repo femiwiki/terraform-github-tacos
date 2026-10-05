@@ -1,12 +1,18 @@
 #!/usr/bin/env bash
 # Before applying. Approval can come long after the plan, so check again what
-# the plan step checked, and record who approved.
+# the plan step checked, and record who approved. An auto-apply workspace has
+# no approval, and the person who started the run stands in.
 # shellcheck source=scripts/common.sh
 source "$(dirname "$0")/common.sh"
 
-approver=$(gh api "repos/$REPO/actions/runs/$GITHUB_RUN_ID/approvals" \
+if [ "$EVENT" = pull_request ] && [ "$APPLY_BEFORE_MERGE" != true ]; then
+  echo "::error::#$PR is applied after it merges, by the run for the push to $DEFAULT_BRANCH. Run the apply job on push rather than pull_request, or set apply-before-merge to \"true\" on the pending, apply and merge steps to apply before the merge."
+  exit 1
+fi
+
+approved=$(gh api "repos/$REPO/actions/runs/$GITHUB_RUN_ID/approvals" \
   --jq '[.[] | select(.state == "approved") | .user.login] | last // empty' || true)
-approver=${approver:-$GITHUB_ACTOR}
+approver=${approved:-$GITHUB_ACTOR}
 echo "approver=$approver" >> "$GITHUB_OUTPUT"
 
 subject=$GITHUB_REF_NAME
@@ -33,7 +39,21 @@ if [ "$EVENT" = pull_request ]; then
   else
     echo "Still $PLANNED."
   fi
+elif [ "$EVENT" = push ]; then
+  # Only the newest commit applies, since its plan carries every older one's
+  # changes; pending cancels the older runs that wait
+  head=$(gh api "repos/$REPO/commits/$GITHUB_REF_NAME" --jq .sha)
+  if [ "$head" != "$GITHUB_SHA" ]; then
+    echo "::error::$GITHUB_REF_NAME is at $head now, not $GITHUB_SHA, which this run planned. Approve the run for $head instead."
+    exit 1
+  fi
+  echo "Still the head of $GITHUB_REF_NAME, $GITHUB_SHA."
 fi
 
+if [ -n "$approved" ]; then
+  line="Approved by @$approver"
+else
+  line="Applied without an approval, in a run @$approver started,"
+fi
 summary "### ${WORKSPACE:-Apply} approval" "" \
-  "Approved by @$approver for $subject at \`${PLANNED:-$GITHUB_SHA}\`."
+  "$line for $subject at \`${PLANNED:-$GITHUB_SHA}\`."

@@ -1,5 +1,30 @@
 # Changelog
 
+## [0.4.0](https://github.com/femiwiki/terraform-github-tacos/compare/v0.3.0...v0.4.0) (2026-10-05)
+
+
+### ⚠ BREAKING CHANGES
+
+* a v0.3.0 workflow no longer applies its pull requests. Add apply-before-merge: "true" to the pending, apply and merge steps to keep applying before the merge.
+
+### Features
+
+* apply after the merge by default ([#50](https://github.com/femiwiki/terraform-github-tacos/issues/50)) ([cc13623](https://github.com/femiwiki/terraform-github-tacos/commit/cc13623af122863e9bfb1d8040826c4a85a24819))
+
+## [0.3.0](https://github.com/femiwiki/terraform-github-tacos/compare/v0.2.3...v0.3.0) (2026-10-02)
+
+
+### Features
+
+* add a collapse step that hides outdated plan comments ([#46](https://github.com/femiwiki/terraform-github-tacos/issues/46)) ([4e5ec39](https://github.com/femiwiki/terraform-github-tacos/commit/4e5ec396b6029f9841b4ea6585eaa7da8f1a957d)), closes [#5](https://github.com/femiwiki/terraform-github-tacos/issues/5)
+
+## [0.2.3](https://github.com/femiwiki/terraform-github-tacos/compare/v0.2.2...v0.2.3) (2026-10-02)
+
+
+### Bug Fixes
+
+* count this run's own approval when deciding to merge ([#42](https://github.com/femiwiki/terraform-github-tacos/issues/42)) ([2804b14](https://github.com/femiwiki/terraform-github-tacos/commit/2804b14c67c13f7a03c03c1a10a78722395d6bb9))
+
 ## [0.2.2](https://github.com/femiwiki/terraform-github-tacos/compare/v0.2.1...v0.2.2) (2026-10-01)
 
 

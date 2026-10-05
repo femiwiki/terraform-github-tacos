@@ -1,3 +1,10 @@
-* navigation
-** Workflow|Workflow
+* Guide
+** Get started|Get started
+** Runs|Runs
+** Apply-before-merge|Apply-before-merge
+** Auto apply|Auto apply
+** Approvals|Approvals
+* Reference
 ** Module|Module
+** Upgrading|Upgrading
+** https://github.com/femiwiki/terraform-github-tacos/releases|Releases
