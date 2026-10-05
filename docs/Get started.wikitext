@@ -1,4 +1,22 @@
-This workflow has one workspace per directory, <code>network</code> and <code>dns</code>. Put it in <code>.github/workflows/</code>, change the workspace list and add your credentials. Make the gate job's name, <code>tofu gate</code>, a required status check of the default branch.
+This page takes one change to production: planned in a pull request, merged, approved and applied. The example repository has two workspaces, one per directory, <code>network</code> and <code>dns</code>, and keeps their state in a remote backend.
+
+== Create the environments ==
+Each workspace applies in a GitHub environment of the same name, and its required reviewers are who can approve the apply. The module creates them:
+
+<syntaxhighlight lang="hcl" copy>
+module "tacos" {
+  source = "github.com/femiwiki/terraform-github-tacos?ref=v0.4.0"  # x-release-please-version
+
+  repository     = "infra"
+  environments   = ["network", "dns"]
+  reviewer_teams = [github_team.deployer.id]
+}
+</syntaxhighlight>
+
+See [[Approvals]] for who can approve and the permissions each job needs.
+
+== Add the workflow ==
+Put this workflow in <code>.github/workflows/</code>, change the workspace list and add your credentials.
 
 <syntaxhighlight lang="yaml" copy>
 name: tofu
@@ -132,3 +150,18 @@ jobs:
           step: gate
           needs: ${{ toJSON(needs) }}
 </syntaxhighlight>
+
+Then make the gate job's name, <code>tofu gate</code>, a required status check of the default branch, so a pull request whose plan fails cannot merge.
+
+== Open a pull request ==
+Change a file in <code>network</code> and open a pull request. Each workspace is planned, and its plan is commented on the pull request. Nothing is applied yet.
+
+== Merge and approve ==
+Merge the pull request. The run for the push plans every workspace again, and the <code>network apply</code> job waits for its environment. A reviewer opens the run and approves the deployment under "Review deployments".
+
+The apply makes a fresh plan and applies it only when it matches the one that was approved. The job summary shows who approved and what changed.
+
+== Next ==
+* [[Runs]] says what each step of the workflow does.
+* [[Auto apply]] skips the approval for chosen workspaces.
+* [[Apply-before-merge]] applies a pull request before it merges.
