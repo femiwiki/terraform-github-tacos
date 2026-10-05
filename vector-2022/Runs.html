@@ -8,7 +8,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <script>(RLQ=window.RLQ||[]).push(function(){mw.loader.impl(function(){return["user.options@12s5i",function($,jQuery,require,module){mw.user.tokens.set({"patrolToken":"+\\","watchToken":"+\\","csrfToken":"+\\"});
 }];});});</script>
 
-<script src="./assets/startup-static.js"></script><script src="./assets/modules-static.js"></script><script>mw.loader.load(["site","mediawiki.page.ready","skins.vector.js","ext.Wikven.pinnableState","ext.Wikven.appearance","ext.Wikven.vectorSkins"]);</script>
+<script src="./assets/startup-static.js"></script><script src="./assets/modules-static.js"></script><script>mw.loader.load(["site","mediawiki.page.ready","mediawiki.toc","skins.vector.js","ext.Wikven.pinnableState","ext.Wikven.appearance","ext.Wikven.vectorSkins"]);</script>
 <meta name="ResourceLoaderDynamicStyles" content="">
 
 <meta name="generator" content="MediaWiki 1.46.0">
@@ -278,6 +278,42 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 		<ul id="toc-Steps-sublist" class="vector-toc-list">
 		</ul>
 	</li>
+	<li id="toc-Plan_comments"
+		class="vector-toc-list-item vector-toc-level-1 vector-toc-list-item-expanded">
+		<a class="vector-toc-link" href="#Plan_comments">
+			<div class="vector-toc-text">
+				<span class="vector-toc-numb">2</span>
+				<span>Plan comments</span>
+			</div>
+		</a>
+		
+		<ul id="toc-Plan_comments-sublist" class="vector-toc-list">
+		</ul>
+	</li>
+	<li id="toc-Which_commit_applies"
+		class="vector-toc-list-item vector-toc-level-1 vector-toc-list-item-expanded">
+		<a class="vector-toc-link" href="#Which_commit_applies">
+			<div class="vector-toc-text">
+				<span class="vector-toc-numb">3</span>
+				<span>Which commit applies</span>
+			</div>
+		</a>
+		
+		<ul id="toc-Which_commit_applies-sublist" class="vector-toc-list">
+		</ul>
+	</li>
+	<li id="toc-Job_summaries"
+		class="vector-toc-list-item vector-toc-level-1 vector-toc-list-item-expanded">
+		<a class="vector-toc-link" href="#Job_summaries">
+			<div class="vector-toc-text">
+				<span class="vector-toc-numb">4</span>
+				<span>Job summaries</span>
+			</div>
+		</a>
+		
+		<ul id="toc-Job_summaries-sublist" class="vector-toc-list">
+		</ul>
+	</li>
 </ul>
 </div>
 
@@ -487,6 +523,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 					<div id="mw-content-text" class="mw-body-content"><div class="mw-content-ltr mw-parser-output" lang="en" dir="ltr"><p>Your workflow calls the action once in each job, with <code>step</code> set to the job it runs in. The apply job's environment has the same name as the workspace.
 </p><p>By default it applies after the merge, in HCP Terraform's order: a pull request only plans, and once it merges, the push to the default branch plans again and applies when the environment approves, or at once for a workspace in <code>auto-apply</code>. With <code>apply-before-merge</code> set to <code>"true"</code> on the <code>pending</code>, <code>apply</code> and <code>merge</code> steps, a pull request is applied first and merges once the apply succeeds.
 </p>
+<meta property="mw:PageProp/toc" />
 <div class="mw-heading mw-heading2"><h2 id="Steps">Steps</h2></div>
 <table class="wikitable">
 <tbody><tr>
@@ -534,10 +571,45 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <td>plan, last step, with <code>if: always()</code></td>
 <td>Hides, as outdated, every plan comment of <code>dflook/tofu-plan</code> or <code>dflook/terraform-plan</code> but the newest of each workspace. Comments starting with <code>**&lt;workspace&gt; apply: </code> are hidden the same way.
 </td></tr></tbody></table>
-<p>The apply job should make a fresh plan and apply it only when it matches the approved one, as <code>dflook/tofu-apply</code> does without <code>plan_path</code> or <code>auto_approve</code>. On a push, dflook's plan updates the merged pull request's plan comment with the plan of the default branch, and the apply compares against that comment.
-</p><p>Only the newest commit of the default branch applies, since its plan carries the changes of every commit before it that has not been applied. So the push run has to plan every workspace that has changes: a workflow that plans only the workspaces a pull request changes should plan them all on a push. A change made since the plan, such as a <code>workflow_dispatch</code> apply, makes the fresh plan differ and stops the apply; "Re-run all jobs" plans again. A commit pushed to the default branch without a pull request has no plan comment, so apply it with <code>workflow_dispatch</code>.
-</p><p>Each step writes a job summary, so the run page shows what was planned, who can approve, who approved, and what the apply changed.
+<div class="mw-heading mw-heading2"><h2 id="Plan_comments">Plan comments</h2></div>
+<p>The plan job's <code>dflook/tofu-plan</code> comments each workspace's plan on the pull request. Pushing again plans again, and the <code>collapse</code> step hides the older plan comments as outdated, so only the newest of each workspace stays open.
+</p><p>The apply job should make a fresh plan and apply it only when it matches the approved one, as <code>dflook/tofu-apply</code> does without <code>plan_path</code> or <code>auto_approve</code>. On a push, dflook's plan updates the merged pull request's plan comment with the plan of the default branch, and the apply compares against that comment.
 </p>
+<div class="mw-heading mw-heading2"><h2 id="Which_commit_applies">Which commit applies</h2></div>
+<p>Only the newest commit of the default branch applies, since its plan carries the changes of every commit before it that has not been applied. So the push run has to plan every workspace that has changes: a workflow that plans only the workspaces a pull request changes should plan them all on a push. A change made since the plan, such as a <code>workflow_dispatch</code> apply, makes the fresh plan differ and stops the apply; "Re-run all jobs" plans again. A commit pushed to the default branch without a pull request has no plan comment, so apply it with <code>workflow_dispatch</code>.
+</p>
+<div class="mw-heading mw-heading2"><h2 id="Job_summaries">Job summaries</h2></div>
+<p>Each step writes a summary on the run page, so a reviewer can see what they are approving without opening the logs.
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th><code>step</code></th>
+<th>Summary
+</th></tr>
+<tr>
+<td><code>changes</code></td>
+<td>How many resources the plan adds, changes, destroys, moves and imports, the plan itself folded, and whether it waits for an approval.
+</td></tr>
+<tr>
+<td><code>pending</code></td>
+<td>Each environment to apply and who can approve it.
+</td></tr>
+<tr>
+<td><code>apply</code></td>
+<td>Who approved, or who started a run that needed no approval, and the commit it applies.
+</td></tr>
+<tr>
+<td><code>result</code></td>
+<td>Whether the apply succeeded, with the same counts and plan as <code>changes</code>.
+</td></tr>
+<tr>
+<td><code>gate</code></td>
+<td>Each job it needs and how it ended.
+</td></tr>
+<tr>
+<td><code>merge</code></td>
+<td>Whether the pull request merged, and if not, why.
+</td></tr></tbody></table>
 <style data-mw-deduplicate="TemplateStyles:r21">.mw-parser-output .tacos-prevnext{display:flex;margin-top:2em}.mw-parser-output .tacos-prevnext-next{margin-left:auto}</style><div class="tacos-prevnext"><div class="tacos-prevnext-prev">&#8592;&#160;<a href="./Get_started.html" title="Get started">Get started</a></div><div class="tacos-prevnext-next"><a href="./Apply-before-merge.html" title="Apply-before-merge">Apply-before-merge</a>&#160;&#8594;</div></div>
 <p><br />
 </p>
@@ -552,7 +624,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 			
 <footer id="footer" class="mw-footer" >
 	<ul id="footer-info">
-	<li id="footer-info-lastmod"> This page was last edited on 5 October 2026, at 09:09.</li>
+	<li id="footer-info-lastmod"> This page was last edited on 5 October 2026, at 14:38.</li>
 </ul>
 
 	<ul id="footer-places">
