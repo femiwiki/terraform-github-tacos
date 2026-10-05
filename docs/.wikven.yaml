@@ -1,6 +1,7 @@
 ---
 extensions:
   - SyntaxHighlight_GeSHi
+  - TemplateStyles
 skins:
   - Citizen
 config:

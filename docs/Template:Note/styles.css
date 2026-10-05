@@ -1,0 +1,7 @@
+/* TemplateStyles takes var() for colors only, so the spacing is in em */
+.tacos-note {
+	margin: 1em 0;
+	padding: 0.5em 1em;
+	border-left: 4px solid var(--color-progressive);
+	background-color: var(--color-surface-2);
+}

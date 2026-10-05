@@ -1,6 +1,6 @@
 Your workflow calls the action once in each job, with <code>step</code> set to the job it runs in. The apply job's environment has the same name as the workspace.
 
-By default it follows HCP Terraform's order: a pull request only plans, and once it merges, the push to the default branch plans again and applies when the environment approves, or at once for a workspace in <code>auto-apply</code>. With <code>apply-before-merge</code> set to <code>"true"</code> on the <code>pending</code>, <code>apply</code> and <code>merge</code> steps, a pull request is applied first and merges once the apply succeeds.
+By default it applies after the merge, in HCP Terraform's order: a pull request only plans, and once it merges, the push to the default branch plans again and applies when the environment approves, or at once for a workspace in <code>auto-apply</code>. With <code>apply-before-merge</code> set to <code>"true"</code> on the <code>pending</code>, <code>apply</code> and <code>merge</code> steps, a pull request is applied first and merges once the apply succeeds.
 
 == Steps ==
 {| class="wikitable"
@@ -193,8 +193,14 @@ jobs:
           needs: ${{ toJSON(needs) }}
 </syntaxhighlight>
 
-== Applying before the merge ==
-With <code>apply-before-merge</code>, the pull request's own run waits for the approval, applies, and merges. The default branch then holds only what was applied, and a pull request that does not merge after its apply leaves production ahead of it, so the <code>merge</code> job fails.
+== Apply-before-merge ==
+With <code>apply-before-merge</code>, the pull request's own run waits for the approval, applies, and merges. The default branch then holds only what was applied, and a pull request that does not merge after its apply leaves production ahead of it, so the <code>merge</code> job fails. This is the order [https://www.runatlantis.io/ Atlantis] and [https://github.com/diggerhq/digger digger] use, and it is usually called apply-before-merge.
+
+{{Note|title=Other names|1=
+* Terrateam calls the two orders [https://docs.terrateam.io/getting-started/plan-and-apply pre-merge and post-merge].
+* [https://terramate.io/rethinking-iac/mastering-terraform-workflows-apply-before-merge-vs-apply-after-merge Terramate] and [https://cloudposse.com/blog/apply-after-merge Cloud Posse] call the default order apply-after-merge, and Terramate also merge-before-apply.
+* After Atlantis, it is also called the Atlantis-style workflow, as in [https://feedback.spacelift.io/p/stack-locking-doesnt-support-atlantis-style-apply-before-merge-workflow Spacelift's feedback board].
+}}
 
 A pull request behind its base may be planned and applied unless <code>require-up-to-date</code> is <code>"true"</code>. The plan runs on the merge commit, so a change on the base to the same workspace makes the fresh plan differ and stops the apply, and a change to another workspace does not.
 
