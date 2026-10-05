@@ -9,3 +9,5 @@ A workspace applies without an approval when its environment has no required rev
 </syntaxhighlight>
 
 After the merge, an auto-apply workspace applies as soon as the push is planned, and the apply still goes ahead only when its fresh plan matches that one. With <code>apply-before-merge</code> it applies as soon as the pull request is planned, before anyone has reviewed it, so give auto apply only to workspaces that anyone who can push a branch may change.
+
+{{Prevnext}}

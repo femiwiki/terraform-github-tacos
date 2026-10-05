@@ -1,5 +1,6 @@
 ---
 extensions:
+  - Scribunto
   - SyntaxHighlight_GeSHi
   - TemplateStyles
 skins:

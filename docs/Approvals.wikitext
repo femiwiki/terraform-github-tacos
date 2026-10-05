@@ -24,3 +24,5 @@ module "tacos" {
 |-
 | <code>collapse</code> || <code>pull-requests: write</code>
 |}
+
+{{Prevnext}}

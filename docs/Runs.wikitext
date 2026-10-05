@@ -28,3 +28,5 @@ The apply job should make a fresh plan and apply it only when it matches the app
 Only the newest commit of the default branch applies, since its plan carries the changes of every commit before it that has not been applied. So the push run has to plan every workspace that has changes: a workflow that plans only the workspaces a pull request changes should plan them all on a push. A change made since the plan, such as a <code>workflow_dispatch</code> apply, makes the fresh plan differ and stops the apply; "Re-run all jobs" plans again. A commit pushed to the default branch without a pull request has no plan comment, so apply it with <code>workflow_dispatch</code>.
 
 Each step writes a job summary, so the run page shows what was planned, who can approve, who approved, and what the apply changed.
+
+{{Prevnext}}
