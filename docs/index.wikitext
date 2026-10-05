@@ -2,7 +2,7 @@
 <div class="tacos-hero-title">terraform-github-tacos</div>
 <div class="tacos-hero-lead">Plan OpenTofu in the pull request. Merge it, and approve the deployment to apply it.</div>
 <div class="tacos-hero-actions">
-<span class="tacos-button tacos-button-primary">[[Workflow|Get started]]</span>
+<span class="tacos-button tacos-button-primary">[[Get started]]</span>
 <span class="tacos-button">[https://github.com/femiwiki/terraform-github-tacos GitHub]</span>
 </div>
 </div>
@@ -34,11 +34,11 @@ With <code>apply-before-merge</code>, a pull request is approved and applied fir
 == What is in it ==
 <div class="tacos-cards">
 <div class="tacos-card">
-<div class="tacos-card-name">[[Workflow|A GitHub Action]]</div>
+<div class="tacos-card-name">[[Runs|A GitHub Action]]</div>
 Called once in each job of your workflow, with <code>step</code> naming the job.
 </div>
 <div class="tacos-card">
-<div class="tacos-card-name">[[Module|An OpenTofu module]]</div>
+<div class="tacos-card-name">[[Approvals|An OpenTofu module]]</div>
 Creates the environments the apply waits on, with their required reviewers.
 </div>
 </div>

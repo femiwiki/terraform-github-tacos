@@ -1,0 +1,26 @@
+The module creates one GitHub environment per workspace, each with required reviewers unless it is in <code>auto_apply</code>. The action's <code>pending</code> step refuses an environment without them unless its workspace is in the step's <code>auto-apply</code>, so an apply never starts unapproved by mistake.
+
+<syntaxhighlight lang="hcl" copy>
+module "tacos" {
+  source = "github.com/femiwiki/terraform-github-tacos?ref=v0.4.0"  # x-release-please-version
+
+  repository     = "infra"
+  environments   = ["network", "dns"]
+  reviewer_teams = [github_team.deployer.id]
+}
+</syntaxhighlight>
+
+== Permissions ==
+{| class="wikitable"
+! <code>step</code> !! Permissions
+|-
+| <code>plan</code> || <code>pull-requests: read</code>
+|-
+| <code>pending</code> || <code>actions: write</code>, <code>checks: read</code>
+|-
+| <code>apply</code> || <code>actions: read</code>, <code>contents: read</code>, <code>pull-requests: read</code>
+|-
+| <code>merge</code> || <code>actions: read</code>, <code>contents: write</code>, <code>deployments: read</code>, <code>pull-requests: write</code>
+|-
+| <code>collapse</code> || <code>pull-requests: write</code>
+|}
