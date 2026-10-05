@@ -23,10 +23,31 @@ By default it applies after the merge, in HCP Terraform's order: a pull request 
 | <code>collapse</code> || plan, last step, with <code>if: always()</code> || Hides, as outdated, every plan comment of <code>dflook/tofu-plan</code> or <code>dflook/terraform-plan</code> but the newest of each workspace. Comments starting with <code>**&lt;workspace&gt; apply: </code> are hidden the same way.
 |}
 
+== Plan comments ==
+The plan job's <code>dflook/tofu-plan</code> comments each workspace's plan on the pull request. Pushing again plans again, and the <code>collapse</code> step hides the older plan comments as outdated, so only the newest of each workspace stays open.
+
 The apply job should make a fresh plan and apply it only when it matches the approved one, as <code>dflook/tofu-apply</code> does without <code>plan_path</code> or <code>auto_approve</code>. On a push, dflook's plan updates the merged pull request's plan comment with the plan of the default branch, and the apply compares against that comment.
 
+== Which commit applies ==
 Only the newest commit of the default branch applies, since its plan carries the changes of every commit before it that has not been applied. So the push run has to plan every workspace that has changes: a workflow that plans only the workspaces a pull request changes should plan them all on a push. A change made since the plan, such as a <code>workflow_dispatch</code> apply, makes the fresh plan differ and stops the apply; "Re-run all jobs" plans again. A commit pushed to the default branch without a pull request has no plan comment, so apply it with <code>workflow_dispatch</code>.
 
-Each step writes a job summary, so the run page shows what was planned, who can approve, who approved, and what the apply changed.
+== Job summaries ==
+Each step writes a summary on the run page, so a reviewer can see what they are approving without opening the logs.
+
+{| class="wikitable"
+! <code>step</code> !! Summary
+|-
+| <code>changes</code> || How many resources the plan adds, changes, destroys, moves and imports, the plan itself folded, and whether it waits for an approval.
+|-
+| <code>pending</code> || Each environment to apply and who can approve it.
+|-
+| <code>apply</code> || Who approved, or who started a run that needed no approval, and the commit it applies.
+|-
+| <code>result</code> || Whether the apply succeeded, with the same counts and plan as <code>changes</code>.
+|-
+| <code>gate</code> || Each job it needs and how it ended.
+|-
+| <code>merge</code> || Whether the pull request merged, and if not, why.
+|}
 
 {{Prevnext}}
