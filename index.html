@@ -236,14 +236,14 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 				
 				<div id="mw-content-text" class="mw-body-content"><div class="mw-content-ltr mw-parser-output" lang="en" dir="ltr"><div class="tacos-hero">
 <div class="tacos-hero-title">terraform-github-tacos</div>
-<div class="tacos-hero-lead">Plan OpenTofu in the pull request. Approve the deployment to apply it. The pull request merges after.</div>
+<div class="tacos-hero-lead">Plan OpenTofu in the pull request. Merge it, and approve the deployment to apply it.</div>
 <div class="tacos-hero-actions">
 <p><span class="tacos-button tacos-button-primary"><a href="./Workflow.html" title="Workflow">Get started</a></span>
 <span class="tacos-button"><a rel="nofollow" class="external text" href="https://github.com/femiwiki/terraform-github-tacos">GitHub</a></span>
 </p>
 </div>
 </div>
-<p>It does what Terraform Cloud's VCS workflow does, with GitHub Actions alone. There is no server to run, and the state stays in your own backend.
+<p>It does what HCP Terraform's (formerly Terraform Cloud) VCS workflow does, with GitHub Actions alone. There is no server to run, and the state stays in your own backend.
 </p>
 <div class="mw-heading mw-heading2"><h2 id="How_it_works">How it works</h2></div>
 <div class="tacos-steps">
@@ -253,8 +253,13 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 </p>
 </div>
 <div class="tacos-step">
+<div class="tacos-step-name">Merge</div>
+<p>The push to the default branch plans every workspace again, and the plan comment of the merged pull request shows the new plan.
+</p>
+</div>
+<div class="tacos-step">
 <div class="tacos-step-name">Approve</div>
-<p>The apply job waits on the workspace's GitHub environment until a required reviewer approves it.
+<p>The apply job waits on the workspace's GitHub environment until a required reviewer approves it. A workspace set to auto apply skips this.
 </p>
 </div>
 <div class="tacos-step">
@@ -262,12 +267,9 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <p>The apply makes a fresh plan and goes ahead only when it matches the one that was approved.
 </p>
 </div>
-<div class="tacos-step">
-<div class="tacos-step-name">Merge</div>
-<p>By default the pull request merges once the apply has succeeded, so the default branch holds only what was applied.
+</div>
+<p>With <code>apply-before-merge</code>, a pull request is approved and applied first and merges once the apply succeeds, so the default branch holds only what was applied.
 </p>
-</div>
-</div>
 <div class="mw-heading mw-heading2"><h2 id="What_is_in_it">What is in it</h2></div>
 <div class="tacos-cards">
 <div class="tacos-card">
@@ -281,7 +283,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 </p>
 </div>
 </div>
-<p>Terraform Cloud also estimates what a run costs. This project leaves that to tools made for it, such as the <a rel="nofollow" class="external text" href="https://github.com/apps/infracost">Infracost GitHub app</a>, which comments the estimate on the pull request beside the plan.
+<p>HCP Terraform also estimates what a run costs. This project leaves that to tools made for it, such as the <a rel="nofollow" class="external text" href="https://github.com/apps/infracost">Infracost GitHub app</a>, which comments the estimate on the pull request beside the plan.
 </p>
 </div>
 <div class="printfooter" data-nosnippet="">Retrieved from "<a dir="ltr" href="https://femiwiki.github.io/terraform-github-tacos/index.html">https://femiwiki.github.io/terraform-github-tacos/index.html</a>"</div></div>
@@ -292,7 +294,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 					<div class="page-info">
 		    <section id="footer-info-lastmod" class="page-info__item">
 		        <div class="page-info__label">Last modified</div>
-		        <div class="page-info__text"> This page was last edited on 1 October 2026, at 16:17.</div>
+		        <div class="page-info__text"> This page was last edited on 5 October 2026, at 02:03.</div>
 		    </section>
 		</div>
 </footer>		</div>

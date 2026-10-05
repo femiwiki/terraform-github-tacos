@@ -375,7 +375,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 				<div id="contentSub"><div id="mw-content-subtitle"></div></div>
 				
 				
-				<div id="mw-content-text" class="mw-body-content"><div class="mw-content-ltr mw-parser-output" lang="en" dir="ltr"><section id="citizen-section-0" class="citizen-section"><p>The module creates one GitHub environment per workspace, each with required reviewers. The action's <code>pending</code> step refuses an environment without them, so an apply never starts unapproved.
+				<div id="mw-content-text" class="mw-body-content"><div class="mw-content-ltr mw-parser-output" lang="en" dir="ltr"><section id="citizen-section-0" class="citizen-section"><p>The module creates one GitHub environment per workspace, each with required reviewers unless it is in <code>auto_apply</code>. The action's <code>pending</code> step refuses an environment without them unless its workspace is in the step's <code>auto-apply</code>, so an apply never starts unapproved by mistake.
 </p>
 <div class="mw-highlight mw-highlight-lang-hcl mw-content-ltr mw-highlight-copy" dir="ltr"><pre><span></span><span class="kr">module</span><span class="w"> </span><span class="nv">"tacos"</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="na">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"github.com/femiwiki/terraform-github-tacos?ref=v0.3.0"</span><span class="c1">  # x-release-please-version</span>
@@ -403,6 +403,11 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <td>One environment per workspace, named after it.
 </td></tr>
 <tr>
+<td><code>auto_apply</code></td>
+<td><code>[]</code></td>
+<td>Environments that apply without an approval, like HCP Terraform's auto apply. List the same workspaces in the action's <code>auto-apply</code> input.
+</td></tr>
+<tr>
 <td><code>reviewer_teams</code></td>
 <td><code>[]</code></td>
 <td>IDs of the teams whose approval starts an apply.
@@ -422,7 +427,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <td><code>false</code></td>
 <td>Whether repository administrators may start an apply without an approval.
 </td></tr></tbody></table>
-<p>At least one reviewer team or user is required.
+<p>At least one reviewer team or user is required, unless every environment is in <code>auto_apply</code>.
 </p>
 </div></section><section id="citizen-section-2" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="Outputs">Outputs</h2></div><div class="citizen-section-body">
 <table class="wikitable">
@@ -453,7 +458,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 	<div class="citizen-menu__content">
 		
 		<ul class="citizen-menu__content-list">
-			<li id="lm-time" class="mw-list-item"><a data-mw="interface" id="citizen-lastmod-relative" href="https://github.com/femiwiki/terraform-github-tacos/commits/main/docs/Module.wikitext" title="This page was last edited on 2 October 2026, at 23:36." data-timestamp="1790984205"><span class="citizen-ui-icon mw-ui-icon-history mw-ui-icon-wikimedia-history"></span><span>2 October 2026</span></a></li>
+			<li id="lm-time" class="mw-list-item"><a data-mw="interface" id="citizen-lastmod-relative" href="https://github.com/femiwiki/terraform-github-tacos/commits/main/docs/Module.wikitext" title="This page was last edited on 5 October 2026, at 02:03." data-timestamp="1791165790"><span class="citizen-ui-icon mw-ui-icon-history mw-ui-icon-wikimedia-history"></span><span>5 October 2026</span></a></li>
 			
 		</ul>
 		
@@ -524,7 +529,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 					<div class="page-info">
 		    <section id="footer-info-lastmod" class="page-info__item">
 		        <div class="page-info__label">Last modified</div>
-		        <div class="page-info__text"> This page was last edited on 2 October 2026, at 23:36.</div>
+		        <div class="page-info__text"> This page was last edited on 5 October 2026, at 02:03.</div>
 		    </section>
 		</div>
 </footer>		</div>
