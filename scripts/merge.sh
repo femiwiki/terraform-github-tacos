@@ -38,13 +38,24 @@ fi
 if [ "$(gh pr view "$PR" --repo "$REPO" --json isDraft --jq .isDraft)" = true ]; then
   gh pr ready "$PR" --repo "$REPO"
 fi
-# The gate has just reported, and branch protection can take a moment to see
-# it, so auto-merge waits out that moment
+unmerged() {
+  echo "::error::#$PR was applied but $1, so production is ahead of $DEFAULT_BRANCH. Merge it by hand."
+  summary "### Merge" "" "**#$PR was applied but $1.** Merge it by hand so \`$DEFAULT_BRANCH\` matches what is deployed."
+  exit 1
+}
 if gh pr merge "$PR" --repo "$REPO" "--$METHOD"; then
   summary "### Merge" "" "Merged #$PR."
-elif gh pr merge "$PR" --repo "$REPO" "--$METHOD" --auto; then
-  summary "### Merge" "" "Turned on auto-merge for #$PR."
-else
-  echo "::warning::could not merge #$PR; merge it by hand so $DEFAULT_BRANCH matches what is deployed"
-  summary "### Merge" "" "**Could not merge #$PR.** Merge it by hand so \`$DEFAULT_BRANCH\` matches what is deployed."
+  exit 0
 fi
+# The gate has just reported, and branch protection can take a moment to see
+# it, so auto-merge waits out that moment. A required check that failed keeps
+# auto-merge waiting for good, as on femiwiki/infra#1144, so it gets 2 minutes.
+gh pr merge "$PR" --repo "$REPO" "--$METHOD" --auto || unmerged "could not be merged"
+for _ in $(seq 12); do
+  sleep 10
+  if [ "$(gh pr view "$PR" --repo "$REPO" --json state --jq .state)" = MERGED ]; then
+    summary "### Merge" "" "Merged #$PR by auto-merge."
+    exit 0
+  fi
+done
+unmerged "has not merged 2 minutes after auto-merge was turned on"
