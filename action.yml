@@ -130,7 +130,7 @@ runs:
         APPLY_BEFORE_MERGE: ${{ inputs.apply-before-merge }}
       run: '"$GITHUB_ACTION_PATH/scripts/pending.sh"'
 
-    - if: inputs.step == 'pending' && inputs.apply-before-merge == 'true' && github.event_name == 'pull_request'
+    - if: inputs.step == 'pending' && inputs.apply-before-merge == 'true' && github.event.pull_request
       uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3  # v9.0.0
       env:
         ACTION_PATH: ${{ github.action_path }}

@@ -104,7 +104,7 @@ const applied = async (github: GitHub, owner: string, repo: string, pull_number:
   const deployed = new Set<number>()
   for (const head_sha of shas) {
     const listed = await github.paginate('GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/runs', {
-      owner, repo, workflow_id: run.workflow_id, event: 'pull_request', head_sha,
+      owner, repo, workflow_id: run.workflow_id, head_sha,
     })
     runs.push(...listed.map(r => r.id as number))
     const deployments = await github.paginate('GET /repos/{owner}/{repo}/deployments', { owner, repo, sha: head_sha })

@@ -5,7 +5,7 @@
 # shellcheck source=scripts/common.sh
 source "$(dirname "$0")/common.sh"
 
-if [ "$EVENT" = pull_request ] && [ "$APPLY_BEFORE_MERGE" != true ]; then
+if [ "$ON_PR" = true ] && [ "$APPLY_BEFORE_MERGE" != true ]; then
   echo "::error::#$PR is applied after it merges, by the run for the push to $DEFAULT_BRANCH. Run the apply job on push rather than pull_request, or set apply-before-merge to \"true\" on the pending, apply and merge steps to apply before the merge."
   exit 1
 fi
@@ -16,7 +16,7 @@ approver=${approved:-$GITHUB_ACTOR}
 echo "approver=$approver" >> "$GITHUB_OUTPUT"
 
 subject=$GITHUB_REF_NAME
-if [ "$EVENT" = pull_request ]; then
+if [ "$ON_PR" = true ]; then
   subject="#$PR"
   pr=$(gh api -H "X-GitHub-Api-Version: $STACK_API" "repos/$REPO/pulls/$PR")
   if [ "$(echo "$pr" | jq .merged)" = true ]; then
