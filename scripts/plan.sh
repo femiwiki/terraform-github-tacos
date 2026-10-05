@@ -7,7 +7,7 @@ if [ "$REQUIRE_UP_TO_DATE" != true ]; then
   echo "A branch behind its base may be planned. The apply compares a fresh plan with the approved one."
   exit 0
 fi
-if [ "$EVENT" != pull_request ]; then
+if [ "$ON_PR" != true ]; then
   echo "Not a pull request, so there is no base to compare with."
   exit 0
 fi

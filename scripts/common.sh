@@ -5,6 +5,8 @@ set -euo pipefail
 
 REPO=$GITHUB_REPOSITORY
 EVENT=$GITHUB_EVENT_NAME
+# A review runs for its pull request, which plans Dependabot's without its secrets
+case "$EVENT" in pull_request | pull_request_review) ON_PR=true ;; *) ON_PR=false ;; esac
 PR=$(jq -r '.pull_request.number // empty' "$GITHUB_EVENT_PATH")
 PLANNED=$(jq -r '.pull_request.head.sha // empty' "$GITHUB_EVENT_PATH")
 DEFAULT_BRANCH=$(jq -r '.repository.default_branch' "$GITHUB_EVENT_PATH")

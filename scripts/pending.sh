@@ -3,7 +3,7 @@
 # shellcheck source=scripts/common.sh
 source "$(dirname "$0")/common.sh"
 
-if [ "$EVENT" = pull_request ] && [ "$APPLY_BEFORE_MERGE" != true ]; then
+if [ "$ON_PR" = true ] && [ "$APPLY_BEFORE_MERGE" != true ]; then
   echo "A pull request is applied after it merges, by the run for the push to $DEFAULT_BRANCH."
   echo "workspaces=[]" >> "$GITHUB_OUTPUT"
   summary "### To apply" "" "Nothing to apply until the merge. The run for the push to \`$DEFAULT_BRANCH\` applies it."
@@ -14,7 +14,7 @@ fi
 # a plan of a commit the branch no longer has at its head. The apply step
 # refuses that too; this keeps it from being offered at all.
 case "$EVENT" in
-  pull_request) branch=$(jq -r .pull_request.head.ref "$GITHUB_EVENT_PATH") ;;
+  pull_request | pull_request_review) branch=$(jq -r .pull_request.head.ref "$GITHUB_EVENT_PATH") ;;
   push) branch=$GITHUB_REF_NAME ;;
   *) branch= ;;
 esac
