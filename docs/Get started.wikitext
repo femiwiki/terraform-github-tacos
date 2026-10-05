@@ -165,3 +165,5 @@ The apply makes a fresh plan and applies it only when it matches the one that wa
 * [[Runs]] says what each step of the workflow does.
 * [[Auto apply]] skips the approval for chosen workspaces.
 * [[Apply-before-merge]] applies a pull request before it merges.
+
+{{Prevnext}}

@@ -1,0 +1,8 @@
+.tacos-prevnext {
+	display: flex;
+	margin-top: 2em;
+}
+
+.tacos-prevnext-next {
+	margin-left: auto;
+}

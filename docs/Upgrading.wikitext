@@ -1,1 +1,3 @@
 v0.3.0 always applied before the merge. To keep that, add <code>apply-before-merge: "true"</code> to the <code>pending</code>, <code>apply</code> and <code>merge</code> steps. To apply after the merge instead, change the workflow to the one in [[Get started]]: add the <code>push</code> trigger, plan on pushes too, run <code>pending</code> on pushes and <code>workflow_dispatch</code> only, make the gate need only the plan jobs, and drop the <code>merge</code> job.
+
+{{Prevnext}}
