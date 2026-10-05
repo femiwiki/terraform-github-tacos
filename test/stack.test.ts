@@ -20,14 +20,14 @@ test('fails a stacked pull request that changes several workspaces', async () =>
 test('lets a stacked pull request that changes one workspace apply the whole stack', async () => {
   const { written } = await run(upper, ['aws'])
   assert.strictEqual(written.failed, undefined)
-  assert.match(written.raw[0], /merges the whole stack into `main`/)
+  assert.match(written.summary(), /merges the whole stack into <code>main<\/code>|merges the whole stack into `main`/)
 })
 
 test('leaves the bottom of a stack and unstacked pull requests alone', async () => {
   for (const pr of [{ stack: { position: 1, base: { ref: 'main' } } }, {}]) {
     const { written } = await run(pr, ['aws', 'docker'])
     assert.strictEqual(written.failed, undefined)
-    assert.deepStrictEqual(written.raw, [])
+    assert.strictEqual(written.summary(), '')
   }
 })
 

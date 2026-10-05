@@ -7,8 +7,10 @@
 			"initial-version": "0.1.0",
 			"bump-minor-pre-major": true,
 			"extra-files": [
-				"docs/Module.wikitext",
-				"docs/Workflow.wikitext"
+				"docs/Apply-before-merge.wikitext",
+				"docs/Approvals.wikitext",
+				"docs/Auto apply.wikitext",
+				"docs/Get started.wikitext"
 			]
 		}
 	}

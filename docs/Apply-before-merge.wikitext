@@ -1,0 +1,163 @@
+With <code>apply-before-merge</code>, the pull request's own run waits for the approval, applies, and merges. The default branch then holds only what was applied, and a pull request that does not merge after its apply leaves production ahead of it, so the <code>merge</code> job fails. This is the order [https://www.runatlantis.io/ Atlantis] and [https://github.com/diggerhq/digger digger] use, and it is usually called apply-before-merge.
+
+{{Note|title=Other names|1=
+* Terrateam calls the two orders [https://docs.terrateam.io/getting-started/plan-and-apply pre-merge and post-merge].
+* [https://terramate.io/rethinking-iac/mastering-terraform-workflows-apply-before-merge-vs-apply-after-merge Terramate] and [https://cloudposse.com/blog/apply-after-merge Cloud Posse] call the default order apply-after-merge, and Terramate also merge-before-apply.
+* After Atlantis, it is also called the Atlantis-style workflow, as in [https://feedback.spacelift.io/p/stack-locking-doesnt-support-atlantis-style-apply-before-merge-workflow Spacelift's feedback board].
+}}
+
+A pull request behind its base may be planned and applied unless <code>require-up-to-date</code> is <code>"true"</code>. The plan runs on the merge commit, so a change on the base to the same workspace makes the fresh plan differ and stops the apply, and a change to another workspace does not.
+
+<syntaxhighlight lang="yaml" copy>
+name: tofu
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      workspace:
+        description: The workspace to apply from this branch, once its environment approves.
+        required: true
+        type: choice
+        options: &workspaces [network, dns]
+permissions: {}
+jobs:
+  plan:
+    name: ${{ matrix.workspace }} plan
+    if: github.event_name == 'pull_request'
+    strategy:
+      fail-fast: false
+      matrix:
+        workspace: *workspaces
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: femiwiki/terraform-github-tacos@v0.4.0  # x-release-please-version
+        with:
+          step: plan
+          workspace: ${{ matrix.workspace }}
+
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
+        with:
+          persist-credentials: false
+
+      - uses: dflook/tofu-plan@c7416238983bdd94c5486fb856bb7358f2bcc935  # v3.1.0
+        id: plan
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          path: ${{ matrix.workspace }}
+
+      - uses: femiwiki/terraform-github-tacos@v0.4.0  # x-release-please-version
+        with:
+          step: changes
+          workspace: ${{ matrix.workspace }}
+          changes: ${{ steps.plan.outputs.changes }}
+          plan-json: ${{ steps.plan.outputs.json_plan_path }}
+          plan-text: ${{ steps.plan.outputs.text_plan_path }}
+
+      - uses: femiwiki/terraform-github-tacos@v0.4.0  # x-release-please-version
+        if: always()
+        with:
+          step: collapse
+
+  pending:
+    needs: plan
+    if: >-
+      !cancelled() && (github.event_name == 'workflow_dispatch'
+      || (needs.plan.result == 'success' && github.event.pull_request.head.repo.full_name == github.repository))
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      checks: read
+      pull-requests: read
+    outputs:
+      workspaces: ${{ steps.pending.outputs.workspaces }}
+    steps:
+      - uses: femiwiki/terraform-github-tacos@v0.4.0  # x-release-please-version
+        id: pending
+        with:
+          step: pending
+          apply-before-merge: "true"
+          workspaces: ${{ inputs.workspace && format('["{0}"]', inputs.workspace) || '' }}
+
+  apply:
+    name: ${{ matrix.workspace }} apply
+    needs: pending
+    if: needs.pending.outputs.workspaces != '[]'
+    strategy:
+      fail-fast: false
+      matrix:
+        workspace: ${{ fromJSON(needs.pending.outputs.workspaces) }}
+    runs-on: ubuntu-latest
+    environment: ${{ matrix.workspace }}
+    permissions:
+      actions: read
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: femiwiki/terraform-github-tacos@v0.4.0  # x-release-please-version
+        id: approver
+        with:
+          step: apply
+          workspace: ${{ matrix.workspace }}
+          apply-before-merge: "true"
+
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
+        with:
+          persist-credentials: false
+
+      - uses: dflook/tofu-apply@e3e5dfc8f935d4b152c767801046f63abf8a77d3  # v3.1.0
+        id: apply
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          path: ${{ matrix.workspace }}
+          auto_approve: ${{ github.event_name == 'workflow_dispatch' }}
+
+      - uses: femiwiki/terraform-github-tacos@v0.4.0  # x-release-please-version
+        if: always()
+        with:
+          step: result
+          workspace: ${{ matrix.workspace }}
+          outcome: ${{ steps.apply.outcome }}
+          plan-json: ${{ steps.apply.outputs.json_plan_path }}
+          plan-text: ${{ steps.apply.outputs.text_plan_path }}
+          approver: ${{ steps.approver.outputs.approver }}
+
+  # Make this the one required check
+  gate:
+    name: ${{ github.event_name == 'pull_request' && 'tofu gate' || 'tofu gate (pull requests only)' }}
+    needs: [plan, pending, apply]
+    if: always() && github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - uses: femiwiki/terraform-github-tacos@v0.4.0  # x-release-please-version
+        with:
+          step: gate
+          needs: ${{ toJSON(needs) }}
+
+  merge:
+    needs: [pending, apply, gate]
+    if: >-
+      !cancelled() && needs.gate.result == 'success'
+      && (needs.apply.result == 'success' || needs.pending.outputs.workspaces == '[]')
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: write
+      deployments: read
+      pull-requests: write
+    steps:
+      - uses: femiwiki/terraform-github-tacos@v0.4.0  # x-release-please-version
+        with:
+          step: merge
+          apply-before-merge: "true"
+</syntaxhighlight>
+
+== Stacked pull requests ==
+In a [https://docs.github.com/en/pull-requests/get-started/about-stacked-prs native stack], which GitHub has in public preview, approving a pull request does what merging it does: the bottom one applies and merges alone, and one higher up applies its own plan, which carries every pull request below it, and merges the whole stack. Higher up, <code>pending</code> fails when that plan changes more than one workspace, since their applies run side by side and one may need what another has yet to apply. Apply such a stack from the bottom: once the lowest pull request merges, GitHub retargets the next one at the default branch, and its next run plans it from there.
+
+A pull request that targets another pull request's branch without being in a native stack is never applied.

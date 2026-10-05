@@ -1,0 +1,30 @@
+Your workflow calls the action once in each job, with <code>step</code> set to the job it runs in. The apply job's environment has the same name as the workspace.
+
+By default it applies after the merge, in HCP Terraform's order: a pull request only plans, and once it merges, the push to the default branch plans again and applies when the environment approves, or at once for a workspace in <code>auto-apply</code>. With <code>apply-before-merge</code> set to <code>"true"</code> on the <code>pending</code>, <code>apply</code> and <code>merge</code> steps, a pull request is applied first and merges once the apply succeeds.
+
+== Steps ==
+{| class="wikitable"
+! <code>step</code> !! Job !! What it does
+|-
+| <code>plan</code> || plan, before planning || With <code>require-up-to-date</code>, refuses a pull request that is behind its base.
+|-
+| <code>changes</code> || plan, after planning || Marks the workspace as having changes to apply.
+|-
+| <code>pending</code> || one job after the plans || Lists the workspaces to apply, and refuses an environment that is missing, or has no required reviewers unless its workspace is in <code>auto-apply</code>. Cancels older runs of the same branch that still wait for approval, unless one of their jobs is running. On a pull request it lists nothing, unless <code>apply-before-merge</code>, and then fails a pull request high in a [[Apply-before-merge#Stacked pull requests|stack]] that changes more than one workspace.
+|-
+| <code>apply</code> || apply, first step || Records who approved, or that nobody had to. On a push, refuses unless the commit is still the head of the branch. On a pull request, refuses unless <code>apply-before-merge</code>, and then refuses when the pull request moved or merged, targets another branch outside a native stack, or with <code>require-up-to-date</code> fell behind.
+|-
+| <code>result</code> || apply, last step, with <code>if: always()</code> || Writes what the apply changed and whether it succeeded.
+|-
+| <code>gate</code> || the required check || Fails unless every job it needs succeeded. The apply job may be skipped.
+|-
+| <code>merge</code> || after the gate, with <code>apply-before-merge</code> || Merges the pull request through the async merge API, which also merges every pull request below it in a stack. When this run has nothing to apply, merges only if an earlier run of it was approved or applied an auto-apply workspace. Fails when the pull request has not merged 2 minutes after the apply, since production is then ahead of the default branch. Does nothing without <code>apply-before-merge</code>.
+|-
+| <code>collapse</code> || plan, last step, with <code>if: always()</code> || Hides, as outdated, every plan comment of <code>dflook/tofu-plan</code> or <code>dflook/terraform-plan</code> but the newest of each workspace. Comments starting with <code>**&lt;workspace&gt; apply: </code> are hidden the same way.
+|}
+
+The apply job should make a fresh plan and apply it only when it matches the approved one, as <code>dflook/tofu-apply</code> does without <code>plan_path</code> or <code>auto_approve</code>. On a push, dflook's plan updates the merged pull request's plan comment with the plan of the default branch, and the apply compares against that comment.
+
+Only the newest commit of the default branch applies, since its plan carries the changes of every commit before it that has not been applied. So the push run has to plan every workspace that has changes: a workflow that plans only the workspaces a pull request changes should plan them all on a push. A change made since the plan, such as a <code>workflow_dispatch</code> apply, makes the fresh plan differ and stops the apply; "Re-run all jobs" plans again. A commit pushed to the default branch without a pull request has no plan comment, so apply it with <code>workflow_dispatch</code>.
+
+Each step writes a job summary, so the run page shows what was planned, who can approve, who approved, and what the apply changed.
