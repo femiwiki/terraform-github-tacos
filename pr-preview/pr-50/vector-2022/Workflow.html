@@ -265,11 +265,23 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 		<ul id="toc-Steps-sublist" class="vector-toc-list">
 		</ul>
 	</li>
+	<li id="toc-Auto_apply"
+		class="vector-toc-list-item vector-toc-level-1 vector-toc-list-item-expanded">
+		<a class="vector-toc-link" href="#Auto_apply">
+			<div class="vector-toc-text">
+				<span class="vector-toc-numb">2</span>
+				<span>Auto apply</span>
+			</div>
+		</a>
+		
+		<ul id="toc-Auto_apply-sublist" class="vector-toc-list">
+		</ul>
+	</li>
 	<li id="toc-Permissions"
 		class="vector-toc-list-item vector-toc-level-1 vector-toc-list-item-expanded">
 		<a class="vector-toc-link" href="#Permissions">
 			<div class="vector-toc-text">
-				<span class="vector-toc-numb">2</span>
+				<span class="vector-toc-numb">3</span>
 				<span>Permissions</span>
 			</div>
 		</a>
@@ -281,7 +293,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 		class="vector-toc-list-item vector-toc-level-1 vector-toc-list-item-expanded">
 		<a class="vector-toc-link" href="#A_whole_workflow">
 			<div class="vector-toc-text">
-				<span class="vector-toc-numb">3</span>
+				<span class="vector-toc-numb">4</span>
 				<span>A whole workflow</span>
 			</div>
 		</a>
@@ -293,7 +305,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 		class="vector-toc-list-item vector-toc-level-1 vector-toc-list-item-expanded">
 		<a class="vector-toc-link" href="#Applying_before_the_merge">
 			<div class="vector-toc-text">
-				<span class="vector-toc-numb">4</span>
+				<span class="vector-toc-numb">5</span>
 				<span>Applying before the merge</span>
 			</div>
 		</a>
@@ -305,7 +317,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 		class="vector-toc-list-item vector-toc-level-1 vector-toc-list-item-expanded">
 		<a class="vector-toc-link" href="#From_v0.3.0">
 			<div class="vector-toc-text">
-				<span class="vector-toc-numb">5</span>
+				<span class="vector-toc-numb">6</span>
 				<span>From v0.3.0</span>
 			</div>
 		</a>
@@ -520,7 +532,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 					
 					
 					<div id="mw-content-text" class="mw-body-content"><div class="mw-content-ltr mw-parser-output" lang="en" dir="ltr"><p>Your workflow calls the action once in each job, with <code>step</code> set to the job it runs in. The apply job's environment has the same name as the workspace.
-</p><p>By default it follows HCP Terraform's order: a pull request only plans, and once it merges, the push to the default branch plans again and applies when the environment approves. With <code>apply-before-merge</code> set to <code>"true"</code> on the <code>pending</code>, <code>apply</code> and <code>merge</code> steps, a pull request is applied first and merges once the apply succeeds.
+</p><p>By default it follows HCP Terraform's order: a pull request only plans, and once it merges, the push to the default branch plans again and applies when the environment approves, or at once for a workspace in <code>auto-apply</code>. With <code>apply-before-merge</code> set to <code>"true"</code> on the <code>pending</code>, <code>apply</code> and <code>merge</code> steps, a pull request is applied first and merges once the apply succeeds.
 </p>
 <meta property="mw:PageProp/toc" />
 <div class="mw-heading mw-heading2"><h2 id="Steps">Steps</h2></div>
@@ -543,12 +555,12 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <tr>
 <td><code>pending</code></td>
 <td>one job after the plans</td>
-<td>Lists the workspaces to apply, and refuses an environment without required reviewers. Cancels older runs of the same branch that still wait for approval, unless one of their jobs is running. On a pull request it lists nothing, unless <code>apply-before-merge</code>.
+<td>Lists the workspaces to apply, and refuses an environment that is missing, or has no required reviewers unless its workspace is in <code>auto-apply</code>. Cancels older runs of the same branch that still wait for approval, unless one of their jobs is running. On a pull request it lists nothing, unless <code>apply-before-merge</code>.
 </td></tr>
 <tr>
 <td><code>apply</code></td>
 <td>apply, first step</td>
-<td>Records who approved. On a push, refuses unless the commit is still the head of the branch. On a pull request, refuses unless <code>apply-before-merge</code>, and then refuses when the pull request moved or merged, or with <code>require-up-to-date</code> fell behind.
+<td>Records who approved, or that nobody had to. On a push, refuses unless the commit is still the head of the branch. On a pull request, refuses unless <code>apply-before-merge</code>, and then refuses when the pull request moved or merged, or with <code>require-up-to-date</code> fell behind.
 </td></tr>
 <tr>
 <td><code>result</code></td>
@@ -563,7 +575,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <tr>
 <td><code>merge</code></td>
 <td>after the gate, with <code>apply-before-merge</code></td>
-<td>Merges the pull request. When this run has nothing to apply, merges only if an earlier run of it was approved. Fails when the pull request has not merged 2 minutes after the apply, since production is then ahead of the default branch. Does nothing without <code>apply-before-merge</code>.
+<td>Merges the pull request. When this run has nothing to apply, merges only if an earlier run of it was approved or applied an auto-apply workspace. Fails when the pull request has not merged 2 minutes after the apply, since production is then ahead of the default branch. Does nothing without <code>apply-before-merge</code>.
 </td></tr>
 <tr>
 <td><code>collapse</code></td>
@@ -572,6 +584,17 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 </td></tr></tbody></table>
 <p>The apply job should make a fresh plan and apply it only when it matches the approved one, as <code>dflook/tofu-apply</code> does without <code>plan_path</code> or <code>auto_approve</code>. On a push, dflook's plan updates the merged pull request's plan comment with the plan of the default branch, and the apply compares against that comment.
 </p><p>Only the newest commit of the default branch applies, since its plan carries the changes of every commit before it that has not been applied. So the push run has to plan every workspace that has changes: a workflow that plans only the workspaces a pull request changes should plan them all on a push. A change made since the plan, such as a <code>workflow_dispatch</code> apply, makes the fresh plan differ and stops the apply; "Re-run all jobs" plans again. A commit pushed to the default branch without a pull request has no plan comment, so apply it with <code>workflow_dispatch</code>.
+</p>
+<div class="mw-heading mw-heading2"><h2 id="Auto_apply">Auto apply</h2></div>
+<p>A workspace applies without an approval when its environment has no required reviewers, as with HCP Terraform's auto apply. GitHub decides whether the apply job waits, so this is set on the environment: create it without reviewers, with the module's <code>auto_apply</code>, and list the workspace in the <code>pending</code> step's <code>auto-apply</code> input. The list is what lets <code>pending</code> tell such an environment from one created by mistake, which it refuses. Every other workspace waits for its reviewers.
+</p>
+<div class="mw-highlight mw-highlight-lang-yaml mw-content-ltr" dir="ltr"><pre><span></span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">femiwiki/terraform-github-tacos@v0.3.0</span><span class="w">  </span><span class="c1"># x-release-please-version</span>
+<span class="w">        </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pending</span>
+<span class="w">        </span><span class="nt">with</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">step</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pending</span>
+<span class="w">          </span><span class="nt">auto-apply</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dns</span>
+</pre></div>
+<p>After the merge, an auto-apply workspace applies as soon as the push is planned, and the apply still goes ahead only when its fresh plan matches that one. With <code>apply-before-merge</code> it applies as soon as the pull request is planned, before anyone has reviewed it, so give auto apply only to workspaces that anyone who can push a branch may change.
 </p><p>Each step writes a job summary, so the run page shows what was planned, who can approve, who approved, and what the apply changed.
 </p>
 <div class="mw-heading mw-heading2"><h2 id="Permissions">Permissions</h2></div>
@@ -594,7 +617,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 </td></tr>
 <tr>
 <td><code>merge</code></td>
-<td><code>actions: read</code>, <code>contents: write</code>, <code>pull-requests: write</code>
+<td><code>actions: read</code>, <code>contents: write</code>, <code>deployments: read</code>, <code>pull-requests: write</code>
 </td></tr>
 <tr>
 <td><code>collapse</code></td>
@@ -876,6 +899,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <span class="w">    </span><span class="nt">permissions</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">actions</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">read</span>
 <span class="w">      </span><span class="nt">contents</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">write</span>
+<span class="w">      </span><span class="nt">deployments</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">read</span>
 <span class="w">      </span><span class="nt">pull-requests</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">write</span>
 <span class="w">    </span><span class="nt">steps</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">femiwiki/terraform-github-tacos@v0.3.0</span><span class="w">  </span><span class="c1"># x-release-please-version</span>
@@ -897,7 +921,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 			
 <footer id="footer" class="mw-footer" >
 	<ul id="footer-info">
-	<li id="footer-info-lastmod"> This page was last edited on 5 October 2026, at 00:28.</li>
+	<li id="footer-info-lastmod"> This page was last edited on 5 October 2026, at 00:45.</li>
 </ul>
 
 	<ul id="footer-places">
