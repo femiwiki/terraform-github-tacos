@@ -108,13 +108,17 @@ runs:
 
     - id: changes
       if: inputs.step == 'changes'
-      shell: bash
+      uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3  # v9.0.0
       env:
+        ACTION_PATH: ${{ github.action_path }}
         WORKSPACE: ${{ inputs.workspace }}
         CHANGES: ${{ inputs.changes }}
         PLAN_JSON: ${{ inputs.plan-json }}
         PLAN_TEXT: ${{ inputs.plan-text }}
-      run: '"$GITHUB_ACTION_PATH/scripts/changes.sh"'
+      with:
+        script: |
+          const { default: changes } = await import(`${process.env.ACTION_PATH}/scripts/changes.ts`)
+          await changes({ core, env: process.env })
 
     - id: pending
       if: inputs.step == 'pending'
@@ -138,14 +142,20 @@ runs:
 
     - id: result
       if: inputs.step == 'result'
-      shell: bash
+      uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3  # v9.0.0
       env:
+        ACTION_PATH: ${{ github.action_path }}
         WORKSPACE: ${{ inputs.workspace }}
         OUTCOME: ${{ inputs.outcome }}
         PLAN_JSON: ${{ inputs.plan-json }}
         PLAN_TEXT: ${{ inputs.plan-text }}
         APPROVER: ${{ inputs.approver }}
-      run: '"$GITHUB_ACTION_PATH/scripts/result.sh"'
+      with:
+        # The returned value becomes the step's `result` output
+        result-encoding: string
+        script: |
+          const { default: result } = await import(`${process.env.ACTION_PATH}/scripts/result.ts`)
+          return await result({ core, env: process.env })
 
     - if: inputs.step == 'gate'
       uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3  # v9.0.0

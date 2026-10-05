@@ -31,7 +31,7 @@ test('fails naming every job that did not succeed', async () => {
 
 test('lists every job in the summary', async () => {
   const written = await run({ plan: { result: 'success' }, apply: { result: 'skipped' } })
-  assert.deepStrictEqual(written.tables[0].slice(1), [['plan', 'success'], ['apply', 'skipped']])
+  assert.match(written.summary(), /<td>plan<\/td><td>success<\/td>.*<td>apply<\/td><td>skipped<\/td>/s)
 })
 
 test('fails without needs', async () => {
