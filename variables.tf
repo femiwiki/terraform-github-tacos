@@ -8,6 +8,12 @@ variable "environments" {
   type        = set(string)
 }
 
+variable "auto_apply" {
+  description = "Environments that apply without an approval, like HCP Terraform's auto apply. List the same workspaces in the action's auto-apply input."
+  type        = set(string)
+  default     = []
+}
+
 variable "reviewer_teams" {
   description = "IDs of the teams whose approval starts an apply."
   type        = list(number)

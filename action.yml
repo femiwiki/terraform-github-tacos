@@ -1,8 +1,8 @@
 ---
 name: terraform-github-tacos
 description: >-
-  Plan OpenTofu or Terraform in a pull request, apply it once a GitHub
-  environment approves, and only then merge.
+  Plan OpenTofu or Terraform in a pull request, plan again once it merges, and
+  apply, by default once a GitHub environment approves.
 author: femiwiki
 branding:
   icon: check-circle
@@ -38,6 +38,13 @@ inputs:
       A JSON list of workspaces to apply, taking the place of the ones found in
       this run. Used by pending, for a workflow_dispatch run.
     default: ""
+  auto-apply:
+    description: >-
+      Workspaces that apply without an approval, separated by spaces, like
+      HCP Terraform's auto apply. Their environments have no required
+      reviewers; any other workspace's environment must have some. Used by
+      pending.
+    default: ""
   needs:
     description: The gate's `toJSON(needs)`. Used by gate.
     default: ""
@@ -50,6 +57,13 @@ inputs:
       applying. Off by default: the apply makes a fresh plan and applies it
       only when it matches the approved one, so a change on the base to the
       same workspace stops it anyway. Used by plan and apply.
+    default: "false"
+  apply-before-merge:
+    description: >-
+      "true" to apply a pull request before it merges, approving the apply in
+      the pull request's run and merging once it succeeds. Off by default: the
+      pull request only plans, and the run for the push to the default branch
+      plans again and applies. Used by pending, apply and merge.
     default: "false"
   merge-method:
     description: squash, merge or rebase. Used by merge.
@@ -108,6 +122,8 @@ runs:
       env:
         GH_TOKEN: ${{ inputs.github-token }}
         WORKSPACES: ${{ inputs.workspaces }}
+        AUTO_APPLY: ${{ inputs.auto-apply }}
+        APPLY_BEFORE_MERGE: ${{ inputs.apply-before-merge }}
       run: '"$GITHUB_ACTION_PATH/scripts/pending.sh"'
 
     - id: apply
@@ -117,6 +133,7 @@ runs:
         GH_TOKEN: ${{ inputs.github-token }}
         WORKSPACE: ${{ inputs.workspace }}
         REQUIRE_UP_TO_DATE: ${{ inputs.require-up-to-date }}
+        APPLY_BEFORE_MERGE: ${{ inputs.apply-before-merge }}
       run: '"$GITHUB_ACTION_PATH/scripts/apply.sh"'
 
     - id: result
@@ -146,6 +163,7 @@ runs:
       env:
         GH_TOKEN: ${{ inputs.github-token }}
         METHOD: ${{ inputs.merge-method }}
+        APPLY_BEFORE_MERGE: ${{ inputs.apply-before-merge }}
       run: '"$GITHUB_ACTION_PATH/scripts/merge.sh"'
 
     - if: inputs.step == 'collapse'
