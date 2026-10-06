@@ -405,7 +405,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <span class="nt">jobs</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">plan</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">>-</span>
-<span class="w">      </span><span class="no">(github.event_name == 'pull_request' &amp;&amp; github.actor != 'dependabot[bot]')</span>
+<span class="w">      </span><span class="no">(github.event_name == 'pull_request' &amp;&amp; github.event.pull_request.user.login != 'dependabot[bot]')</span>
 <span class="w">      </span><span class="no">|| (github.event_name == 'pull_request_review'</span>
 <span class="w">      </span><span class="no">&amp;&amp; github.event.review.state == 'approved'</span>
 <span class="w">      </span><span class="no">&amp;&amp; github.event.pull_request.user.login == 'dependabot[bot]'</span>
@@ -442,9 +442,9 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <div id="citizen-page-aside-lastmod" class="citizen-page-aside__panel citizen-page-aside__panel--lastmod" data-order="10">
 	<div id="citizen-page-aside-lastmod-heading" class="citizen-page-aside__heading">Last modified</div>
 	<div class="citizen-page-aside__body">
-<a class="citizen-page-aside__link cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" href="https://github.com/femiwiki/terraform-github-tacos/commits/main/docs/Dependabot.wikitext" title="This page was last edited on 5 October 2026, at 15:27.">
+<a class="citizen-page-aside__link cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" href="https://github.com/femiwiki/terraform-github-tacos/commits/main/docs/Dependabot.wikitext" title="This page was last edited on 6 October 2026, at 00:12.">
 	<span class="citizen-ui-icon mw-ui-icon-history mw-ui-icon-wikimedia-history"></span>
-	<time id="citizen-page-aside-lastmod-time" datetime="2026-10-05T15:27:28Z">5 October 2026</time>
+	<time id="citizen-page-aside-lastmod-time" datetime="2026-10-06T00:12:47Z">6 October 2026</time>
 </a>
 </div>
 </div>
@@ -507,7 +507,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 					<div class="page-info">
 		    <section id="footer-info-lastmod" class="page-info__item">
 		        <div class="page-info__label">Last modified</div>
-		        <div class="page-info__text"> This page was last edited on 5 October 2026, at 15:27.</div>
+		        <div class="page-info__text"> This page was last edited on 6 October 2026, at 00:12.</div>
 		    </section>
 		</div>
 </footer>		</div>

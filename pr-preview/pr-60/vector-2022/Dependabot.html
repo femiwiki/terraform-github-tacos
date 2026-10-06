@@ -495,7 +495,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <span class="nt">jobs</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">plan</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;-</span>
-<span class="w">      </span><span class="no">(github.event_name == &#39;pull_request&#39; &amp;&amp; github.actor&#160;!= &#39;dependabot[bot]&#39;)</span>
+<span class="w">      </span><span class="no">(github.event_name == &#39;pull_request&#39; &amp;&amp; github.event.pull_request.user.login&#160;!= &#39;dependabot[bot]&#39;)</span>
 <span class="w">      </span><span class="no">|| (github.event_name == &#39;pull_request_review&#39;</span>
 <span class="w">      </span><span class="no">&amp;&amp; github.event.review.state == &#39;approved&#39;</span>
 <span class="w">      </span><span class="no">&amp;&amp; github.event.pull_request.user.login == &#39;dependabot[bot]&#39;</span>
@@ -533,7 +533,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 			
 <footer id="footer" class="mw-footer" >
 	<ul id="footer-info">
-	<li id="footer-info-lastmod"> This page was last edited on 5 October 2026, at 15:27.</li>
+	<li id="footer-info-lastmod"> This page was last edited on 6 October 2026, at 00:12.</li>
 </ul>
 
 	<ul id="footer-places">
