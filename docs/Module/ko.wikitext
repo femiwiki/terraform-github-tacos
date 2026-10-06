@@ -1,0 +1,36 @@
+<!--T:title @f148224a-->
+모듈
+
+<!--T:1 @c4ad809c-->
+[[Special:MyLanguage/Approvals|승인]]에서 쓰는 모듈의 입력과 출력입니다.
+
+<!--T:2 @8c92de77-->
+== 입력 ==
+{| class="wikitable"
+! 이름 !! 기본값 !! 설명
+|-
+| <code>repository</code> || || 플랜하고 적용하는 워크플로가 있는 저장소.
+|-
+| <code>environments</code> || || 워크스페이스마다 하나씩, 워크스페이스 이름을 딴 환경.
+|-
+| <code>auto_apply</code> || <code>[]</code> || 승인 없이 적용하는 환경. HCP Terraform의 자동 적용과 같습니다. 같은 워크스페이스를 액션의 <code>auto-apply</code> 입력에도 넣으세요.
+|-
+| <code>reviewer_teams</code> || <code>[]</code> || 승인하면 적용이 시작되는 팀의 ID.
+|-
+| <code>reviewer_users</code> || <code>[]</code> || 승인하면 적용이 시작되는 사용자의 ID.
+|-
+| <code>prevent_self_review</code> || <code>false</code> || 변경을 푸시한 사람이 그 적용을 승인할 수 있는지. 한 사람이 둘 다 한다면 끄세요.
+|-
+| <code>can_admins_bypass</code> || <code>false</code> || 저장소 관리자가 승인 없이 적용을 시작할 수 있는지.
+|}
+
+<!--T:3 @b4660599-->
+모든 환경이 <code>auto_apply</code>에 있지 않다면 리뷰어 팀이나 사용자가 적어도 하나 있어야 합니다.
+
+<!--T:4 @b2f3cb07-->
+== 출력 ==
+{| class="wikitable"
+! 이름 !! 설명
+|-
+| <code>environments</code> || 워크스페이스별 환경.
+|}

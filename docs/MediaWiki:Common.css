@@ -1,6 +1,25 @@
-/* The landing page draws its own title */
-.page-Main_Page .mw-first-heading {
+/* The landing page draws its own title and has nothing for the side column. MediaWiki:Mainpage
+   goes through Special:MyLanguage so the logo keeps a reader in their language, and so MediaWiki
+   no longer knows this is the main page and shows both; they are hidden here. */
+.page-index .citizen-page-header,
+.page-index .citizen-page-aside,
+.page-index_ko .citizen-page-header,
+.page-index_ko .citizen-page-aside {
 	display: none;
+}
+
+/* The layout Citizen gives a page with no side column */
+.page-index,
+.page-index_ko {
+	--width-page: var( --width-layout );
+}
+
+.page-index .citizen-body-container,
+.page-index_ko .citizen-body-container {
+	grid-template-areas:
+		'content'
+		'footer';
+	grid-template-columns: minmax( 0, var( --width-layout ) );
 }
 
 .tacos-hero {
