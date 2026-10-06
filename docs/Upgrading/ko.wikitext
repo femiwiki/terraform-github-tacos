@@ -1,0 +1,5 @@
+<!--T:title @d8f1ee5b-->
+업그레이드
+
+<!--T:1 @0d8c252a-->
+v0.3.0은 항상 머지 전에 적용했습니다. 그대로 쓰려면 <code>pending</code>, <code>apply</code>, <code>merge</code> 스텝에 <code>apply-before-merge: "true"</code>를 넣으세요. 머지한 뒤에 적용하려면 워크플로를 [[Special:MyLanguage/Get started|시작하기]]의 것으로 바꾸세요. <code>push</code> 트리거를 넣고, 푸시에서도 플랜하고, <code>pending</code>은 푸시와 <code>workflow_dispatch</code>에서만 돌리고, 게이트는 플랜 잡에만 의존하게 하고, <code>merge</code> 잡은 빼면 됩니다.
