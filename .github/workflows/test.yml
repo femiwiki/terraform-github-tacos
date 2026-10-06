@@ -56,11 +56,13 @@ jobs:
         run: |
           echo '{"resource_changes": [{"change": {"actions": ["create"]}}]}' > "$RUNNER_TEMP/plan.json"
 
+      # The annotated job reads every changes annotation in this run, so this
+      # names an environment that exists
       - id: changes
         uses: ./
         with:
           step: changes
-          workspace: test
+          workspace: preview
           changes: "true"
           plan-json: ${{ runner.temp }}/plan.json
 
@@ -190,3 +192,58 @@ jobs:
       - name: pending refused a missing environment even when listed
         if: steps.missing.outcome != 'failure'
         run: exit 1
+
+  # A matrix where only one leg has changes, for the annotated job to find
+  annotate:
+    name: ${{ matrix.workspace }} changes
+    if: github.event_name == 'pull_request'
+    strategy:
+      matrix:
+        include:
+          - workspace: preview
+            changes: "true"
+          - workspace: unchanged
+            changes: "false"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
+        with:
+          persist-credentials: false
+
+      - uses: ./
+        with:
+          step: changes
+          workspace: ${{ matrix.workspace }}
+          changes: ${{ matrix.changes }}
+
+  # pending without a workspaces input reads them from the annotations
+  annotated:
+    needs: annotate
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      checks: read
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
+        with:
+          persist-credentials: false
+
+      - id: pending
+        uses: ./
+        with:
+          step: pending
+          apply-before-merge: "true"
+          auto-apply: preview
+
+      - name: pending found the leg with changes and only that one
+        env:
+          WORKSPACES: ${{ steps.pending.outputs.workspaces }}
+        run: |
+          echo "workspaces=$WORKSPACES"
+          [ "$WORKSPACES" = '["preview"]' ]
