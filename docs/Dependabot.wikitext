@@ -1,4 +1,8 @@
+<languages />
+<translate>
+<!--T:1-->
 A workflow run that Dependabot starts gets Dependabot secrets, not Actions secrets, so with none set every plan in a Dependabot pull request fails. A run started by a person's review of that pull request gets the Actions secrets, and the action handles it like a pull request run. So the way this page recommends is to skip the plans in Dependabot's own runs and plan when someone who can merge approves:
+</translate>
 
 <syntaxhighlight lang="yaml" copy>
 on:
@@ -25,15 +29,21 @@ jobs:
     # ...
 </syntaxhighlight>
 
+<translate>
+<!--T:2-->
 In Dependabot's own run the plans are skipped, so the gate fails and the pull request cannot merge. The approval starts a run that plans, and its gate, on the same head commit, replaces the failed one. A new commit from Dependabot fails the gate again until the next approval. Any other review starts a run with nothing to do and no gate.
 
+<!--T:3-->
 Only people who can merge count, since anyone may review a public repository's pull request, and the plan runs the updated dependency with the secrets. Changes in that plan still wait for their environment's reviewers.
 
+<!--T:4-->
 == Other ways ==
 * '''Copy the plan secrets''' to Dependabot secrets, for example with <code>github_dependabot_secret</code>. Dependabot pull requests then plan by themselves, but the updated dependency runs with those secrets before anyone has read the diff. A cooldown in <code>dependabot.yml</code> keeps a fresh release away for a few days. Leave out secrets that can do much more than plan, such as a GitHub App key with administration rights.
 * '''Push a commit''' to the Dependabot branch after reading the diff. That run is the pusher's and gets the Actions secrets, but Dependabot stops rebasing a branch someone else pushed to.
 * '''Skip the plans''' for Dependabot and let the gate pass. Nothing is shared, but an update is not planned before the merge, which is wrong for an update to this action.
 
+<!--T:5-->
 Re-running a Dependabot run does not help: it keeps Dependabot's secrets whoever re-runs it.
+</translate>
 
 {{Prevnext}}

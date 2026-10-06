@@ -1,7 +1,12 @@
+<languages />
+<translate>
+<!--T:1-->
 This page takes one change to production: planned in a pull request, merged, approved and applied. The example repository has two workspaces, one per directory, <code>network</code> and <code>dns</code>, and keeps their state in a remote backend.
 
+<!--T:2-->
 == Create the environments ==
 Each workspace applies in a GitHub environment of the same name, and its required reviewers are who can approve the apply. The module creates them:
+</translate>
 
 <syntaxhighlight lang="hcl" copy>
 module "tacos" {
@@ -13,10 +18,14 @@ module "tacos" {
 }
 </syntaxhighlight>
 
-See [[Approvals]] for who can approve and the permissions each job needs.
+<translate>
+<!--T:3-->
+See [[Special:MyLanguage/Approvals|Approvals]] for who can approve and the permissions each job needs.
 
+<!--T:4-->
 == Add the workflow ==
 Put this workflow in <code>.github/workflows/</code>, change the workspace list and add your credentials.
+</translate>
 
 <syntaxhighlight lang="yaml" copy>
 name: tofu
@@ -151,19 +160,26 @@ jobs:
           needs: ${{ toJSON(needs) }}
 </syntaxhighlight>
 
+<translate>
+<!--T:5-->
 Then make the gate job's name, <code>tofu gate</code>, a required status check of the default branch, so a pull request whose plan fails cannot merge.
 
+<!--T:6-->
 == Open a pull request ==
 Change a file in <code>network</code> and open a pull request. Each workspace is planned, and its plan is commented on the pull request. Nothing is applied yet.
 
+<!--T:7-->
 == Merge and approve ==
 Merge the pull request. The run for the push plans every workspace again, and the <code>network apply</code> job waits for its environment. A reviewer opens the run and approves the deployment under "Review deployments".
 
+<!--T:8-->
 The apply makes a fresh plan and applies it only when it matches the one that was approved. The job summary shows who approved and what changed.
 
+<!--T:9-->
 == Next ==
-* [[Runs]] says what each step of the workflow does.
-* [[Auto apply]] skips the approval for chosen workspaces.
-* [[Apply-before-merge]] applies a pull request before it merges.
+* [[Special:MyLanguage/Runs|Runs]] says what each step of the workflow does.
+* [[Special:MyLanguage/Auto apply|Auto apply]] skips the approval for chosen workspaces.
+* [[Special:MyLanguage/Apply-before-merge|Apply-before-merge]] applies a pull request before it merges.
+</translate>
 
 {{Prevnext}}

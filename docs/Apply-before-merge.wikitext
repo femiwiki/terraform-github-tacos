@@ -1,12 +1,18 @@
+<languages />
+<translate>
+<!--T:1-->
 With <code>apply-before-merge</code>, the pull request's own run waits for the approval, applies, and merges. The default branch then holds only what was applied, and a pull request that does not merge after its apply leaves production ahead of it, so the <code>merge</code> job fails. This is the order [https://www.runatlantis.io/ Atlantis] and [https://github.com/diggerhq/digger digger] use, and it is usually called apply-before-merge.
 
+<!--T:2-->
 {{Note|title=Other names|1=
 * Terrateam calls the two orders [https://docs.terrateam.io/getting-started/plan-and-apply pre-merge and post-merge].
 * [https://terramate.io/rethinking-iac/mastering-terraform-workflows-apply-before-merge-vs-apply-after-merge Terramate] and [https://cloudposse.com/blog/apply-after-merge Cloud Posse] call the default order apply-after-merge, and Terramate also merge-before-apply.
 * After Atlantis, it is also called the Atlantis-style workflow, as in [https://feedback.spacelift.io/p/stack-locking-doesnt-support-atlantis-style-apply-before-merge-workflow Spacelift's feedback board].
 }}
 
+<!--T:3-->
 A pull request behind its base may be planned and applied unless <code>require-up-to-date</code> is <code>"true"</code>. The plan runs on the merge commit, so a change on the base to the same workspace makes the fresh plan differ and stops the apply, and a change to another workspace does not.
+</translate>
 
 <syntaxhighlight lang="yaml" copy>
 name: tofu
@@ -157,9 +163,14 @@ jobs:
           apply-before-merge: "true"
 </syntaxhighlight>
 
+<span id="Stacked pull requests"></span>
+<translate>
+<!--T:4-->
 == Stacked pull requests ==
 In a [https://docs.github.com/en/pull-requests/get-started/about-stacked-prs native stack], which GitHub has in public preview, approving a pull request does what merging it does: the bottom one applies and merges alone, and one higher up applies its own plan, which carries every pull request below it, and merges the whole stack. Higher up, <code>pending</code> fails when that plan changes more than one workspace, since their applies run side by side and one may need what another has yet to apply. Apply such a stack from the bottom: once the lowest pull request merges, GitHub retargets the next one at the default branch, and its next run plans it from there.
 
+<!--T:5-->
 A pull request that targets another pull request's branch without being in a native stack is never applied.
+</translate>
 
 {{Prevnext}}

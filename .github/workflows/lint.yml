@@ -48,3 +48,8 @@ jobs:
         with:
           source: docs
           output: dist
+
+      # Fails on a source page Translate cannot read; a translation that is behind is only annotated
+      - uses: chaotic-ground/wikven/actions/check-translations@79c58df9b0fd9a92143c3cd76e0e677f9de10d45  # v1.2.0
+        with:
+          source: docs

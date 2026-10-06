@@ -1,47 +1,112 @@
+<languages />
 <div class="tacos-hero">
 <div class="tacos-hero-title">terraform-github-tacos</div>
-<div class="tacos-hero-lead">Plan OpenTofu in the pull request. Merge it, and approve the deployment to apply it.</div>
+<div class="tacos-hero-lead">
+<translate>
+<!--T:1-->
+Plan OpenTofu in the pull request. Merge it, and approve the deployment to apply it.
+</translate>
+</div>
 <div class="tacos-hero-actions">
 <!-- The empty title hides the link's own title, which only repeats the label -->
-<span class="tacos-button tacos-button-primary">[[Get started|<span title="">Get started</span>]]</span>
+<span class="tacos-button tacos-button-primary">[[Special:MyLanguage/Get started|<span title="">{{#invoke:Sequence.lua|label|Get started}}</span>]]</span>
 <span class="tacos-button tacos-button-github plainlinks">[https://github.com/femiwiki/terraform-github-tacos <span>GitHub</span>]</span>
 </div>
 </div>
 
+<translate>
+<!--T:2-->
 It does what HCP Terraform's (formerly Terraform Cloud) VCS workflow does, with GitHub Actions alone. There is no server to run, and the state stays in your own backend.
 
+<!--T:3-->
 == How it works ==
+</translate>
 <div class="tacos-steps">
 <div class="tacos-step">
-<div class="tacos-step-name">Plan</div>
+<div class="tacos-step-name">
+<translate>
+<!--T:4-->
+Plan
+</translate>
+</div>
+<translate>
+<!--T:5-->
 Every pull request plans each workspace it changes, and the plan is posted on the pull request.
+</translate>
 </div>
 <div class="tacos-step">
-<div class="tacos-step-name">Merge</div>
+<div class="tacos-step-name">
+<translate>
+<!--T:6-->
+Merge
+</translate>
+</div>
+<translate>
+<!--T:7-->
 The push to the default branch plans every workspace again, and the plan comment of the merged pull request shows the new plan.
+</translate>
 </div>
 <div class="tacos-step">
-<div class="tacos-step-name">Approve</div>
+<div class="tacos-step-name">
+<translate>
+<!--T:8-->
+Approve
+</translate>
+</div>
+<translate>
+<!--T:9-->
 The apply job waits on the workspace's GitHub environment until a required reviewer approves it. A workspace set to auto apply skips this.
+</translate>
 </div>
 <div class="tacos-step">
-<div class="tacos-step-name">Apply</div>
+<div class="tacos-step-name">
+<translate>
+<!--T:10-->
+Apply
+</translate>
+</div>
+<translate>
+<!--T:11-->
 The apply makes a fresh plan and goes ahead only when it matches the one that was approved.
+</translate>
 </div>
 </div>
 
+<translate>
+<!--T:12-->
 With <code>apply-before-merge</code>, a pull request is approved and applied first and merges once the apply succeeds, so the default branch holds only what was applied.
 
+<!--T:13-->
 == What is in it ==
+</translate>
 <div class="tacos-cards">
 <div class="tacos-card">
-<div class="tacos-card-name">[[Runs|A GitHub Action]]</div>
+<div class="tacos-card-name">
+<translate>
+<!--T:14-->
+[[Special:MyLanguage/Runs|A GitHub Action]]
+</translate>
+</div>
+<translate>
+<!--T:15-->
 Called once in each job of your workflow, with <code>step</code> naming the job.
+</translate>
 </div>
 <div class="tacos-card">
-<div class="tacos-card-name">[[Approvals|An OpenTofu module]]</div>
+<div class="tacos-card-name">
+<translate>
+<!--T:16-->
+[[Special:MyLanguage/Approvals|An OpenTofu module]]
+</translate>
+</div>
+<translate>
+<!--T:17-->
 Creates the environments the apply waits on, with their required reviewers.
+</translate>
 </div>
 </div>
 
+<translate>
+<!--T:18-->
 HCP Terraform also estimates what a run costs. This project leaves that to tools made for it, such as the [https://github.com/apps/infracost Infracost GitHub app], which comments the estimate on the pull request beside the plan.
+</translate>
