@@ -1,11 +1,13 @@
-* Guide
-** Get started|Get started
-** Runs|Runs
-** Apply-before-merge|Apply-before-merge
-** Auto apply|Auto apply
-** Approvals|Approvals
-** Dependabot|Dependabot
-* Reference
-** Module|Module
-** Upgrading|Upgrading
-** https://github.com/femiwiki/terraform-github-tacos/releases|Releases
+<!-- Links go through Special:MyLanguage, so a reader on a translated page stays in that language.
+     The labels are messages, translated as MediaWiki:Sidebar-<key>/<lang>. -->
+* sidebar-guide
+** Special:MyLanguage/Get started|sidebar-get-started
+** Special:MyLanguage/Runs|sidebar-runs
+** Special:MyLanguage/Apply-before-merge|sidebar-apply-before-merge
+** Special:MyLanguage/Auto apply|sidebar-auto-apply
+** Special:MyLanguage/Approvals|sidebar-approvals
+** Special:MyLanguage/Dependabot|sidebar-dependabot
+* sidebar-reference
+** Special:MyLanguage/Module|sidebar-module
+** Special:MyLanguage/Upgrading|sidebar-upgrading
+** https://github.com/femiwiki/terraform-github-tacos/releases|sidebar-releases

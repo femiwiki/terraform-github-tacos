@@ -1,5 +1,9 @@
-The inputs and outputs of the module that [[Approvals]] uses.
+<languages />
+<translate>
+<!--T:1-->
+The inputs and outputs of the module that [[Special:MyLanguage/Approvals|Approvals]] uses.
 
+<!--T:2-->
 == Inputs ==
 {| class="wikitable"
 ! Name !! Default !! Description
@@ -19,13 +23,16 @@ The inputs and outputs of the module that [[Approvals]] uses.
 | <code>can_admins_bypass</code> || <code>false</code> || Whether repository administrators may start an apply without an approval.
 |}
 
+<!--T:3-->
 At least one reviewer team or user is required, unless every environment is in <code>auto_apply</code>.
 
+<!--T:4-->
 == Outputs ==
 {| class="wikitable"
 ! Name !! Description
 |-
 | <code>environments</code> || The environments, by workspace.
 |}
+</translate>
 
 {{Prevnext}}

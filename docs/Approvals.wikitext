@@ -1,4 +1,8 @@
+<languages />
+<translate>
+<!--T:1-->
 The module creates one GitHub environment per workspace, each with required reviewers unless it is in <code>auto_apply</code>. The action's <code>pending</code> step refuses an environment without them unless its workspace is in the step's <code>auto-apply</code>, so an apply never starts unapproved by mistake.
+</translate>
 
 <syntaxhighlight lang="hcl" copy>
 module "tacos" {
@@ -10,6 +14,8 @@ module "tacos" {
 }
 </syntaxhighlight>
 
+<translate>
+<!--T:2-->
 == Permissions ==
 {| class="wikitable"
 ! <code>step</code> !! Permissions
@@ -24,5 +30,6 @@ module "tacos" {
 |-
 | <code>collapse</code> || <code>pull-requests: write</code>
 |}
+</translate>
 
 {{Prevnext}}
