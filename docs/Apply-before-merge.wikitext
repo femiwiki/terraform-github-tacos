@@ -33,7 +33,7 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: femiwiki/terraform-github-tacos@v0.4.0  # x-release-please-version
+      - uses: femiwiki/terraform-github-tacos@v0.5.0  # x-release-please-version
         with:
           step: plan
           workspace: ${{ matrix.workspace }}
@@ -49,7 +49,7 @@ jobs:
         with:
           path: ${{ matrix.workspace }}
 
-      - uses: femiwiki/terraform-github-tacos@v0.4.0  # x-release-please-version
+      - uses: femiwiki/terraform-github-tacos@v0.5.0  # x-release-please-version
         with:
           step: changes
           workspace: ${{ matrix.workspace }}
@@ -57,7 +57,7 @@ jobs:
           plan-json: ${{ steps.plan.outputs.json_plan_path }}
           plan-text: ${{ steps.plan.outputs.text_plan_path }}
 
-      - uses: femiwiki/terraform-github-tacos@v0.4.0  # x-release-please-version
+      - uses: femiwiki/terraform-github-tacos@v0.5.0  # x-release-please-version
         if: always()
         with:
           step: collapse
@@ -75,7 +75,7 @@ jobs:
     outputs:
       workspaces: ${{ steps.pending.outputs.workspaces }}
     steps:
-      - uses: femiwiki/terraform-github-tacos@v0.4.0  # x-release-please-version
+      - uses: femiwiki/terraform-github-tacos@v0.5.0  # x-release-please-version
         id: pending
         with:
           step: pending
@@ -97,7 +97,7 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: femiwiki/terraform-github-tacos@v0.4.0  # x-release-please-version
+      - uses: femiwiki/terraform-github-tacos@v0.5.0  # x-release-please-version
         id: approver
         with:
           step: apply
@@ -116,7 +116,7 @@ jobs:
           path: ${{ matrix.workspace }}
           auto_approve: ${{ github.event_name == 'workflow_dispatch' }}
 
-      - uses: femiwiki/terraform-github-tacos@v0.4.0  # x-release-please-version
+      - uses: femiwiki/terraform-github-tacos@v0.5.0  # x-release-please-version
         if: always()
         with:
           step: result
@@ -134,7 +134,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions: {}
     steps:
-      - uses: femiwiki/terraform-github-tacos@v0.4.0  # x-release-please-version
+      - uses: femiwiki/terraform-github-tacos@v0.5.0  # x-release-please-version
         with:
           step: gate
           needs: ${{ toJSON(needs) }}
@@ -151,7 +151,7 @@ jobs:
       deployments: read
       pull-requests: write
     steps:
-      - uses: femiwiki/terraform-github-tacos@v0.4.0  # x-release-please-version
+      - uses: femiwiki/terraform-github-tacos@v0.5.0  # x-release-please-version
         with:
           step: merge
           apply-before-merge: "true"
