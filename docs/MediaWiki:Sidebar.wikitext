@@ -4,6 +4,7 @@
 ** Apply-before-merge|Apply-before-merge
 ** Auto apply|Auto apply
 ** Approvals|Approvals
+** Dependabot|Dependabot
 * Reference
 ** Module|Module
 ** Upgrading|Upgrading
