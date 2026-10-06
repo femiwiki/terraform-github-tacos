@@ -25,6 +25,9 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <link rel="stylesheet" href="../assets/ext.Wikven.styles.css">
 <link rel="stylesheet" href="../assets/ext.uls.pt.css">
 <link rel="canonical" href="https://femiwiki.github.io/terraform-github-tacos/Apply-before-merge.html">
+<link rel="alternate" hreflang="en" href="https://femiwiki.github.io/terraform-github-tacos/Apply-before-merge.html">
+<link rel="alternate" hreflang="ko" href="https://femiwiki.github.io/terraform-github-tacos/Apply-before-merge/ko.html">
+<link rel="alternate" hreflang="x-default" href="https://femiwiki.github.io/terraform-github-tacos/Apply-before-merge.html">
 <link rel="stylesheet" href="../assets/site.styles.css"></head>
 <body class="skin--responsive skin-vector skin-vector-search-vue mediawiki ltr sitedir-ltr mw-hide-empty-elt ns-0 ns-subject mw-editable page-Apply-before-merge_en rootpage-Apply-before-merge_en skin-vector-2022 action-view">
 <div id="mw-aria-live-region" class="mw-aria-live-region" aria-live="polite"></div><a class="mw-jump-link" href="#bodyContent">Jump to content</a>
@@ -81,7 +84,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 		
 		<ul class="vector-menu-content-list">
 			
-			<li id="n-sidebar-module" class="mw-list-item"><a href="../Module/en.html"><span>Module</span></a></li><li id="n-sidebar-upgrading" class="mw-list-item"><a href="../Upgrading/en.html"><span>Upgrading</span></a></li><li id="n-sidebar-releases" class="mw-list-item"><a rel="nofollow" href="https://github.com/femiwiki/terraform-github-tacos/releases"><span>Releases</span></a></li>
+			<li id="n-sidebar-module" class="mw-list-item"><a href="../Module/en.html"><span>Module</span></a></li><li id="n-sidebar-upgrading" class="mw-list-item"><a href="../Upgrading.html"><span>Upgrading</span></a></li><li id="n-sidebar-releases" class="mw-list-item"><a rel="nofollow" href="https://github.com/femiwiki/terraform-github-tacos/releases"><span>Releases</span></a></li>
 		</ul>
 		
 	</div>
@@ -492,10 +495,11 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 					<div id="contentSub"><div id="mw-content-subtitle"></div></div>
 					
 					
-					<div id="mw-content-text" class="mw-body-content"><div class="mw-pt-translate-header noprint" dir="ltr" lang="en"><a href="https://github.com/femiwiki/terraform-github-tacos/edit/main/docs/Apply-before-merge/en.wikitext" title="Special:Translate">Translate this page</a></div><div class="mw-content-ltr mw-parser-output" lang="en" dir="ltr"><div class="mw-pt-languages noprint navigation-not-searchable" lang="en" dir="ltr"><div class="mw-pt-languages-label">Other languages:</div><ul class="mw-pt-languages-list"><li><a href="../Apply-before-merge.html" class="mw-pt-languages-ui mw-pt-progress mw-pt-progress--complete" title="Apply-before-merge (100% translated)" lang="en" dir="ltr">English</a></li></ul></div>
+					<div id="mw-content-text" class="mw-body-content"><div class="mw-pt-translate-header noprint" dir="ltr" lang="en"><a href="https://github.com/femiwiki/terraform-github-tacos/edit/main/docs/Apply-before-merge/en.wikitext" title="Special:Translate">Translate this page</a></div><div class="mw-content-ltr mw-parser-output" lang="en" dir="ltr"><div class="mw-pt-languages noprint navigation-not-searchable" lang="en" dir="ltr"><div class="mw-pt-languages-label">Other languages:</div><ul class="mw-pt-languages-list"><li><a href="../Apply-before-merge.html" class="mw-pt-languages-ui mw-pt-progress mw-pt-progress--complete" title="Apply-before-merge (100% translated)" lang="en" dir="ltr">English</a></li>
+<li><a href="../Apply-before-merge/ko.html" class="mw-pt-progress mw-pt-progress--complete" title="머지 전 적용 (100% translated)" lang="ko" dir="ltr">한국어</a></li></ul></div>
 <p>With <code>apply-before-merge</code>, the pull request's own run waits for the approval, applies, and merges. The default branch then holds only what was applied, and a pull request that does not merge after its apply leaves production ahead of it, so the <code>merge</code> job fails. This is the order <a rel="nofollow" class="external text" href="https://www.runatlantis.io/">Atlantis</a> and <a rel="nofollow" class="external text" href="https://github.com/diggerhq/digger">digger</a> use, and it is usually called apply-before-merge.
 </p>
-<style data-mw-deduplicate="TemplateStyles:r31">.mw-parser-output .tacos-note{margin:1em 0;padding:0.5em 1em;border-left:4px solid var(--color-progressive);background-color:var(--color-surface-2)}</style><div class="tacos-note">
+<style data-mw-deduplicate="TemplateStyles:r43">.mw-parser-output .tacos-note{margin:1em 0;padding:0.5em 1em;border-left:4px solid var(--color-progressive);background-color:var(--color-surface-2)}</style><div class="tacos-note">
 <p><b>Other names</b>
 </p>
 <ul><li>Terrateam calls the two orders <a rel="nofollow" class="external text" href="https://docs.terrateam.io/getting-started/plan-and-apply">pre-merge and post-merge</a>.</li>
@@ -658,7 +662,7 @@ A pull request behind its base may be planned and applied unless <code>require-u
 <p>In a <a rel="nofollow" class="external text" href="https://docs.github.com/en/pull-requests/get-started/about-stacked-prs">native stack</a>, which GitHub has in public preview, approving a pull request does what merging it does: the bottom one applies and merges alone, and one higher up applies its own plan, which carries every pull request below it, and merges the whole stack. Higher up, <code>pending</code> fails when that plan changes more than one workspace, since their applies run side by side and one may need what another has yet to apply. Apply such a stack from the bottom: once the lowest pull request merges, GitHub retargets the next one at the default branch, and its next run plans it from there.
 </p><p>A pull request that targets another pull request's branch without being in a native stack is never applied.
 </p>
-<style data-mw-deduplicate="TemplateStyles:r33">.mw-parser-output .tacos-prevnext{display:flex;margin-top:2em}.mw-parser-output .tacos-prevnext-next{margin-left:auto}</style><div class="tacos-prevnext"><div class="tacos-prevnext-prev">&#8592;&#160;<a href="../Runs/en.html" title="Special:MyLanguage/Runs">Runs</a></div><div class="tacos-prevnext-next"><a href="../Auto_apply/en.html" title="Special:MyLanguage/Auto apply">Auto apply</a>&#160;&#8594;</div></div>
+<style data-mw-deduplicate="TemplateStyles:r45">.mw-parser-output .tacos-prevnext{display:flex;margin-top:2em}.mw-parser-output .tacos-prevnext-next{margin-left:auto}</style><div class="tacos-prevnext"><div class="tacos-prevnext-prev">&#8592;&#160;<a href="../Runs/en.html" title="Special:MyLanguage/Runs">Runs</a></div><div class="tacos-prevnext-next"><a href="../Auto_apply/en.html" title="Special:MyLanguage/Auto apply">Auto apply</a>&#160;&#8594;</div></div>
 
 </div>
 <div class="printfooter" data-nosnippet="">Retrieved from "<a dir="ltr" href="https://femiwiki.github.io/terraform-github-tacos/Apply-before-merge/en.html">https://femiwiki.github.io/terraform-github-tacos/Apply-before-merge/en.html</a>"</div></div>

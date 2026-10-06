@@ -26,6 +26,9 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <link rel="stylesheet" href="./assets/ext.Wikven.styles.css">
 <link rel="stylesheet" href="./assets/ext.uls.pt.css">
 <link rel="canonical" href="https://femiwiki.github.io/terraform-github-tacos/Auto_apply.html">
+<link rel="alternate" hreflang="en" href="https://femiwiki.github.io/terraform-github-tacos/Auto_apply.html">
+<link rel="alternate" hreflang="ko" href="https://femiwiki.github.io/terraform-github-tacos/Auto_apply/ko.html">
+<link rel="alternate" hreflang="x-default" href="https://femiwiki.github.io/terraform-github-tacos/Auto_apply.html">
 <link rel="stylesheet" href="./assets/site.styles.css"></head>
 <body class="skin--responsive skin-vector skin-vector-search-vue mediawiki ltr sitedir-ltr mw-hide-empty-elt ns-0 ns-subject mw-editable page-Auto_apply rootpage-Auto_apply skin-vector-2022 action-view">
 <div id="mw-aria-live-region" class="mw-aria-live-region" aria-live="polite"></div><a class="mw-jump-link" href="#bodyContent">Jump to content</a>
@@ -433,7 +436,8 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 					<div id="contentSub"><div id="mw-content-subtitle"></div></div>
 					
 					
-					<div id="mw-content-text" class="mw-body-content"><div class="mw-content-ltr mw-parser-output" lang="en" dir="ltr"><div class="mw-pt-languages noprint navigation-not-searchable" lang="en" dir="ltr"><div class="mw-pt-languages-label">Other languages:</div><ul class="mw-pt-languages-list"><li><span class="mw-pt-languages-ui mw-pt-languages-selected mw-pt-progress mw-pt-progress--complete" lang="en" dir="ltr">English</span></li></ul></div>
+					<div id="mw-content-text" class="mw-body-content"><div class="mw-content-ltr mw-parser-output" lang="en" dir="ltr"><div class="mw-pt-languages noprint navigation-not-searchable" lang="en" dir="ltr"><div class="mw-pt-languages-label">Other languages:</div><ul class="mw-pt-languages-list"><li><span class="mw-pt-languages-ui mw-pt-languages-selected mw-pt-progress mw-pt-progress--complete" lang="en" dir="ltr">English</span></li>
+<li><a href="./Auto_apply/ko.html" class="mw-pt-progress mw-pt-progress--complete" title="자동 적용 (100% translated)" lang="ko" dir="ltr">한국어</a></li></ul></div>
 <p>A workspace applies without an approval when its environment has no required reviewers, as with HCP Terraform's auto apply. GitHub decides whether the apply job waits, so this is set on the environment: create it without reviewers, with the module's <code>auto_apply</code>, and list the workspace in the <code>pending</code> step's <code>auto-apply</code> input. The list is what lets <code>pending</code> tell such an environment from one created by mistake, which it refuses. Every other workspace waits for its reviewers.
 </p>
 <div class="mw-highlight mw-highlight-lang-yaml mw-content-ltr" dir="ltr"><pre><span></span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">femiwiki/terraform-github-tacos@v0.5.0</span><span class="w">  </span><span class="c1"># x-release-please-version</span>
@@ -444,7 +448,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 </pre></div>
 <p>After the merge, an auto-apply workspace applies as soon as the push is planned, and the apply still goes ahead only when its fresh plan matches that one. With <code>apply-before-merge</code> it applies as soon as the pull request is planned, before anyone has reviewed it, so give auto apply only to workspaces that anyone who can push a branch may change.
 </p>
-<style data-mw-deduplicate="TemplateStyles:r33">.mw-parser-output .tacos-prevnext{display:flex;margin-top:2em}.mw-parser-output .tacos-prevnext-next{margin-left:auto}</style><div class="tacos-prevnext"><div class="tacos-prevnext-prev">&#8592;&#160;<a href="./Apply-before-merge.html" title="Special:MyLanguage/Apply-before-merge">Apply-before-merge</a></div><div class="tacos-prevnext-next"><a href="./Approvals.html" title="Special:MyLanguage/Approvals">Approvals</a>&#160;&#8594;</div></div>
+<style data-mw-deduplicate="TemplateStyles:r45">.mw-parser-output .tacos-prevnext{display:flex;margin-top:2em}.mw-parser-output .tacos-prevnext-next{margin-left:auto}</style><div class="tacos-prevnext"><div class="tacos-prevnext-prev">&#8592;&#160;<a href="./Apply-before-merge.html" title="Special:MyLanguage/Apply-before-merge">Apply-before-merge</a></div><div class="tacos-prevnext-next"><a href="./Approvals.html" title="Special:MyLanguage/Approvals">Approvals</a>&#160;&#8594;</div></div>
 
 </div>
 <div class="printfooter" data-nosnippet="">Retrieved from "<a dir="ltr" href="https://femiwiki.github.io/terraform-github-tacos/Auto_apply.html">https://femiwiki.github.io/terraform-github-tacos/Auto_apply.html</a>"</div></div>
