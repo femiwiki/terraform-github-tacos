@@ -43,8 +43,13 @@ local function label(page, lang)
 	return page
 end
 
-local function link(page, lang, before, after)
-	return before .. '[[Special:MyLanguage/' .. page .. '|' .. label(page, lang) .. ']]' .. after
+-- A card for the page on one side: "Previous" or "Next" over the page's title
+local function card(side, page, lang)
+	local code = lang ~= '' and lang:sub(2) or mw.language.getContentLanguage():getCode()
+	local word = mw.message.new('tacos-prevnext-' .. side):inLanguage(code):plain()
+	return '<div class="tacos-prevnext-' .. side .. '">[[Special:MyLanguage/' .. page
+		.. '|<span class="tacos-prevnext-label">' .. word .. '</span>'
+		.. '<span class="tacos-prevnext-title">' .. label(page, lang) .. '</span>]]</div>'
 end
 
 -- The title of the page named by the first argument, in the language of the page calling it
@@ -63,10 +68,10 @@ function p.row(frame)
 	local lang = frame:preprocess('{{#translation:}}')
 	local out = {}
 	if pages[i - 1] then
-		out[#out + 1] = '<div class="tacos-prevnext-prev">' .. link(pages[i - 1], lang, '&larr;&nbsp;', '') .. '</div>'
+		out[#out + 1] = card('prev', pages[i - 1], lang)
 	end
 	if pages[i + 1] then
-		out[#out + 1] = '<div class="tacos-prevnext-next">' .. link(pages[i + 1], lang, '', '&nbsp;&rarr;') .. '</div>'
+		out[#out + 1] = card('next', pages[i + 1], lang)
 	end
 	return table.concat(out)
 end
