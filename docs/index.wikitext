@@ -2,8 +2,9 @@
 <div class="tacos-hero-title">terraform-github-tacos</div>
 <div class="tacos-hero-lead">Plan OpenTofu in the pull request. Merge it, and approve the deployment to apply it.</div>
 <div class="tacos-hero-actions">
-<span class="tacos-button tacos-button-primary">[[Get started]]</span>
-<span class="tacos-button">[https://github.com/femiwiki/terraform-github-tacos GitHub]</span>
+<!-- The empty title hides the link's own title, which only repeats the label -->
+<span class="tacos-button tacos-button-primary">[[Get started|<span title="">Get started</span>]]</span>
+<span class="tacos-button tacos-button-github plainlinks">[https://github.com/femiwiki/terraform-github-tacos <span>GitHub</span>]</span>
 </div>
 </div>
 
