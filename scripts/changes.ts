@@ -15,7 +15,7 @@ export default async ({ core, env }: { core: typeof Core; env: NodeJS.ProcessEnv
     // A matrix job has one set of outputs for all of its legs, so pending reads
     // this annotation from each leg's check run instead
     core.notice(workspace, { title: MARKER })
-    core.info(`The plan has changes, so ${workspace} waits for its environment to approve them.`)
+    core.info(`The plan has changes for ${workspace} to apply.`)
   } else {
     core.info('The plan is empty.')
   }
@@ -25,7 +25,8 @@ export default async ({ core, env }: { core: typeof Core; env: NodeJS.ProcessEnv
   addCountsTable(core.summary, counts)
   addPlanText(core.summary, env.PLAN_TEXT)
   if (apply) {
-    core.summary.addRaw(`Waiting for the \`${workspace}\` environment to approve the apply.\n`)
+    // Whether and for whom it waits is pending's to say, which knows auto-apply and apply-before-merge
+    core.summary.addRaw('Changes to apply. The run\'s To apply summary says who approves them, and when.\n')
   } else {
     core.summary.addRaw('Nothing to apply.\n')
   }
