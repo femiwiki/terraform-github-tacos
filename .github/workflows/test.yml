@@ -31,10 +31,20 @@ jobs:
     timeout-minutes: 5
     permissions:
       contents: read
+      # The plan step reads which files the pull request changes
+      pull-requests: read
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
         with:
           persist-credentials: false
+
+      # Every pull request changes some file, so this plans whatever it changed
+      - id: plan
+        uses: ./
+        with:
+          step: plan
+          workspace: test
+          shared-paths: "**"
 
       - uses: ./
         with:
@@ -76,11 +86,12 @@ jobs:
 
       - name: The outputs came through
         env:
+          PLAN: ${{ steps.plan.outputs.plan }}
           APPLY: ${{ steps.changes.outputs.apply }}
           RESULT: ${{ steps.result.outputs.result }}
         run: |
-          echo "apply=$APPLY result=$RESULT"
-          [ "$APPLY" = true ] && [ "$RESULT" = applied ]
+          echo "plan=$PLAN apply=$APPLY result=$RESULT"
+          [ "$PLAN" = true ] && [ "$APPLY" = true ] && [ "$RESULT" = applied ]
 
   collapse:
     runs-on: ubuntu-latest
