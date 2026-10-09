@@ -4,13 +4,13 @@
 A workspace applies without an approval when its environment has no required reviewers, as with HCP Terraform's auto apply. GitHub decides whether the apply job waits, so this is set on the environment: create it without reviewers, with the module's <code>auto_apply</code>, and list the workspace in the <code>pending</code> step's <code>auto-apply</code> input. The list is what lets <code>pending</code> tell such an environment from one created by mistake, which it refuses. Every other workspace waits for its reviewers.
 </translate>
 
-<syntaxhighlight lang="yaml">
-      - uses: femiwiki/terraform-github-tacos@v0.6.0  # x-release-please-version
+{{#tag:syntaxhighlight|<nowiki>
+      - uses: femiwiki/terraform-github-tacos@v</nowiki>{{Version}}<nowiki>
         id: pending
         with:
           step: pending
           auto-apply: dns
-</syntaxhighlight>
+</nowiki>|lang=yaml}}
 
 <translate>
 <!--T:2-->
