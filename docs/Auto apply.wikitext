@@ -5,7 +5,7 @@ A workspace applies without an approval when its environment has no required rev
 </translate>
 
 <syntaxhighlight lang="yaml">
-      - uses: femiwiki/terraform-github-tacos@v0.5.0  # x-release-please-version
+      - uses: femiwiki/terraform-github-tacos@v0.6.0  # x-release-please-version
         id: pending
         with:
           step: pending
