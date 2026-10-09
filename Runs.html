@@ -72,7 +72,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <ul class="citizen-siteStats" role="list" aria-label="Statistics">
 	<li class="citizen-siteStats__item" id="citizen-siteStats__item--articles" role="listitem">
 		<span class="citizen-ui-icon mw-ui-icon-article mw-ui-icon-wikimedia-article" title="articles"></span>
-		<span>18</span>
+		<span>22</span>
 		<span class="citizen-siteStats__label">articles</span>
 	</li>
 	<li class="citizen-siteStats__item" id="citizen-siteStats__item--images" role="listitem">
@@ -87,7 +87,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 	</li>
 	<li class="citizen-siteStats__item" id="citizen-siteStats__item--edits" role="listitem">
 		<span class="citizen-ui-icon mw-ui-icon-edit mw-ui-icon-wikimedia-edit" title="edits"></span>
-		<span>209</span>
+		<span>213</span>
 		<span class="citizen-siteStats__label">edits</span>
 	</li>
 </ul>
@@ -418,7 +418,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <tr>
 <td><code>plan</code></td>
 <td>plan, before planning</td>
-<td>With <code>require-up-to-date</code>, refuses a pull request that is behind its base.
+<td>With <code>require-up-to-date</code>, refuses a pull request that is behind its base. Restores the providers dflook downloads, cached by the workspace's <code>.terraform.lock.hcl</code>, and saves them when the job ends.
 </td></tr>
 <tr>
 <td><code>changes</code></td>
@@ -433,7 +433,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <tr>
 <td><code>apply</code></td>
 <td>apply, first step</td>
-<td>Records who approved, or that nobody had to. On a push, refuses unless the commit is still the head of the branch. On a pull request, refuses unless <code>apply-before-merge</code>, and then refuses when the pull request moved or merged, targets another branch outside a native stack, or with <code>require-up-to-date</code> fell behind.
+<td>Restores the providers the plan job cached, so the apply does not download them again. Records who approved, or that nobody had to. On a push, refuses unless the commit is still the head of the branch. On a pull request, refuses unless <code>apply-before-merge</code>, and then refuses when the pull request moved or merged, targets another branch outside a native stack, or with <code>require-up-to-date</code> fell behind.
 </td></tr>
 <tr>
 <td><code>result</code></td>
@@ -506,9 +506,9 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <div id="citizen-page-aside-lastmod" class="citizen-page-aside__panel citizen-page-aside__panel--lastmod" data-order="10">
 	<div id="citizen-page-aside-lastmod-heading" class="citizen-page-aside__heading">Last modified</div>
 	<div class="citizen-page-aside__body">
-<a class="citizen-page-aside__link cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" href="https://github.com/femiwiki/terraform-github-tacos/commits/main/docs/Runs.wikitext" title="This page was last edited on 6 October 2026, at 12:38.">
+<a class="citizen-page-aside__link cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" href="https://github.com/femiwiki/terraform-github-tacos/commits/main/docs/Runs.wikitext" title="This page was last edited on 9 October 2026, at 14:48.">
 	<span class="citizen-ui-icon mw-ui-icon-history mw-ui-icon-wikimedia-history"></span>
-	<time id="citizen-page-aside-lastmod-time" datetime="2026-10-06T12:38:17Z">6 October 2026</time>
+	<time id="citizen-page-aside-lastmod-time" datetime="2026-10-09T14:48:06Z">9 October 2026</time>
 </a>
 </div>
 </div>
@@ -616,7 +616,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 					<div class="page-info">
 		    <section id="footer-info-lastmod" class="page-info__item">
 		        <div class="page-info__label">Last modified</div>
-		        <div class="page-info__text"> This page was last edited on 6 October 2026, at 12:38.</div>
+		        <div class="page-info__text"> This page was last edited on 9 October 2026, at 14:48.</div>
 		    </section>
 		</div>
 </footer>		</div>
