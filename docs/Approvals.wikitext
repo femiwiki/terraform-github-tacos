@@ -20,7 +20,7 @@ module "tacos" {
 {| class="wikitable"
 ! <code>step</code> !! Permissions
 |-
-| <code>plan</code> || <code>pull-requests: read</code>
+| <code>plan</code> || <code>contents: read</code>, <code>pull-requests: read</code>
 |-
 | <code>pending</code> || <code>actions: write</code>, <code>checks: read</code>; also <code>pull-requests: read</code> with <code>apply-before-merge</code>
 |-
