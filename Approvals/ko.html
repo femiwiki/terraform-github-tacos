@@ -38,7 +38,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <a class="mw-jump-link citizen-jump-link" href="#bodyContent">본문으로 이동</a>
 <header class="mw-header citizen-header">
 	<div class="citizen-header__logo">
-		<a href="../index/ko.html" class="mw-logo citizen-cdx-button--size-large cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--icon-only cdx-button--weight-quiet" title="대문으로 가기">
+		<a href="../index.html" class="mw-logo citizen-cdx-button--size-large cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--icon-only cdx-button--weight-quiet" title="대문으로 가기">
 			<img class="mw-logo-icon" src="../assets/img-e90bfaeac7a3.svg 
 " alt="" aria-hidden="true" height="32" width="32">
 			<span class="citizen-ui-icon mw-ui-icon-home mw-ui-icon-wikimedia-home"></span>
@@ -63,7 +63,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 		<div id="citizen-drawer__card" class="citizen-drawer__card citizen-menu__card">
 			<div class="citizen-menu__card-content">
 				<div class="citizen-drawer__header">
-					<a href="../index/ko.html" class="mw-logo citizen-drawer__logo" title="대문으로 가기">
+					<a href="../index.html" class="mw-logo citizen-drawer__logo" title="대문으로 가기">
 					<img class="mw-logo-icon" src="../assets/img-e90bfaeac7a3.svg 
 " alt="" aria-hidden="true" height="80" width="80" loading="lazy">
 				</a>
@@ -72,7 +72,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <ul class="citizen-siteStats" role="list" aria-label="통계">
 	<li class="citizen-siteStats__item" id="citizen-siteStats__item--articles" role="listitem">
 		<span class="citizen-ui-icon mw-ui-icon-article mw-ui-icon-wikimedia-article" title="문서"></span>
-		<span>22</span>
+		<span>18</span>
 		<span class="citizen-siteStats__label">문서</span>
 	</li>
 	<li class="citizen-siteStats__item" id="citizen-siteStats__item--images" role="listitem">
@@ -87,7 +87,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 	</li>
 	<li class="citizen-siteStats__item" id="citizen-siteStats__item--edits" role="listitem">
 		<span class="citizen-ui-icon mw-ui-icon-edit mw-ui-icon-wikimedia-edit" title="편집"></span>
-		<span>213</span>
+		<span>209</span>
 		<span class="citizen-siteStats__label">편집</span>
 	</li>
 </ul>
@@ -129,7 +129,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 		
 		<ul class="citizen-menu__content-list">
 			
-			<li id="n-sidebar-module" class="mw-list-item"><a href="../Module/ko.html"><span>모듈</span></a></li><li id="n-sidebar-upgrading" class="mw-list-item"><a href="../Upgrading/ko.html"><span>업그레이드</span></a></li><li id="n-sidebar-releases" class="mw-list-item"><a rel="nofollow" href="https://github.com/femiwiki/terraform-github-tacos/releases"><span>릴리스</span></a></li>
+			<li id="n-sidebar-module" class="mw-list-item"><a href="../Module/ko.html"><span>모듈</span></a></li><li id="n-sidebar-upgrading" class="mw-list-item"><a href="../Upgrading.html"><span>업그레이드</span></a></li><li id="n-sidebar-releases" class="mw-list-item"><a rel="nofollow" href="https://github.com/femiwiki/terraform-github-tacos/releases"><span>릴리스</span></a></li>
 		</ul>
 		
 	</div></nav>
@@ -407,7 +407,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <p>모듈은 워크스페이스마다 GitHub 환경을 하나씩 만들고, <code>auto_apply</code>에 있는 것을 빼면 모두 필수 리뷰어를 둡니다. 액션의 <code>pending</code> 스텝은 필수 리뷰어가 없는 환경을 거부합니다. 그 워크스페이스가 스텝의 <code>auto-apply</code>에 있을 때만 예외라서, 실수로 승인 없이 적용이 시작되는 일은 없습니다.
 </p>
 <div class="mw-highlight mw-highlight-lang-hcl mw-content-ltr mw-highlight-copy" dir="ltr"><pre><span></span><span class="kr">module</span><span class="w"> </span><span class="nv">"tacos"</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="na">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"github.com/femiwiki/terraform-github-tacos?ref=v0.5.0"</span><span class="c1">  # x-release-please-version</span>
+<span class="w">  </span><span class="na">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"github.com/femiwiki/terraform-github-tacos?ref=v0.6.0"</span><span class="c1">  # x-release-please-version</span>
 
 <span class="w">  </span><span class="na">repository</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s2">"infra"</span>
 <span class="w">  </span><span class="na">environments</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">"network", "dns"</span><span class="p">]</span>
