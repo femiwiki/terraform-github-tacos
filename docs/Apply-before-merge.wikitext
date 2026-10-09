@@ -14,7 +14,7 @@ With <code>apply-before-merge</code>, the pull request's own run waits for the a
 A pull request behind its base may be planned and applied unless <code>require-up-to-date</code> is <code>"true"</code>. The plan runs on the merge commit, so a change on the base to the same workspace makes the fresh plan differ and stops the apply, and a change to another workspace does not.
 </translate>
 
-<syntaxhighlight lang="yaml" copy>
+{{#tag:syntaxhighlight|<nowiki>
 name: tofu
 on:
   pull_request:
@@ -39,7 +39,7 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: femiwiki/terraform-github-tacos@v0.6.0  # x-release-please-version
+      - uses: femiwiki/terraform-github-tacos@v</nowiki>{{Version}}<nowiki>
         with:
           step: plan
           workspace: ${{ matrix.workspace }}
@@ -55,7 +55,7 @@ jobs:
         with:
           path: ${{ matrix.workspace }}
 
-      - uses: femiwiki/terraform-github-tacos@v0.6.0  # x-release-please-version
+      - uses: femiwiki/terraform-github-tacos@v</nowiki>{{Version}}<nowiki>
         with:
           step: changes
           workspace: ${{ matrix.workspace }}
@@ -63,14 +63,14 @@ jobs:
           plan-json: ${{ steps.plan.outputs.json_plan_path }}
           plan-text: ${{ steps.plan.outputs.text_plan_path }}
 
-      - uses: femiwiki/terraform-github-tacos@v0.6.0  # x-release-please-version
+      - uses: femiwiki/terraform-github-tacos@v</nowiki>{{Version}}<nowiki>
         if: always()
         with:
           step: collapse
 
   pending:
     needs: plan
-    if: >-
+    if: </nowiki>><nowiki>-
       !cancelled() && (github.event_name == 'workflow_dispatch'
       || (needs.plan.result == 'success' && github.event.pull_request.head.repo.full_name == github.repository))
     runs-on: ubuntu-latest
@@ -81,7 +81,7 @@ jobs:
     outputs:
       workspaces: ${{ steps.pending.outputs.workspaces }}
     steps:
-      - uses: femiwiki/terraform-github-tacos@v0.6.0  # x-release-please-version
+      - uses: femiwiki/terraform-github-tacos@v</nowiki>{{Version}}<nowiki>
         id: pending
         with:
           step: pending
@@ -103,7 +103,7 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: femiwiki/terraform-github-tacos@v0.6.0  # x-release-please-version
+      - uses: femiwiki/terraform-github-tacos@v</nowiki>{{Version}}<nowiki>
         id: approver
         with:
           step: apply
@@ -122,7 +122,7 @@ jobs:
           path: ${{ matrix.workspace }}
           auto_approve: ${{ github.event_name == 'workflow_dispatch' }}
 
-      - uses: femiwiki/terraform-github-tacos@v0.6.0  # x-release-please-version
+      - uses: femiwiki/terraform-github-tacos@v</nowiki>{{Version}}<nowiki>
         if: always()
         with:
           step: result
@@ -140,14 +140,14 @@ jobs:
     runs-on: ubuntu-latest
     permissions: {}
     steps:
-      - uses: femiwiki/terraform-github-tacos@v0.6.0  # x-release-please-version
+      - uses: femiwiki/terraform-github-tacos@v</nowiki>{{Version}}<nowiki>
         with:
           step: gate
           needs: ${{ toJSON(needs) }}
 
   merge:
     needs: [pending, apply, gate]
-    if: >-
+    if: </nowiki>><nowiki>-
       !cancelled() && needs.gate.result == 'success'
       && (needs.apply.result == 'success' || needs.pending.outputs.workspaces == '[]')
     runs-on: ubuntu-latest
@@ -157,11 +157,11 @@ jobs:
       deployments: read
       pull-requests: write
     steps:
-      - uses: femiwiki/terraform-github-tacos@v0.6.0  # x-release-please-version
+      - uses: femiwiki/terraform-github-tacos@v</nowiki>{{Version}}<nowiki>
         with:
           step: merge
           apply-before-merge: "true"
-</syntaxhighlight>
+</nowiki>|lang=yaml|copy=1}}
 
 <span id="Stacked pull requests"></span>
 <translate>
