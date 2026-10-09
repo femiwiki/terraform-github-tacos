@@ -98,6 +98,20 @@ runs:
         echo "::error::step must be plan, changes, pending, apply, result, gate, merge or collapse, not '$STEP'."
         exit 1
 
+    - id: providers
+      if: inputs.step == 'plan' || inputs.step == 'apply'
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        WORKSPACE: ${{ inputs.workspace }}
+      run: '"$GITHUB_ACTION_PATH/scripts/providers.sh"'
+
+    - if: steps.providers.outputs.key
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
+      with:
+        path: ${{ steps.providers.outputs.path }}
+        key: ${{ steps.providers.outputs.key }}
+
     - if: inputs.step == 'plan'
       shell: bash
       env:
