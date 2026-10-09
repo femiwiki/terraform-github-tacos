@@ -44,12 +44,12 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: chaotic-ground/wikven/actions/bake@248de7419f63cf3653400adb11425784c10751bc  # v1.3.0
+      - uses: chaotic-ground/wikven/actions/bake@d1234262d2fc2b00bad29487eb019a09ee7c3b24  # v1.4.1
         with:
           source: docs
           output: dist
 
       # Fails on a source page Translate cannot read; a translation that is behind is only annotated
-      - uses: chaotic-ground/wikven/actions/check-translations@248de7419f63cf3653400adb11425784c10751bc  # v1.3.0
+      - uses: chaotic-ground/wikven/actions/check-translations@d1234262d2fc2b00bad29487eb019a09ee7c3b24  # v1.4.1
         with:
           source: docs
