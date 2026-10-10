@@ -7,18 +7,18 @@
 <!--T:2 @da853d2b-->
 기본값은 HCP Terraform과 같은 순서로, 머지한 뒤에 적용합니다. 풀 리퀘스트에서는 플랜만 하고, 머지되면 기본 브랜치로의 푸시가 다시 플랜한 다음 환경이 승인하면 적용합니다. <code>auto-apply</code>에 있는 워크스페이스는 바로 적용합니다. <code>pending</code>, <code>apply</code>, <code>merge</code> 스텝에 <code>apply-before-merge</code>를 <code>"true"</code>로 주면 풀 리퀘스트를 먼저 적용하고, 적용이 성공하면 머지합니다.
 
-<!--T:3 @75bc65d1-->
+<!--T:3 @c3bc362d-->
 == 스텝 ==
 {| class="wikitable"
 ! <code>step</code> !! 잡 !! 하는 일
 |-
-| <code>plan</code> || plan, 플랜 전 || 풀 리퀘스트가 워크스페이스 디렉터리, 이 액션을 부른 워크플로, <code>shared-paths</code> 중 어느 것도 바꾸지 않으면 <code>plan</code> 출력을 <code>"false"</code>로 냅니다. 뒤 스텝은 <code>if: steps.&lt;id&gt;.outputs.plan == 'true'</code>로 건너뛰면 됩니다. <code>require-up-to-date</code>를 켜면 베이스보다 뒤처진 풀 리퀘스트를 거부합니다.
+| <code>plan</code> || plan, 플랜 전 || 풀 리퀘스트가 워크스페이스 디렉터리, 이 액션을 부른 워크플로, <code>shared-paths</code> 중 어느 것도 바꾸지 않으면 <code>plan</code> 출력을 <code>"false"</code>로 냅니다. 뒤 스텝은 <code>if: steps.&lt;id&gt;.outputs.plan == 'true'</code>로 건너뛰면 됩니다. <code>require-up-to-date</code>를 켜면 베이스보다 뒤처진 풀 리퀘스트를 거부합니다. dflook이 내려받는 프로바이더를 워크스페이스의 <code>.terraform.lock.hcl</code>을 키로 캐시에서 복원하고, 잡이 끝날 때 저장합니다.
 |-
 | <code>changes</code> || plan, 플랜 후 || 워크스페이스에 적용할 변경이 있다고 표시합니다.
 |-
 | <code>pending</code> || 플랜이 끝난 뒤의 잡 하나 || 적용할 워크스페이스를 고릅니다. 환경이 없거나, <code>auto-apply</code>에 없는 워크스페이스인데 필수 리뷰어가 없으면 거부합니다. 같은 브랜치에서 아직 승인을 기다리는 이전 실행은 취소하는데, 잡이 하나라도 돌고 있으면 두지 않습니다. 풀 리퀘스트에서는 아무것도 고르지 않습니다. <code>apply-before-merge</code>일 때만 고르고, 이때 [[Special:MyLanguage/Apply-before-merge#Stacked pull requests|스택]] 위쪽의 풀 리퀘스트가 워크스페이스 둘 이상을 바꾸면 실패합니다.
 |-
-| <code>apply</code> || apply, 첫 스텝 || 누가 승인했는지, 또는 승인이 필요 없었는지 기록합니다. 푸시에서는 커밋이 여전히 브랜치의 헤드일 때만 진행합니다. 풀 리퀘스트에서는 <code>apply-before-merge</code>가 아니면 거부하고, 맞더라도 풀 리퀘스트가 움직였거나 머지됐을 때, 네이티브 스택 밖에서 다른 브랜치를 향할 때, <code>require-up-to-date</code>인데 뒤처졌을 때 거부합니다.
+| <code>apply</code> || apply, 첫 스텝 || plan 잡이 캐시한 프로바이더를 복원해서, 적용에서 다시 내려받지 않습니다. 누가 승인했는지, 또는 승인이 필요 없었는지 기록합니다. 푸시에서는 커밋이 여전히 브랜치의 헤드일 때만 진행합니다. 풀 리퀘스트에서는 <code>apply-before-merge</code>가 아니면 거부하고, 맞더라도 풀 리퀘스트가 움직였거나 머지됐을 때, 네이티브 스택 밖에서 다른 브랜치를 향할 때, <code>require-up-to-date</code>인데 뒤처졌을 때 거부합니다.
 |-
 | <code>result</code> || apply, 마지막 스텝, <code>if: always()</code> || 적용으로 무엇이 바뀌었고 성공했는지 남깁니다.
 |-

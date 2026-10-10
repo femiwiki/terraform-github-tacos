@@ -11,13 +11,13 @@ By default it applies after the merge, in HCP Terraform's order: a pull request 
 {| class="wikitable"
 ! <code>step</code> !! Job !! What it does
 |-
-| <code>plan</code> || plan, before planning || Sets the <code>plan</code> output to <code>"false"</code> when a pull request changes nothing in the workspace's directory, the calling workflow or <code>shared-paths</code>, so the later steps can be skipped with <code>if: steps.&lt;id&gt;.outputs.plan == 'true'</code>. With <code>require-up-to-date</code>, refuses a pull request that is behind its base.
+| <code>plan</code> || plan, before planning || Sets the <code>plan</code> output to <code>"false"</code> when a pull request changes nothing in the workspace's directory, the calling workflow or <code>shared-paths</code>, so the later steps can be skipped with <code>if: steps.&lt;id&gt;.outputs.plan == 'true'</code>. With <code>require-up-to-date</code>, refuses a pull request that is behind its base. Restores the providers dflook downloads, cached by the workspace's <code>.terraform.lock.hcl</code>, and saves them when the job ends.
 |-
 | <code>changes</code> || plan, after planning || Marks the workspace as having changes to apply.
 |-
 | <code>pending</code> || one job after the plans || Lists the workspaces to apply, and refuses an environment that is missing, or has no required reviewers unless its workspace is in <code>auto-apply</code>. Cancels older runs of the same branch that still wait for approval, unless one of their jobs is running. On a pull request it lists nothing, unless <code>apply-before-merge</code>, and then fails a pull request high in a [[Special:MyLanguage/Apply-before-merge#Stacked pull requests|stack]] that changes more than one workspace.
 |-
-| <code>apply</code> || apply, first step || Records who approved, or that nobody had to. On a push, refuses unless the commit is still the head of the branch. On a pull request, refuses unless <code>apply-before-merge</code>, and then refuses when the pull request moved or merged, targets another branch outside a native stack, or with <code>require-up-to-date</code> fell behind.
+| <code>apply</code> || apply, first step || Restores the providers the plan job cached, so the apply does not download them again. Records who approved, or that nobody had to. On a push, refuses unless the commit is still the head of the branch. On a pull request, refuses unless <code>apply-before-merge</code>, and then refuses when the pull request moved or merged, targets another branch outside a native stack, or with <code>require-up-to-date</code> fell behind.
 |-
 | <code>result</code> || apply, last step, with <code>if: always()</code> || Writes what the apply changed and whether it succeeded.
 |-

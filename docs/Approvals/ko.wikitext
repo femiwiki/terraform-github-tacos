@@ -4,12 +4,12 @@
 <!--T:1 @5493bc8e-->
 모듈은 워크스페이스마다 GitHub 환경을 하나씩 만들고, <code>auto_apply</code>에 있는 것을 빼면 모두 필수 리뷰어를 둡니다. 액션의 <code>pending</code> 스텝은 필수 리뷰어가 없는 환경을 거부합니다. 그 워크스페이스가 스텝의 <code>auto-apply</code>에 있을 때만 예외라서, 실수로 승인 없이 적용이 시작되는 일은 없습니다.
 
-<!--T:2 @e970d6e8-->
+<!--T:2 @f7361b69-->
 == 권한 ==
 {| class="wikitable"
 ! <code>step</code> !! 권한
 |-
-| <code>plan</code> || <code>pull-requests: read</code>
+| <code>plan</code> || <code>contents: read</code>, <code>pull-requests: read</code>
 |-
 | <code>pending</code> || <code>actions: write</code>, <code>checks: read</code>. <code>apply-before-merge</code>일 때는 <code>pull-requests: read</code>도
 |-

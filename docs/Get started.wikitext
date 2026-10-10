@@ -8,15 +8,15 @@ This page takes one change to production: planned in a pull request, merged, app
 Each workspace applies in a GitHub environment of the same name, and its required reviewers are who can approve the apply. The module creates them:
 </translate>
 
-<syntaxhighlight lang="hcl" copy>
+{{#tag:syntaxhighlight|<nowiki>
 module "tacos" {
-  source = "github.com/femiwiki/terraform-github-tacos?ref=v0.5.0"  # x-release-please-version
+  source = "github.com/femiwiki/terraform-github-tacos?ref=v</nowiki>{{Version}}<nowiki>"
 
   repository     = "infra"
   environments   = ["network", "dns"]
   reviewer_teams = [github_team.deployer.id]
 }
-</syntaxhighlight>
+</nowiki>|lang=hcl|copy=1}}
 
 <translate>
 <!--T:3-->
@@ -27,7 +27,7 @@ See [[Special:MyLanguage/Approvals|Approvals]] for who can approve and the permi
 Put this workflow in <code>.github/workflows/</code>, change the workspace list and add your credentials.
 </translate>
 
-<syntaxhighlight lang="yaml" copy>
+{{#tag:syntaxhighlight|<nowiki>
 name: tofu
 on:
   pull_request:
@@ -54,7 +54,7 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: femiwiki/terraform-github-tacos@v0.5.0  # x-release-please-version
+      - uses: femiwiki/terraform-github-tacos@v</nowiki>{{Version}}<nowiki>
         with:
           step: plan
           workspace: ${{ matrix.workspace }}
@@ -70,7 +70,7 @@ jobs:
         with:
           path: ${{ matrix.workspace }}
 
-      - uses: femiwiki/terraform-github-tacos@v0.5.0  # x-release-please-version
+      - uses: femiwiki/terraform-github-tacos@v</nowiki>{{Version}}<nowiki>
         with:
           step: changes
           workspace: ${{ matrix.workspace }}
@@ -78,14 +78,14 @@ jobs:
           plan-json: ${{ steps.plan.outputs.json_plan_path }}
           plan-text: ${{ steps.plan.outputs.text_plan_path }}
 
-      - uses: femiwiki/terraform-github-tacos@v0.5.0  # x-release-please-version
+      - uses: femiwiki/terraform-github-tacos@v</nowiki>{{Version}}<nowiki>
         if: always()
         with:
           step: collapse
 
   pending:
     needs: plan
-    if: >-
+    if: </nowiki>><nowiki>-
       !cancelled() && (github.event_name == 'workflow_dispatch'
       || (github.event_name == 'push' && needs.plan.result == 'success'))
     runs-on: ubuntu-latest
@@ -95,7 +95,7 @@ jobs:
     outputs:
       workspaces: ${{ steps.pending.outputs.workspaces }}
     steps:
-      - uses: femiwiki/terraform-github-tacos@v0.5.0  # x-release-please-version
+      - uses: femiwiki/terraform-github-tacos@v</nowiki>{{Version}}<nowiki>
         id: pending
         with:
           step: pending
@@ -104,7 +104,7 @@ jobs:
   apply:
     name: ${{ matrix.workspace }} apply
     needs: pending
-    if: >-
+    if: </nowiki>><nowiki>-
       !cancelled() && needs.pending.result == 'success'
       && needs.pending.outputs.workspaces != '[]'
     strategy:
@@ -118,7 +118,7 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: femiwiki/terraform-github-tacos@v0.5.0  # x-release-please-version
+      - uses: femiwiki/terraform-github-tacos@v</nowiki>{{Version}}<nowiki>
         id: approver
         with:
           step: apply
@@ -136,7 +136,7 @@ jobs:
           path: ${{ matrix.workspace }}
           auto_approve: ${{ github.event_name == 'workflow_dispatch' }}
 
-      - uses: femiwiki/terraform-github-tacos@v0.5.0  # x-release-please-version
+      - uses: femiwiki/terraform-github-tacos@v</nowiki>{{Version}}<nowiki>
         if: always()
         with:
           step: result
@@ -154,11 +154,11 @@ jobs:
     runs-on: ubuntu-latest
     permissions: {}
     steps:
-      - uses: femiwiki/terraform-github-tacos@v0.5.0  # x-release-please-version
+      - uses: femiwiki/terraform-github-tacos@v</nowiki>{{Version}}<nowiki>
         with:
           step: gate
           needs: ${{ toJSON(needs) }}
-</syntaxhighlight>
+</nowiki>|lang=yaml|copy=1}}
 
 <translate>
 <!--T:5-->

@@ -14,12 +14,13 @@ const run = async (env: NodeJS.ProcessEnv) => {
   return written
 }
 
-test('a plan with changes waits for approval and leaves the marker', async () => {
+test('a plan with changes leaves the marker, and no claim about approval', async () => {
   const written = await run({ CHANGES: 'true', PLAN_JSON: plan(create) })
   assert.strictEqual(written.outputs.apply, true)
   assert.deepStrictEqual(written.notices, [{ message: 'dns', title: MARKER }])
   assert.match(written.summary(), /\| 1 \| 0 \| 0 \| 0 \| 0 \|/)
-  assert.match(written.summary(), /Waiting for the `dns` environment/)
+  assert.match(written.summary(), /Changes to apply\./)
+  assert.doesNotMatch(written.summary(), /[Ww]ait/)
 })
 
 test('an empty plan has nothing to apply', async () => {

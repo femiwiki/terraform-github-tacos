@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.6.1](https://github.com/femiwiki/terraform-github-tacos/compare/v0.6.0...v0.6.1) (2026-10-09)
+
+
+### Bug Fixes
+
+* stop telling every workspace with changes that it waits for approval ([#75](https://github.com/femiwiki/terraform-github-tacos/issues/75)) ([388cbd8](https://github.com/femiwiki/terraform-github-tacos/commit/388cbd88b0d4c436e2ec8895ab3178b7d38696b3)), closes [#74](https://github.com/femiwiki/terraform-github-tacos/issues/74)
+
+## [0.6.0](https://github.com/femiwiki/terraform-github-tacos/compare/v0.5.0...v0.6.0) (2026-10-09)
+
+
+### Features
+
+* cache the providers dflook downloads, and retry downloads more ([#71](https://github.com/femiwiki/terraform-github-tacos/issues/71)) ([e9f37b3](https://github.com/femiwiki/terraform-github-tacos/commit/e9f37b3953356deb9a3d1af3fe803bd49e5b7fae))
+
+
+### Bug Fixes
+
+* **docs:** keep the landing buttons readable on hover ([#64](https://github.com/femiwiki/terraform-github-tacos/issues/64)) ([496241b](https://github.com/femiwiki/terraform-github-tacos/commit/496241b4de48df139510a0615c6dc5759a1fd022))
+
 ## [0.5.0](https://github.com/femiwiki/terraform-github-tacos/compare/v0.4.0...v0.5.0) (2026-10-05)
 
 

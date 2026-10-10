@@ -109,14 +109,6 @@ runs:
         echo "::error::step must be plan, changes, pending, apply, result, gate, merge or collapse, not '$STEP'."
         exit 1
 
-    - if: inputs.step == 'plan'
-      shell: bash
-      env:
-        GH_TOKEN: ${{ inputs.github-token }}
-        WORKSPACE: ${{ inputs.workspace }}
-        REQUIRE_UP_TO_DATE: ${{ inputs.require-up-to-date }}
-      run: '"$GITHUB_ACTION_PATH/scripts/plan.sh"'
-
     - id: scope
       if: inputs.step == 'plan'
       uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3  # v9.0.0
@@ -130,6 +122,29 @@ runs:
         script: |
           const { default: scope } = await import(`${process.env.ACTION_PATH}/scripts/scope.ts`)
           await scope({ github, core, env: process.env })
+
+    # A workspace the pull request leaves alone is not planned, so needs no providers
+    - id: providers
+      if: (inputs.step == 'plan' && steps.scope.outputs.plan == 'true') || inputs.step == 'apply'
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        WORKSPACE: ${{ inputs.workspace }}
+      run: '"$GITHUB_ACTION_PATH/scripts/providers.sh"'
+
+    - if: steps.providers.outputs.key
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
+      with:
+        path: ${{ steps.providers.outputs.path }}
+        key: ${{ steps.providers.outputs.key }}
+
+    - if: inputs.step == 'plan'
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        WORKSPACE: ${{ inputs.workspace }}
+        REQUIRE_UP_TO_DATE: ${{ inputs.require-up-to-date }}
+      run: '"$GITHUB_ACTION_PATH/scripts/plan.sh"'
 
     - id: changes
       if: inputs.step == 'changes'
