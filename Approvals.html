@@ -73,7 +73,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <ul class="citizen-siteStats" role="list" aria-label="Statistics">
 	<li class="citizen-siteStats__item" id="citizen-siteStats__item--articles" role="listitem">
 		<span class="citizen-ui-icon mw-ui-icon-article mw-ui-icon-wikimedia-article" title="articles"></span>
-		<span>12</span>
+		<span>10</span>
 		<span class="citizen-siteStats__label">articles</span>
 	</li>
 	<li class="citizen-siteStats__item" id="citizen-siteStats__item--images" role="listitem">
@@ -88,7 +88,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 	</li>
 	<li class="citizen-siteStats__item" id="citizen-siteStats__item--edits" role="listitem">
 		<span class="citizen-ui-icon mw-ui-icon-edit mw-ui-icon-wikimedia-edit" title="edits"></span>
-		<span>204</span>
+		<span>202</span>
 		<span class="citizen-siteStats__label">edits</span>
 	</li>
 </ul>
@@ -408,7 +408,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <p>The module creates one GitHub environment per workspace, each with required reviewers unless it is in <code>auto_apply</code>. The action's <code>pending</code> step refuses an environment without them unless its workspace is in the step's <code>auto-apply</code>, so an apply never starts unapproved by mistake.
 </p>
 <div class="mw-highlight mw-highlight-lang-hcl mw-content-ltr mw-highlight-copy" dir="ltr"><pre><span></span><span class="kr">module</span><span class="w"> </span><span class="nv">"tacos"</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="na">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"github.com/femiwiki/terraform-github-tacos?ref=v0.6.1"</span>
+<span class="w">  </span><span class="na">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"github.com/femiwiki/terraform-github-tacos?ref=v0.7.0"</span>
 
 <span class="w">  </span><span class="na">repository</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s2">"infra"</span>
 <span class="w">  </span><span class="na">environments</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">"network", "dns"</span><span class="p">]</span>

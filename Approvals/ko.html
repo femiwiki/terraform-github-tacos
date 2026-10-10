@@ -72,7 +72,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <ul class="citizen-siteStats" role="list" aria-label="통계">
 	<li class="citizen-siteStats__item" id="citizen-siteStats__item--articles" role="listitem">
 		<span class="citizen-ui-icon mw-ui-icon-article mw-ui-icon-wikimedia-article" title="문서"></span>
-		<span>12</span>
+		<span>10</span>
 		<span class="citizen-siteStats__label">문서</span>
 	</li>
 	<li class="citizen-siteStats__item" id="citizen-siteStats__item--images" role="listitem">
@@ -87,7 +87,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 	</li>
 	<li class="citizen-siteStats__item" id="citizen-siteStats__item--edits" role="listitem">
 		<span class="citizen-ui-icon mw-ui-icon-edit mw-ui-icon-wikimedia-edit" title="편집"></span>
-		<span>204</span>
+		<span>202</span>
 		<span class="citizen-siteStats__label">편집</span>
 	</li>
 </ul>
@@ -110,7 +110,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 		
 		<ul class="citizen-menu__content-list">
 			
-			<li id="n-sidebar-get-started" class="mw-list-item"><a href="../Get_started.html"><span>시작하기</span></a></li><li id="n-sidebar-runs" class="mw-list-item"><a href="../Runs.html"><span>실행</span></a></li><li id="n-sidebar-apply-before-merge" class="mw-list-item"><a href="../Apply-before-merge/ko.html"><span>머지 전 적용</span></a></li><li id="n-sidebar-auto-apply" class="mw-list-item"><a href="../Auto_apply/ko.html"><span>자동 적용</span></a></li><li id="n-sidebar-approvals" class="mw-list-item"><a href="../Approvals/ko.html"><span>승인</span></a></li><li id="n-sidebar-dependabot" class="mw-list-item"><a href="../Dependabot/ko.html"><span>Dependabot</span></a></li>
+			<li id="n-sidebar-get-started" class="mw-list-item"><a href="../Get_started.html"><span>시작하기</span></a></li><li id="n-sidebar-runs" class="mw-list-item"><a href="../Runs.html"><span>실행</span></a></li><li id="n-sidebar-apply-before-merge" class="mw-list-item"><a href="../Apply-before-merge/ko.html"><span>머지 전 적용</span></a></li><li id="n-sidebar-auto-apply" class="mw-list-item"><a href="../Auto_apply/ko.html"><span>자동 적용</span></a></li><li id="n-sidebar-approvals" class="mw-list-item"><a href="../Approvals/ko.html"><span>승인</span></a></li><li id="n-sidebar-dependabot" class="mw-list-item"><a href="../Dependabot.html"><span>Dependabot</span></a></li>
 		</ul>
 		
 	</div></nav>
@@ -407,7 +407,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <p>모듈은 워크스페이스마다 GitHub 환경을 하나씩 만들고, <code>auto_apply</code>에 있는 것을 빼면 모두 필수 리뷰어를 둡니다. 액션의 <code>pending</code> 스텝은 필수 리뷰어가 없는 환경을 거부합니다. 그 워크스페이스가 스텝의 <code>auto-apply</code>에 있을 때만 예외라서, 실수로 승인 없이 적용이 시작되는 일은 없습니다.
 </p>
 <div class="mw-highlight mw-highlight-lang-hcl mw-content-ltr mw-highlight-copy" dir="ltr"><pre><span></span><span class="kr">module</span><span class="w"> </span><span class="nv">"tacos"</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="na">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"github.com/femiwiki/terraform-github-tacos?ref=v0.6.1"</span>
+<span class="w">  </span><span class="na">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"github.com/femiwiki/terraform-github-tacos?ref=v0.7.0"</span>
 
 <span class="w">  </span><span class="na">repository</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s2">"infra"</span>
 <span class="w">  </span><span class="na">environments</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">"network", "dns"</span><span class="p">]</span>
@@ -440,7 +440,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <td><code>collapse</code></td>
 <td><code>pull-requests: write</code>
 </td></tr></tbody></table>
-<style data-mw-deduplicate="TemplateStyles:r49">.mw-parser-output .tacos-prevnext{display:grid;grid-template-columns:1fr 1fr;gap:1em;margin-top:2em}.mw-parser-output .tacos-prevnext a{display:flex;flex-direction:column;gap:0.25em;height:100%;box-sizing:border-box;padding:0.75em 1em;border:1px solid var(--border-color-base);border-radius:8px;text-decoration:none}.mw-parser-output .tacos-prevnext a:hover{border:1px solid var(--color-progressive);background-color:var(--color-surface-2)}.mw-parser-output .tacos-prevnext-next{grid-column:2;text-align:right}.mw-parser-output .tacos-prevnext-label{font-size:0.875em;color:var(--color-subtle)}.mw-parser-output .tacos-prevnext-title{font-weight:600}</style><div class="tacos-prevnext"><div class="tacos-prevnext-prev"><a href="../Auto_apply/ko.html" title="Special:MyLanguage/Auto apply"><span class="tacos-prevnext-label">이전</span><span class="tacos-prevnext-title">자동 적용</span></a></div><div class="tacos-prevnext-next"><a href="../Dependabot/ko.html" title="Special:MyLanguage/Dependabot"><span class="tacos-prevnext-label">다음</span><span class="tacos-prevnext-title">Dependabot</span></a></div></div>
+<style data-mw-deduplicate="TemplateStyles:r49">.mw-parser-output .tacos-prevnext{display:grid;grid-template-columns:1fr 1fr;gap:1em;margin-top:2em}.mw-parser-output .tacos-prevnext a{display:flex;flex-direction:column;gap:0.25em;height:100%;box-sizing:border-box;padding:0.75em 1em;border:1px solid var(--border-color-base);border-radius:8px;text-decoration:none}.mw-parser-output .tacos-prevnext a:hover{border:1px solid var(--color-progressive);background-color:var(--color-surface-2)}.mw-parser-output .tacos-prevnext-next{grid-column:2;text-align:right}.mw-parser-output .tacos-prevnext-label{font-size:0.875em;color:var(--color-subtle)}.mw-parser-output .tacos-prevnext-title{font-weight:600}</style><div class="tacos-prevnext"><div class="tacos-prevnext-prev"><a href="../Auto_apply/ko.html" title="Special:MyLanguage/Auto apply"><span class="tacos-prevnext-label">이전</span><span class="tacos-prevnext-title">자동 적용</span></a></div><div class="tacos-prevnext-next"><a href="../Dependabot.html" title="Special:MyLanguage/Dependabot"><span class="tacos-prevnext-label">다음</span><span class="tacos-prevnext-title">Dependabot</span></a></div></div>
 
 </div></section></div>
 <div class="printfooter" data-nosnippet="" lang="ko" dir="ltr">원본 주소 "<a dir="ltr" href="https://femiwiki.github.io/terraform-github-tacos/Approvals/ko.html">https://femiwiki.github.io/terraform-github-tacos/Approvals/ko.html</a>"</div></div>
