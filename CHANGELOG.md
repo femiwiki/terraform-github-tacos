@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.0](https://github.com/femiwiki/terraform-github-tacos/compare/v0.6.1...v0.7.0) (2026-10-10)
+
+
+### Features
+
+* skip planning a workspace the pull request leaves alone ([#70](https://github.com/femiwiki/terraform-github-tacos/issues/70)) ([12c929d](https://github.com/femiwiki/terraform-github-tacos/commit/12c929d1b090f7ce9b7e26dd0032e51afc1c3042)), closes [#3](https://github.com/femiwiki/terraform-github-tacos/issues/3)
+
 ## [0.6.1](https://github.com/femiwiki/terraform-github-tacos/compare/v0.6.0...v0.6.1) (2026-10-09)
 
 
