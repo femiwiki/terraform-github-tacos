@@ -16,6 +16,12 @@ inputs:
   workspace:
     description: The workspace this job plans or applies. Used by plan, changes and apply.
     default: ""
+  shared-paths:
+    description: >-
+      Paths besides the workspace's directory and the calling workflow whose
+      change plans the workspace, one glob per line, as in the `paths` filter
+      of a workflow trigger. Used by plan.
+    default: ""
   changes:
     description: Whether the plan has changes, "true" or "false". Used by changes.
     default: ""
@@ -72,6 +78,11 @@ inputs:
     description: The token to call the GitHub API with.
     default: ${{ github.token }}
 outputs:
+  plan:
+    description: >-
+      From plan, "true" when the pull request changes the workspace, or the run
+      is not for a pull request.
+    value: ${{ steps.scope.outputs.plan }}
   apply:
     description: From changes, "true" when the plan has something to apply.
     value: ${{ steps.changes.outputs.apply }}
@@ -98,8 +109,23 @@ runs:
         echo "::error::step must be plan, changes, pending, apply, result, gate, merge or collapse, not '$STEP'."
         exit 1
 
+    - id: scope
+      if: inputs.step == 'plan'
+      uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3  # v9.0.0
+      env:
+        ACTION_PATH: ${{ github.action_path }}
+        PR: ${{ github.event.pull_request.number }}
+        WORKSPACE: ${{ inputs.workspace }}
+        SHARED_PATHS: ${{ inputs.shared-paths }}
+      with:
+        github-token: ${{ inputs.github-token }}
+        script: |
+          const { default: scope } = await import(`${process.env.ACTION_PATH}/scripts/scope.ts`)
+          await scope({ github, core, env: process.env })
+
+    # A workspace the pull request leaves alone is not planned, so needs no providers
     - id: providers
-      if: inputs.step == 'plan' || inputs.step == 'apply'
+      if: (inputs.step == 'plan' && steps.scope.outputs.plan == 'true') || inputs.step == 'apply'
       shell: bash
       env:
         GH_TOKEN: ${{ inputs.github-token }}

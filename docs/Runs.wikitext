@@ -11,7 +11,7 @@ By default it applies after the merge, in HCP Terraform's order: a pull request 
 {| class="wikitable"
 ! <code>step</code> !! Job !! What it does
 |-
-| <code>plan</code> || plan, before planning || With <code>require-up-to-date</code>, refuses a pull request that is behind its base. Restores the providers dflook downloads, cached by the workspace's <code>.terraform.lock.hcl</code>, and saves them when the job ends.
+| <code>plan</code> || plan, before planning || Sets the <code>plan</code> output to <code>"false"</code> when a pull request changes nothing in the workspace's directory, the calling workflow or <code>shared-paths</code>, so the later steps can be skipped with <code>if: steps.&lt;id&gt;.outputs.plan == 'true'</code>. With <code>require-up-to-date</code>, refuses a pull request that is behind its base. Restores the providers dflook downloads, cached by the workspace's <code>.terraform.lock.hcl</code>, and saves them when the job ends.
 |-
 | <code>changes</code> || plan, after planning || Marks the workspace as having changes to apply.
 |-
@@ -37,7 +37,7 @@ The apply job should make a fresh plan and apply it only when it matches the app
 
 <!--T:6-->
 == Which commit applies ==
-Only the newest commit of the default branch applies, since its plan carries the changes of every commit before it that has not been applied. So the push run has to plan every workspace that has changes: a workflow that plans only the workspaces a pull request changes should plan them all on a push. A change made since the plan, such as a <code>workflow_dispatch</code> apply, makes the fresh plan differ and stops the apply; "Re-run all jobs" plans again. A commit pushed to the default branch without a pull request has no plan comment, so apply it with <code>workflow_dispatch</code>.
+Only the newest commit of the default branch applies, since its plan carries the changes of every commit before it that has not been applied. So the push run has to plan every workspace that has changes, and the <code>plan</code> step's <code>plan</code> output is always <code>"true"</code> outside a pull request. A change made since the plan, such as a <code>workflow_dispatch</code> apply, makes the fresh plan differ and stops the apply; "Re-run all jobs" plans again. A commit pushed to the default branch without a pull request has no plan comment, so apply it with <code>workflow_dispatch</code>.
 
 <!--T:7-->
 == Job summaries ==

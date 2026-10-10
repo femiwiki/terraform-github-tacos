@@ -7,12 +7,12 @@
 <!--T:2 @da853d2b-->
 기본값은 HCP Terraform과 같은 순서로, 머지한 뒤에 적용합니다. 풀 리퀘스트에서는 플랜만 하고, 머지되면 기본 브랜치로의 푸시가 다시 플랜한 다음 환경이 승인하면 적용합니다. <code>auto-apply</code>에 있는 워크스페이스는 바로 적용합니다. <code>pending</code>, <code>apply</code>, <code>merge</code> 스텝에 <code>apply-before-merge</code>를 <code>"true"</code>로 주면 풀 리퀘스트를 먼저 적용하고, 적용이 성공하면 머지합니다.
 
-<!--T:3 @3746e6b7-->
+<!--T:3 @c3bc362d-->
 == 스텝 ==
 {| class="wikitable"
 ! <code>step</code> !! 잡 !! 하는 일
 |-
-| <code>plan</code> || plan, 플랜 전 || <code>require-up-to-date</code>를 켜면 베이스보다 뒤처진 풀 리퀘스트를 거부합니다. dflook이 내려받는 프로바이더를 워크스페이스의 <code>.terraform.lock.hcl</code>을 키로 캐시에서 복원하고, 잡이 끝날 때 저장합니다.
+| <code>plan</code> || plan, 플랜 전 || 풀 리퀘스트가 워크스페이스 디렉터리, 이 액션을 부른 워크플로, <code>shared-paths</code> 중 어느 것도 바꾸지 않으면 <code>plan</code> 출력을 <code>"false"</code>로 냅니다. 뒤 스텝은 <code>if: steps.&lt;id&gt;.outputs.plan == 'true'</code>로 건너뛰면 됩니다. <code>require-up-to-date</code>를 켜면 베이스보다 뒤처진 풀 리퀘스트를 거부합니다. dflook이 내려받는 프로바이더를 워크스페이스의 <code>.terraform.lock.hcl</code>을 키로 캐시에서 복원하고, 잡이 끝날 때 저장합니다.
 |-
 | <code>changes</code> || plan, 플랜 후 || 워크스페이스에 적용할 변경이 있다고 표시합니다.
 |-
@@ -36,9 +36,9 @@ plan 잡의 <code>dflook/tofu-plan</code>이 워크스페이스마다 플랜을 
 <!--T:5 @bd574890-->
 적용 잡은 플랜을 새로 만들어 승인받은 것과 같을 때만 적용해야 합니다. <code>plan_path</code>나 <code>auto_approve</code> 없이 쓴 <code>dflook/tofu-apply</code>가 그렇게 동작합니다. 푸시에서는 dflook의 플랜이 머지된 풀 리퀘스트의 플랜 댓글을 기본 브랜치의 플랜으로 고쳐 쓰고, 적용은 그 댓글과 비교합니다.
 
-<!--T:6 @1b295497-->
+<!--T:6 @26d4ba3c-->
 == 어느 커밋이 적용되나 ==
-기본 브랜치의 최신 커밋만 적용됩니다. 그 플랜에 아직 적용되지 않은 앞선 커밋의 변경이 모두 들어 있기 때문입니다. 그래서 푸시 실행은 변경이 있는 워크스페이스를 모두 플랜해야 합니다. 풀 리퀘스트가 바꾼 워크스페이스만 플랜하는 워크플로라도 푸시에서는 전부 플랜하세요. <code>workflow_dispatch</code> 적용처럼 플랜 뒤에 생긴 변경이 있으면 새 플랜이 달라져서 적용이 멈춥니다. 이때는 "Re-run all jobs"로 다시 플랜하면 됩니다. 풀 리퀘스트 없이 기본 브랜치에 푸시한 커밋은 플랜 댓글이 없으니 <code>workflow_dispatch</code>로 적용하세요.
+기본 브랜치의 최신 커밋만 적용됩니다. 그 플랜에 아직 적용되지 않은 앞선 커밋의 변경이 모두 들어 있기 때문입니다. 그래서 푸시 실행은 변경이 있는 워크스페이스를 모두 플랜해야 하고, <code>plan</code> 스텝의 <code>plan</code> 출력은 풀 리퀘스트가 아니면 언제나 <code>"true"</code>입니다. <code>workflow_dispatch</code> 적용처럼 플랜 뒤에 생긴 변경이 있으면 새 플랜이 달라져서 적용이 멈춥니다. 이때는 "Re-run all jobs"로 다시 플랜하면 됩니다. 풀 리퀘스트 없이 기본 브랜치에 푸시한 커밋은 플랜 댓글이 없으니 <code>workflow_dispatch</code>로 적용하세요.
 
 <!--T:7 @0747f780-->
 == 잡 요약 ==
