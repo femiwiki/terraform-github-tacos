@@ -72,7 +72,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <ul class="citizen-siteStats" role="list" aria-label="통계">
 	<li class="citizen-siteStats__item" id="citizen-siteStats__item--articles" role="listitem">
 		<span class="citizen-ui-icon mw-ui-icon-article mw-ui-icon-wikimedia-article" title="문서"></span>
-		<span>20</span>
+		<span>12</span>
 		<span class="citizen-siteStats__label">문서</span>
 	</li>
 	<li class="citizen-siteStats__item" id="citizen-siteStats__item--images" role="listitem">
@@ -87,7 +87,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 	</li>
 	<li class="citizen-siteStats__item" id="citizen-siteStats__item--edits" role="listitem">
 		<span class="citizen-ui-icon mw-ui-icon-edit mw-ui-icon-wikimedia-edit" title="편집"></span>
-		<span>212</span>
+		<span>204</span>
 		<span class="citizen-siteStats__label">편집</span>
 	</li>
 </ul>
@@ -110,7 +110,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 		
 		<ul class="citizen-menu__content-list">
 			
-			<li id="n-sidebar-get-started" class="mw-list-item"><a href="../Get_started/ko.html"><span>시작하기</span></a></li><li id="n-sidebar-runs" class="mw-list-item"><a href="../Runs/ko.html"><span>실행</span></a></li><li id="n-sidebar-apply-before-merge" class="mw-list-item"><a href="../Apply-before-merge/ko.html"><span>머지 전 적용</span></a></li><li id="n-sidebar-auto-apply" class="mw-list-item"><a href="../Auto_apply/ko.html"><span>자동 적용</span></a></li><li id="n-sidebar-approvals" class="mw-list-item"><a href="../Approvals/ko.html"><span>승인</span></a></li><li id="n-sidebar-dependabot" class="mw-list-item"><a href="../Dependabot/ko.html"><span>Dependabot</span></a></li>
+			<li id="n-sidebar-get-started" class="mw-list-item"><a href="../Get_started.html"><span>시작하기</span></a></li><li id="n-sidebar-runs" class="mw-list-item"><a href="../Runs.html"><span>실행</span></a></li><li id="n-sidebar-apply-before-merge" class="mw-list-item"><a href="../Apply-before-merge/ko.html"><span>머지 전 적용</span></a></li><li id="n-sidebar-auto-apply" class="mw-list-item"><a href="../Auto_apply/ko.html"><span>자동 적용</span></a></li><li id="n-sidebar-approvals" class="mw-list-item"><a href="../Approvals/ko.html"><span>승인</span></a></li><li id="n-sidebar-dependabot" class="mw-list-item"><a href="../Dependabot/ko.html"><span>Dependabot</span></a></li>
 		</ul>
 		
 	</div></nav>
@@ -129,7 +129,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 		
 		<ul class="citizen-menu__content-list">
 			
-			<li id="n-sidebar-module" class="mw-list-item"><a href="../Module/ko.html"><span>모듈</span></a></li><li id="n-sidebar-upgrading" class="mw-list-item"><a href="../Upgrading/ko.html"><span>업그레이드</span></a></li><li id="n-sidebar-releases" class="mw-list-item"><a rel="nofollow" href="https://github.com/femiwiki/terraform-github-tacos/releases"><span>릴리스</span></a></li>
+			<li id="n-sidebar-module" class="mw-list-item"><a href="../Module.html"><span>모듈</span></a></li><li id="n-sidebar-upgrading" class="mw-list-item"><a href="../Upgrading.html"><span>업그레이드</span></a></li><li id="n-sidebar-releases" class="mw-list-item"><a rel="nofollow" href="https://github.com/femiwiki/terraform-github-tacos/releases"><span>릴리스</span></a></li>
 		</ul>
 		
 	</div></nav>
@@ -569,7 +569,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <p>GitHub가 공개 미리보기로 내놓은 <a rel="nofollow" class="external text" href="https://docs.github.com/en/pull-requests/get-started/about-stacked-prs">네이티브 스택</a>에서는 풀 리퀘스트를 승인하는 것이 머지하는 것과 같은 결과를 냅니다. 맨 아래 풀 리퀘스트는 혼자 적용되고 머지됩니다. 그보다 위의 풀 리퀘스트는 아래 풀 리퀘스트를 모두 담은 자기 플랜을 적용하고 스택 전체를 머지합니다. 이때 그 플랜이 워크스페이스 둘 이상을 바꾸면 <code>pending</code>이 실패합니다. 워크스페이스별 적용은 나란히 돌아서, 한쪽이 아직 적용되지 않은 다른 쪽의 결과를 필요로 할 수 있기 때문입니다. 이런 스택은 아래부터 적용하세요. 가장 아래 풀 리퀘스트가 머지되면 GitHub가 다음 풀 리퀘스트의 대상을 기본 브랜치로 바꾸고, 다음 실행이 거기서부터 플랜합니다.
 </p><p>네이티브 스택에 속하지 않으면서 다른 풀 리퀘스트의 브랜치를 대상으로 하는 풀 리퀘스트는 적용되지 않습니다.
 </p>
-<style data-mw-deduplicate="TemplateStyles:r49">.mw-parser-output .tacos-prevnext{display:grid;grid-template-columns:1fr 1fr;gap:1em;margin-top:2em}.mw-parser-output .tacos-prevnext a{display:flex;flex-direction:column;gap:0.25em;height:100%;box-sizing:border-box;padding:0.75em 1em;border:1px solid var(--border-color-base);border-radius:8px;text-decoration:none}.mw-parser-output .tacos-prevnext a:hover{border:1px solid var(--color-progressive);background-color:var(--color-surface-2)}.mw-parser-output .tacos-prevnext-next{grid-column:2;text-align:right}.mw-parser-output .tacos-prevnext-label{font-size:0.875em;color:var(--color-subtle)}.mw-parser-output .tacos-prevnext-title{font-weight:600}</style><div class="tacos-prevnext"><div class="tacos-prevnext-prev"><a href="../Runs/ko.html" title="Special:MyLanguage/Runs"><span class="tacos-prevnext-label">이전</span><span class="tacos-prevnext-title">실행</span></a></div><div class="tacos-prevnext-next"><a href="../Auto_apply/ko.html" title="Special:MyLanguage/Auto apply"><span class="tacos-prevnext-label">다음</span><span class="tacos-prevnext-title">자동 적용</span></a></div></div>
+<style data-mw-deduplicate="TemplateStyles:r49">.mw-parser-output .tacos-prevnext{display:grid;grid-template-columns:1fr 1fr;gap:1em;margin-top:2em}.mw-parser-output .tacos-prevnext a{display:flex;flex-direction:column;gap:0.25em;height:100%;box-sizing:border-box;padding:0.75em 1em;border:1px solid var(--border-color-base);border-radius:8px;text-decoration:none}.mw-parser-output .tacos-prevnext a:hover{border:1px solid var(--color-progressive);background-color:var(--color-surface-2)}.mw-parser-output .tacos-prevnext-next{grid-column:2;text-align:right}.mw-parser-output .tacos-prevnext-label{font-size:0.875em;color:var(--color-subtle)}.mw-parser-output .tacos-prevnext-title{font-weight:600}</style><div class="tacos-prevnext"><div class="tacos-prevnext-prev"><a href="../Runs.html" title="Special:MyLanguage/Runs"><span class="tacos-prevnext-label">이전</span><span class="tacos-prevnext-title">실행</span></a></div><div class="tacos-prevnext-next"><a href="../Auto_apply/ko.html" title="Special:MyLanguage/Auto apply"><span class="tacos-prevnext-label">다음</span><span class="tacos-prevnext-title">자동 적용</span></a></div></div>
 
 </div></section></div>
 <div class="printfooter" data-nosnippet="" lang="ko" dir="ltr">원본 주소 "<a dir="ltr" href="https://femiwiki.github.io/terraform-github-tacos/Apply-before-merge/ko.html">https://femiwiki.github.io/terraform-github-tacos/Apply-before-merge/ko.html</a>"</div></div>

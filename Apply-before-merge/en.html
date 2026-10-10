@@ -72,7 +72,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <ul class="citizen-siteStats" role="list" aria-label="Statistics">
 	<li class="citizen-siteStats__item" id="citizen-siteStats__item--articles" role="listitem">
 		<span class="citizen-ui-icon mw-ui-icon-article mw-ui-icon-wikimedia-article" title="articles"></span>
-		<span>20</span>
+		<span>12</span>
 		<span class="citizen-siteStats__label">articles</span>
 	</li>
 	<li class="citizen-siteStats__item" id="citizen-siteStats__item--images" role="listitem">
@@ -87,7 +87,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 	</li>
 	<li class="citizen-siteStats__item" id="citizen-siteStats__item--edits" role="listitem">
 		<span class="citizen-ui-icon mw-ui-icon-edit mw-ui-icon-wikimedia-edit" title="edits"></span>
-		<span>212</span>
+		<span>204</span>
 		<span class="citizen-siteStats__label">edits</span>
 	</li>
 </ul>
@@ -110,7 +110,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 		
 		<ul class="citizen-menu__content-list">
 			
-			<li id="n-sidebar-get-started" class="mw-list-item"><a href="../Get_started/en.html"><span>Get started</span></a></li><li id="n-sidebar-runs" class="mw-list-item"><a href="../Runs/en.html"><span>Runs</span></a></li><li id="n-sidebar-apply-before-merge" class="mw-list-item"><a href="../Apply-before-merge/en.html"><span>Apply-before-merge</span></a></li><li id="n-sidebar-auto-apply" class="mw-list-item"><a href="../Auto_apply/en.html"><span>Auto apply</span></a></li><li id="n-sidebar-approvals" class="mw-list-item"><a href="../Approvals/en.html"><span>Approvals</span></a></li><li id="n-sidebar-dependabot" class="mw-list-item"><a href="../Dependabot/en.html"><span>Dependabot</span></a></li>
+			<li id="n-sidebar-get-started" class="mw-list-item"><a href="../Get_started.html"><span>Get started</span></a></li><li id="n-sidebar-runs" class="mw-list-item"><a href="../Runs.html"><span>Runs</span></a></li><li id="n-sidebar-apply-before-merge" class="mw-list-item"><a href="../Apply-before-merge/en.html"><span>Apply-before-merge</span></a></li><li id="n-sidebar-auto-apply" class="mw-list-item"><a href="../Auto_apply/en.html"><span>Auto apply</span></a></li><li id="n-sidebar-approvals" class="mw-list-item"><a href="../Approvals/en.html"><span>Approvals</span></a></li><li id="n-sidebar-dependabot" class="mw-list-item"><a href="../Dependabot/en.html"><span>Dependabot</span></a></li>
 		</ul>
 		
 	</div></nav>
@@ -129,7 +129,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 		
 		<ul class="citizen-menu__content-list">
 			
-			<li id="n-sidebar-module" class="mw-list-item"><a href="../Module/en.html"><span>Module</span></a></li><li id="n-sidebar-upgrading" class="mw-list-item"><a href="../Upgrading/en.html"><span>Upgrading</span></a></li><li id="n-sidebar-releases" class="mw-list-item"><a rel="nofollow" href="https://github.com/femiwiki/terraform-github-tacos/releases"><span>Releases</span></a></li>
+			<li id="n-sidebar-module" class="mw-list-item"><a href="../Module.html"><span>Module</span></a></li><li id="n-sidebar-upgrading" class="mw-list-item"><a href="../Upgrading.html"><span>Upgrading</span></a></li><li id="n-sidebar-releases" class="mw-list-item"><a rel="nofollow" href="https://github.com/femiwiki/terraform-github-tacos/releases"><span>Releases</span></a></li>
 		</ul>
 		
 	</div></nav>
@@ -569,7 +569,7 @@ A pull request behind its base may be planned and applied unless <code>require-u
 <p>In a <a rel="nofollow" class="external text" href="https://docs.github.com/en/pull-requests/get-started/about-stacked-prs">native stack</a>, which GitHub has in public preview, approving a pull request does what merging it does: the bottom one applies and merges alone, and one higher up applies its own plan, which carries every pull request below it, and merges the whole stack. Higher up, <code>pending</code> fails when that plan changes more than one workspace, since their applies run side by side and one may need what another has yet to apply. Apply such a stack from the bottom: once the lowest pull request merges, GitHub retargets the next one at the default branch, and its next run plans it from there.
 </p><p>A pull request that targets another pull request's branch without being in a native stack is never applied.
 </p>
-<style data-mw-deduplicate="TemplateStyles:r49">.mw-parser-output .tacos-prevnext{display:grid;grid-template-columns:1fr 1fr;gap:1em;margin-top:2em}.mw-parser-output .tacos-prevnext a{display:flex;flex-direction:column;gap:0.25em;height:100%;box-sizing:border-box;padding:0.75em 1em;border:1px solid var(--border-color-base);border-radius:8px;text-decoration:none}.mw-parser-output .tacos-prevnext a:hover{border:1px solid var(--color-progressive);background-color:var(--color-surface-2)}.mw-parser-output .tacos-prevnext-next{grid-column:2;text-align:right}.mw-parser-output .tacos-prevnext-label{font-size:0.875em;color:var(--color-subtle)}.mw-parser-output .tacos-prevnext-title{font-weight:600}</style><div class="tacos-prevnext"><div class="tacos-prevnext-prev"><a href="../Runs/en.html" title="Special:MyLanguage/Runs"><span class="tacos-prevnext-label">Previous</span><span class="tacos-prevnext-title">Runs</span></a></div><div class="tacos-prevnext-next"><a href="../Auto_apply/en.html" title="Special:MyLanguage/Auto apply"><span class="tacos-prevnext-label">Next</span><span class="tacos-prevnext-title">Auto apply</span></a></div></div>
+<style data-mw-deduplicate="TemplateStyles:r49">.mw-parser-output .tacos-prevnext{display:grid;grid-template-columns:1fr 1fr;gap:1em;margin-top:2em}.mw-parser-output .tacos-prevnext a{display:flex;flex-direction:column;gap:0.25em;height:100%;box-sizing:border-box;padding:0.75em 1em;border:1px solid var(--border-color-base);border-radius:8px;text-decoration:none}.mw-parser-output .tacos-prevnext a:hover{border:1px solid var(--color-progressive);background-color:var(--color-surface-2)}.mw-parser-output .tacos-prevnext-next{grid-column:2;text-align:right}.mw-parser-output .tacos-prevnext-label{font-size:0.875em;color:var(--color-subtle)}.mw-parser-output .tacos-prevnext-title{font-weight:600}</style><div class="tacos-prevnext"><div class="tacos-prevnext-prev"><a href="../Runs.html" title="Special:MyLanguage/Runs"><span class="tacos-prevnext-label">Previous</span><span class="tacos-prevnext-title">Runs</span></a></div><div class="tacos-prevnext-next"><a href="../Auto_apply/en.html" title="Special:MyLanguage/Auto apply"><span class="tacos-prevnext-label">Next</span><span class="tacos-prevnext-title">Auto apply</span></a></div></div>
 
 </div></section></div>
 <div class="printfooter" data-nosnippet="">Retrieved from "<a dir="ltr" href="https://femiwiki.github.io/terraform-github-tacos/Apply-before-merge/en.html">https://femiwiki.github.io/terraform-github-tacos/Apply-before-merge/en.html</a>"</div></div>
