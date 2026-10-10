@@ -72,7 +72,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <ul class="citizen-siteStats" role="list" aria-label="Statistics">
 	<li class="citizen-siteStats__item" id="citizen-siteStats__item--articles" role="listitem">
 		<span class="citizen-ui-icon mw-ui-icon-article mw-ui-icon-wikimedia-article" title="articles"></span>
-		<span>14</span>
+		<span>20</span>
 		<span class="citizen-siteStats__label">articles</span>
 	</li>
 	<li class="citizen-siteStats__item" id="citizen-siteStats__item--images" role="listitem">
@@ -87,7 +87,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 	</li>
 	<li class="citizen-siteStats__item" id="citizen-siteStats__item--edits" role="listitem">
 		<span class="citizen-ui-icon mw-ui-icon-edit mw-ui-icon-wikimedia-edit" title="edits"></span>
-		<span>206</span>
+		<span>212</span>
 		<span class="citizen-siteStats__label">edits</span>
 	</li>
 </ul>
@@ -110,7 +110,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 		
 		<ul class="citizen-menu__content-list">
 			
-			<li id="n-sidebar-get-started" class="mw-list-item"><a href="../Get_started/en.html"><span>Get started</span></a></li><li id="n-sidebar-runs" class="mw-list-item"><a href="../Runs.html"><span>Runs</span></a></li><li id="n-sidebar-apply-before-merge" class="mw-list-item"><a href="../Apply-before-merge/en.html"><span>Apply-before-merge</span></a></li><li id="n-sidebar-auto-apply" class="mw-list-item"><a href="../Auto_apply/en.html"><span>Auto apply</span></a></li><li id="n-sidebar-approvals" class="mw-list-item"><a href="../Approvals/en.html"><span>Approvals</span></a></li><li id="n-sidebar-dependabot" class="mw-list-item"><a href="../Dependabot/en.html"><span>Dependabot</span></a></li>
+			<li id="n-sidebar-get-started" class="mw-list-item"><a href="../Get_started/en.html"><span>Get started</span></a></li><li id="n-sidebar-runs" class="mw-list-item"><a href="../Runs/en.html"><span>Runs</span></a></li><li id="n-sidebar-apply-before-merge" class="mw-list-item"><a href="../Apply-before-merge/en.html"><span>Apply-before-merge</span></a></li><li id="n-sidebar-auto-apply" class="mw-list-item"><a href="../Auto_apply/en.html"><span>Auto apply</span></a></li><li id="n-sidebar-approvals" class="mw-list-item"><a href="../Approvals/en.html"><span>Approvals</span></a></li><li id="n-sidebar-dependabot" class="mw-list-item"><a href="../Dependabot/en.html"><span>Dependabot</span></a></li>
 		</ul>
 		
 	</div></nav>
@@ -129,7 +129,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 		
 		<ul class="citizen-menu__content-list">
 			
-			<li id="n-sidebar-module" class="mw-list-item"><a href="../Module.html"><span>Module</span></a></li><li id="n-sidebar-upgrading" class="mw-list-item"><a href="../Upgrading.html"><span>Upgrading</span></a></li><li id="n-sidebar-releases" class="mw-list-item"><a rel="nofollow" href="https://github.com/femiwiki/terraform-github-tacos/releases"><span>Releases</span></a></li>
+			<li id="n-sidebar-module" class="mw-list-item"><a href="../Module/en.html"><span>Module</span></a></li><li id="n-sidebar-upgrading" class="mw-list-item"><a href="../Upgrading/en.html"><span>Upgrading</span></a></li><li id="n-sidebar-releases" class="mw-list-item"><a rel="nofollow" href="https://github.com/femiwiki/terraform-github-tacos/releases"><span>Releases</span></a></li>
 		</ul>
 		
 	</div></nav>
@@ -411,7 +411,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <p>Each workspace applies in a GitHub environment of the same name, and its required reviewers are who can approve the apply. The module creates them:
 </p>
 <div class="mw-highlight mw-highlight-lang-hcl mw-content-ltr mw-highlight-copy" dir="ltr"><pre><span></span><span class="kr">module</span><span class="w"> </span><span class="nv">"tacos"</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="na">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"github.com/femiwiki/terraform-github-tacos?ref=v0.6.0"</span>
+<span class="w">  </span><span class="na">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"github.com/femiwiki/terraform-github-tacos?ref=v0.6.1"</span>
 
 <span class="w">  </span><span class="na">repository</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s2">"infra"</span>
 <span class="w">  </span><span class="na">environments</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">"network", "dns"</span><span class="p">]</span>
@@ -449,7 +449,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <span class="w">      </span><span class="nt">contents</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">read</span>
 <span class="w">      </span><span class="nt">pull-requests</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">write</span>
 <span class="w">    </span><span class="nt">steps</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">femiwiki/terraform-github-tacos@v0.6.0</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">femiwiki/terraform-github-tacos@v0.6.1</span>
 <span class="w">        </span><span class="nt">with</span><span class="p">:</span>
 <span class="w">          </span><span class="nt">step</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">plan</span>
 <span class="w">          </span><span class="nt">workspace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ matrix.workspace }}</span>
@@ -465,7 +465,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <span class="w">        </span><span class="nt">with</span><span class="p">:</span>
 <span class="w">          </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ matrix.workspace }}</span>
 
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">femiwiki/terraform-github-tacos@v0.6.0</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">femiwiki/terraform-github-tacos@v0.6.1</span>
 <span class="w">        </span><span class="nt">with</span><span class="p">:</span>
 <span class="w">          </span><span class="nt">step</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">changes</span>
 <span class="w">          </span><span class="nt">workspace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ matrix.workspace }}</span>
@@ -473,7 +473,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <span class="w">          </span><span class="nt">plan-json</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ steps.plan.outputs.json_plan_path }}</span>
 <span class="w">          </span><span class="nt">plan-text</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ steps.plan.outputs.text_plan_path }}</span>
 
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">femiwiki/terraform-github-tacos@v0.6.0</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">femiwiki/terraform-github-tacos@v0.6.1</span>
 <span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">always()</span>
 <span class="w">        </span><span class="nt">with</span><span class="p">:</span>
 <span class="w">          </span><span class="nt">step</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">collapse</span>
@@ -490,7 +490,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <span class="w">    </span><span class="nt">outputs</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">workspaces</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ steps.pending.outputs.workspaces }}</span>
 <span class="w">    </span><span class="nt">steps</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">femiwiki/terraform-github-tacos@v0.6.0</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">femiwiki/terraform-github-tacos@v0.6.1</span>
 <span class="w">        </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pending</span>
 <span class="w">        </span><span class="nt">with</span><span class="p">:</span>
 <span class="w">          </span><span class="nt">step</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pending</span>
@@ -513,7 +513,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <span class="w">      </span><span class="nt">contents</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">read</span>
 <span class="w">      </span><span class="nt">pull-requests</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">write</span>
 <span class="w">    </span><span class="nt">steps</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">femiwiki/terraform-github-tacos@v0.6.0</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">femiwiki/terraform-github-tacos@v0.6.1</span>
 <span class="w">        </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">approver</span>
 <span class="w">        </span><span class="nt">with</span><span class="p">:</span>
 <span class="w">          </span><span class="nt">step</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apply</span>
@@ -531,7 +531,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <span class="w">          </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ matrix.workspace }}</span>
 <span class="w">          </span><span class="nt">auto_approve</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ github.event_name == 'workflow_dispatch' }}</span>
 
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">femiwiki/terraform-github-tacos@v0.6.0</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">femiwiki/terraform-github-tacos@v0.6.1</span>
 <span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">always()</span>
 <span class="w">        </span><span class="nt">with</span><span class="p">:</span>
 <span class="w">          </span><span class="nt">step</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">result</span>
@@ -549,7 +549,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu-latest</span>
 <span class="w">    </span><span class="nt">permissions</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
 <span class="w">    </span><span class="nt">steps</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">femiwiki/terraform-github-tacos@v0.6.0</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">femiwiki/terraform-github-tacos@v0.6.1</span>
 <span class="w">        </span><span class="nt">with</span><span class="p">:</span>
 <span class="w">          </span><span class="nt">step</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gate</span>
 <span class="w">          </span><span class="nt">needs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ toJSON(needs) }}</span>
@@ -564,10 +564,10 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 </p><p>The apply makes a fresh plan and applies it only when it matches the one that was approved. The job summary shows who approved and what changed.
 </p>
 </div></section><section id="citizen-section-5" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="Next">Next</h2></div><div class="citizen-section-body">
-<ul><li><a href="../Runs.html" title="Special:MyLanguage/Runs">Runs</a> says what each step of the workflow does.</li>
+<ul><li><a href="../Runs/en.html" title="Special:MyLanguage/Runs">Runs</a> says what each step of the workflow does.</li>
 <li><a href="../Auto_apply/en.html" title="Special:MyLanguage/Auto apply">Auto apply</a> skips the approval for chosen workspaces.</li>
 <li><a href="../Apply-before-merge/en.html" title="Special:MyLanguage/Apply-before-merge">Apply-before-merge</a> applies a pull request before it merges.</li></ul>
-<style data-mw-deduplicate="TemplateStyles:r49">.mw-parser-output .tacos-prevnext{display:grid;grid-template-columns:1fr 1fr;gap:1em;margin-top:2em}.mw-parser-output .tacos-prevnext a{display:flex;flex-direction:column;gap:0.25em;height:100%;box-sizing:border-box;padding:0.75em 1em;border:1px solid var(--border-color-base);border-radius:8px;text-decoration:none}.mw-parser-output .tacos-prevnext a:hover{border:1px solid var(--color-progressive);background-color:var(--color-surface-2)}.mw-parser-output .tacos-prevnext-next{grid-column:2;text-align:right}.mw-parser-output .tacos-prevnext-label{font-size:0.875em;color:var(--color-subtle)}.mw-parser-output .tacos-prevnext-title{font-weight:600}</style><div class="tacos-prevnext"><div class="tacos-prevnext-next"><a href="../Runs.html" title="Special:MyLanguage/Runs"><span class="tacos-prevnext-label">Next</span><span class="tacos-prevnext-title">Runs</span></a></div></div>
+<style data-mw-deduplicate="TemplateStyles:r49">.mw-parser-output .tacos-prevnext{display:grid;grid-template-columns:1fr 1fr;gap:1em;margin-top:2em}.mw-parser-output .tacos-prevnext a{display:flex;flex-direction:column;gap:0.25em;height:100%;box-sizing:border-box;padding:0.75em 1em;border:1px solid var(--border-color-base);border-radius:8px;text-decoration:none}.mw-parser-output .tacos-prevnext a:hover{border:1px solid var(--color-progressive);background-color:var(--color-surface-2)}.mw-parser-output .tacos-prevnext-next{grid-column:2;text-align:right}.mw-parser-output .tacos-prevnext-label{font-size:0.875em;color:var(--color-subtle)}.mw-parser-output .tacos-prevnext-title{font-weight:600}</style><div class="tacos-prevnext"><div class="tacos-prevnext-next"><a href="../Runs/en.html" title="Special:MyLanguage/Runs"><span class="tacos-prevnext-label">Next</span><span class="tacos-prevnext-title">Runs</span></a></div></div>
 
 </div></section></div>
 <div class="printfooter" data-nosnippet="">Retrieved from "<a dir="ltr" href="https://femiwiki.github.io/terraform-github-tacos/Get_started/en.html">https://femiwiki.github.io/terraform-github-tacos/Get_started/en.html</a>"</div></div>
