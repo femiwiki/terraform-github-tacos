@@ -8,6 +8,11 @@ import type { GitHub } from './merge.ts'
 // miss the very file that matters
 const FILES_LIMIT = 3000
 
+// The paths filter lets a wildcard match a name starting with a dot, which
+// matchesGlob does not, so such dots are swapped for a character it treats as plain
+const undot = (path: string) => path.replace(/(^|\/)\./g, '$1\uE000')
+const matches = (file: string, glob: string) => posix.matchesGlob(undot(file), undot(glob))
+
 export default async ({ github, core, env }: { github: GitHub; core: typeof Core; env: NodeJS.ProcessEnv }) => {
   // A push plans every workspace: only the newest commit of the default branch
   // applies, and its plan carries every change not yet applied
@@ -30,7 +35,7 @@ export default async ({ github, core, env }: { github: GitHub; core: typeof Core
   const files: string[] = (await github.paginate('GET /repos/{owner}/{repo}/pulls/{pull_number}/files', {
     owner, repo, pull_number: Number(env.PR), per_page: 100,
   })).map(f => f.filename)
-  const touched = files.find(f => globs.some(g => posix.matchesGlob(f, g)))
+  const touched = files.find(f => globs.some(g => matches(f, g)))
   const plan = touched !== undefined || files.length >= FILES_LIMIT
 
   core.setOutput('plan', plan)
