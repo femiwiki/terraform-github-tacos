@@ -25,7 +25,7 @@ jobs:
           fetch-depth: 0
 
       - if: github.event.action != 'closed'
-        uses: chaotic-ground/wikven/actions/bake@d1234262d2fc2b00bad29487eb019a09ee7c3b24  # v1.4.1
+        uses: chaotic-ground/wikven/actions/bake@75d325babd714624999a29977ec273b0d3e1036c  # v1.4.2
         with:
           source: docs
           output: dist
