@@ -42,6 +42,12 @@ test('plans when a shared path changed', async () => {
   assert.strictEqual((await run(['servingx/Caddyfile'], { SHARED_PATHS: shared })).written.outputs.plan, false)
 })
 
+test('a wildcard matches names starting with a dot', async () => {
+  assert.strictEqual((await run(['dns/.terraform.lock.hcl'])).written.outputs.plan, true)
+  assert.strictEqual((await run(['.github/workflows/lint.yml'], { SHARED_PATHS: '**' })).written.outputs.plan, true)
+  assert.strictEqual((await run(['.github/workflows/lint.yml'], { SHARED_PATHS: '*' })).written.outputs.plan, false)
+})
+
 test('a single star stays within a directory', async () => {
   assert.strictEqual((await run(['versions.tf'], { SHARED_PATHS: '*.tf' })).written.outputs.plan, true)
   assert.strictEqual((await run(['network/versions.tf'], { SHARED_PATHS: '*.tf' })).written.outputs.plan, false)
