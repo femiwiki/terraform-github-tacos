@@ -86,7 +86,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 	</li>
 	<li class="citizen-siteStats__item" id="citizen-siteStats__item--edits" role="listitem">
 		<span class="citizen-ui-icon mw-ui-icon-edit mw-ui-icon-wikimedia-edit" title="edits"></span>
-		<span>216</span>
+		<span>218</span>
 		<span class="citizen-siteStats__label">edits</span>
 	</li>
 </ul>
@@ -438,6 +438,11 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <td>IDs of the users whose approval starts an apply.
 </td></tr>
 <tr>
+<td><code>organization_team</code></td>
+<td><code>null</code></td>
+<td>A team to create in the repository's organization, with read access to the repository, and add to the reviewers: <code>name</code>, and optionally <code>description</code>, <code>members</code> and <code>maintainers</code> as GitHub usernames. Leave it out for a repository a user owns, since only organizations have teams.
+</td></tr>
+<tr>
 <td><code>prevent_self_review</code></td>
 <td><code>false</code></td>
 <td>Whether the person who pushed the change may approve its apply. Leave it off when one person does both.
@@ -452,7 +457,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <td><code>"tofu gate"</code></td>
 <td>The name of the gate job, made a required check of the default branch through a ruleset. <code>null</code> leaves the branch alone.
 </td></tr></tbody></table>
-<p>At least one reviewer team or user is required, unless every environment is in <code>auto_apply</code>.
+<p>At least one reviewer team or user, or <code>organization_team</code>, is required, unless every environment is in <code>auto_apply</code>.
 </p>
 </div></section><section id="citizen-section-2" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="Outputs">Outputs</h2></div><div class="citizen-section-body">
 <table class="wikitable">
@@ -463,6 +468,10 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <tr>
 <td><code>environments</code></td>
 <td>The environments, by workspace.
+</td></tr>
+<tr>
+<td><code>organization_team_id</code></td>
+<td>The ID of the team made from <code>organization_team</code>, or <code>null</code>.
 </td></tr></tbody></table>
 <style data-mw-deduplicate="TemplateStyles:r49">.mw-parser-output .tacos-prevnext{display:grid;grid-template-columns:1fr 1fr;gap:1em;margin-top:2em}.mw-parser-output .tacos-prevnext a{display:flex;flex-direction:column;gap:0.25em;height:100%;box-sizing:border-box;padding:0.75em 1em;border:1px solid var(--border-color-base);border-radius:8px;text-decoration:none}.mw-parser-output .tacos-prevnext a:hover{border:1px solid var(--color-progressive);background-color:var(--color-surface-2)}.mw-parser-output .tacos-prevnext-next{grid-column:2;text-align:right}.mw-parser-output .tacos-prevnext-label{font-size:0.875em;color:var(--color-subtle)}.mw-parser-output .tacos-prevnext-title{font-weight:600}</style><div class="tacos-prevnext"><div class="tacos-prevnext-prev"><a href="../Dependabot/en.html" title="Special:MyLanguage/Dependabot"><span class="tacos-prevnext-label">Previous</span><span class="tacos-prevnext-title">Dependabot</span></a></div><div class="tacos-prevnext-next"><a href="../Upgrading/en.html" title="Special:MyLanguage/Upgrading"><span class="tacos-prevnext-label">Next</span><span class="tacos-prevnext-title">Upgrading</span></a></div></div>
 
@@ -476,9 +485,9 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <div id="citizen-page-aside-lastmod" class="citizen-page-aside__panel citizen-page-aside__panel--lastmod" data-order="10">
 	<div id="citizen-page-aside-lastmod-heading" class="citizen-page-aside__heading">Last modified</div>
 	<div class="citizen-page-aside__body">
-<a class="citizen-page-aside__link cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" href="https://github.com/femiwiki/terraform-github-tacos/commits/main/docs/Module/en.wikitext" title="This page was last edited on 13 October 2026, at 11:44.">
+<a class="citizen-page-aside__link cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" href="https://github.com/femiwiki/terraform-github-tacos/commits/main/docs/Module/en.wikitext" title="This page was last edited on 13 October 2026, at 13:29.">
 	<span class="citizen-ui-icon mw-ui-icon-history mw-ui-icon-wikimedia-history"></span>
-	<time id="citizen-page-aside-lastmod-time" datetime="2026-10-13T11:44:10Z">13 October 2026</time>
+	<time id="citizen-page-aside-lastmod-time" datetime="2026-10-13T13:29:41Z">13 October 2026</time>
 </a>
 </div>
 </div>
@@ -556,7 +565,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 					<div class="page-info">
 		    <section id="footer-info-lastmod" class="page-info__item">
 		        <div class="page-info__label">Last modified</div>
-		        <div class="page-info__text"> This page was last edited on 13 October 2026, at 11:44.</div>
+		        <div class="page-info__text"> This page was last edited on 13 October 2026, at 13:29.</div>
 		    </section>
 		</div>
 </footer>		</div>
