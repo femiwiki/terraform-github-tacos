@@ -1,6 +1,7 @@
 // Shared by the step scripts.
 import { existsSync, readFileSync, statSync } from 'node:fs'
 import type * as Core from '@actions/core'
+import type { GitHub } from './merge.ts'
 
 // The annotation the changes step leaves and the pending step looks for
 export const MARKER = 'Changes to apply'
@@ -54,4 +55,22 @@ export const addPlanText = (summary: typeof Core.summary, path: string | undefin
     summary.addRaw(`Cut at ${PLAN_TEXT_LIMIT} of ${size} bytes. The job log has the whole plan.\n\n`)
   }
   summary.addRaw('</details>\n\n')
+}
+
+// The REST API version whose pull requests carry their native stack
+export const STACK_API = { 'x-github-api-version': '2026-03-10' }
+
+// A review runs for its pull request, which plans Dependabot's without its secrets
+export const onPullRequest = (env: NodeJS.ProcessEnv) =>
+  env.GITHUB_EVENT_NAME === 'pull_request' || env.GITHUB_EVENT_NAME === 'pull_request_review'
+
+// Why a head behind its base cannot be applied, or undefined when it is not behind
+export const behind = async (github: Pick<GitHub, 'request'>, env: NodeJS.ProcessEnv, base: string, head: string, then: string) => {
+  const [owner, repo] = (env.GITHUB_REPOSITORY ?? '').split('/')
+  const { data } = await github.request('GET /repos/{owner}/{repo}/compare/{basehead}', {
+    owner, repo, basehead: `${base}...${head}`,
+  })
+  if (data.behind_by > 0) {
+    return `#${env.PR} is ${data.behind_by} commits behind ${base}, so a plan from it describes a tree that no longer exists and applying it would undo what landed meanwhile. Update the branch, then ${then}.`
+  }
 }

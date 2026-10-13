@@ -208,6 +208,22 @@ jobs:
           echo "workspaces=$WORKSPACES"
           [ "$WORKSPACES" = '["preview"]' ]
 
+      # Nobody approves an auto-apply, so the person who started the run stands in
+      - id: apply
+        uses: ./
+        with:
+          step: apply
+          workspace: preview
+          apply-before-merge: "true"
+
+      - name: apply named who started the run
+        env:
+          APPROVER: ${{ steps.apply.outputs.approver }}
+          ACTOR: ${{ github.actor }}
+        run: |
+          echo "approver=$APPROVER"
+          [ "$APPROVER" = "$ACTOR" ]
+
       - id: missing
         uses: ./
         continue-on-error: true
