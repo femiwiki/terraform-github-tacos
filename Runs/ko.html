@@ -87,7 +87,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 	</li>
 	<li class="citizen-siteStats__item" id="citizen-siteStats__item--edits" role="listitem">
 		<span class="citizen-ui-icon mw-ui-icon-edit mw-ui-icon-wikimedia-edit" title="편집"></span>
-		<span>218</span>
+		<span>220</span>
 		<span class="citizen-siteStats__label">편집</span>
 	</li>
 </ul>
@@ -454,15 +454,23 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <td><code>collapse</code></td>
 <td>plan, 마지막 스텝, <code>if: always()</code></td>
 <td><code>dflook/tofu-plan</code>이나 <code>dflook/terraform-plan</code>의 플랜 댓글을 워크스페이스마다 최신 하나만 남기고 오래된 것으로 숨깁니다. <code>**&lt;workspace> apply: </code>로 시작하는 댓글도 같은 방식으로 숨깁니다.
+</td></tr>
+<tr>
+<td><code>log</code></td>
+<td>적용 잡 뒤의 잡 하나, 적용 잡에 <code>needs</code>, <code>if: always()</code></td>
+<td><code>&lt;workspace> apply</code> 잡마다 <code>log-step</code>의 출력을 풀 리퀘스트에 댓글로 남깁니다.
 </td></tr></tbody></table>
 </div></section><section id="citizen-section-2" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="플랜_댓글"><span id=".ED.94.8C.EB.9E.9C_.EB.8C.93.EA.B8.80"></span>플랜 댓글</h2></div><div class="citizen-section-body">
 <p>plan 잡의 <code>dflook/tofu-plan</code>이 워크스페이스마다 플랜을 풀 리퀘스트에 댓글로 남깁니다. 다시 푸시하면 다시 플랜하고, <code>collapse</code> 스텝이 이전 플랜 댓글을 오래된 것으로 숨겨서 워크스페이스마다 최신 댓글만 펼쳐져 있습니다.
 </p><p>적용 잡은 플랜을 새로 만들어 승인받은 것과 같을 때만 적용해야 합니다. <code>plan_path</code>나 <code>auto_approve</code> 없이 쓴 <code>dflook/tofu-apply</code>가 그렇게 동작합니다. 푸시에서는 dflook의 플랜이 머지된 풀 리퀘스트의 플랜 댓글을 기본 브랜치의 플랜으로 고쳐 쓰고, 적용은 그 댓글과 비교합니다.
 </p>
-</div></section><section id="citizen-section-3" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="어느_커밋이_적용되나"><span id=".EC.96.B4.EB.8A.90_.EC.BB.A4.EB.B0.8B.EC.9D.B4_.EC.A0.81.EC.9A.A9.EB.90.98.EB.82.98"></span>어느 커밋이 적용되나</h2></div><div class="citizen-section-body">
+</div></section><section id="citizen-section-3" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="적용_로그"><span id=".EC.A0.81.EC.9A.A9_.EB.A1.9C.EA.B7.B8"></span>적용 로그</h2></div><div class="citizen-section-body">
+<p>실행 로그는 만료되므로, <code>log</code> 스텝이 적용 출력을 적용한 풀 리퀘스트에 댓글로 남깁니다. 머지 뒤라면 그 커밋을 머지한 풀 리퀘스트입니다. 댓글에는 <code>log-step</code>(기본값 <code>dflook/tofu-apply</code>)을 <code>uses</code>하는 스텝의 출력이 접힌 그룹 없이 들어가고, 댓글에 다 들어가지 않으면 끝부분만 남습니다. 오래된 댓글은 <code>collapse</code> 스텝이 숨깁니다.
+</p>
+</div></section><section id="citizen-section-4" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="어느_커밋이_적용되나"><span id=".EC.96.B4.EB.8A.90_.EC.BB.A4.EB.B0.8B.EC.9D.B4_.EC.A0.81.EC.9A.A9.EB.90.98.EB.82.98"></span>어느 커밋이 적용되나</h2></div><div class="citizen-section-body">
 <p>기본 브랜치의 최신 커밋만 적용됩니다. 그 플랜에 아직 적용되지 않은 앞선 커밋의 변경이 모두 들어 있기 때문입니다. 그래서 푸시 실행은 변경이 있는 워크스페이스를 모두 플랜해야 하고, <code>plan</code> 스텝의 <code>plan</code> 출력은 풀 리퀘스트가 아니면 언제나 <code>"true"</code>입니다. <code>workflow_dispatch</code> 적용처럼 플랜 뒤에 생긴 변경이 있으면 새 플랜이 달라져서 적용이 멈춥니다. 이때는 "Re-run all jobs"로 다시 플랜하면 됩니다. 풀 리퀘스트 없이 기본 브랜치에 푸시한 커밋은 플랜 댓글이 없으니 <code>workflow_dispatch</code>로 적용하세요.
 </p>
-</div></section><section id="citizen-section-4" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="잡_요약"><span id=".EC.9E.A1_.EC.9A.94.EC.95.BD"></span>잡 요약</h2></div><div class="citizen-section-body">
+</div></section><section id="citizen-section-5" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="잡_요약"><span id=".EC.9E.A1_.EC.9A.94.EC.95.BD"></span>잡 요약</h2></div><div class="citizen-section-body">
 <p>스텝마다 실행 페이지에 요약을 남겨서, 리뷰어가 로그를 열지 않고도 무엇을 승인하는지 볼 수 있습니다.
 </p>
 <table class="wikitable">
@@ -494,7 +502,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <td><code>merge</code></td>
 <td>풀 리퀘스트가 머지됐는지, 안 됐다면 그 이유.
 </td></tr></tbody></table>
-</div></section><section id="citizen-section-5" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="전체_워크플로"><span id=".EC.A0.84.EC.B2.B4_.EC.9B.8C.ED.81.AC.ED.94.8C.EB.A1.9C"></span>전체 워크플로</h2></div><div class="citizen-section-body">
+</div></section><section id="citizen-section-6" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="전체_워크플로"><span id=".EC.A0.84.EC.B2.B4_.EC.9B.8C.ED.81.AC.ED.94.8C.EB.A1.9C"></span>전체 워크플로</h2></div><div class="citizen-section-body">
 <p><a href="../Get_started/ko.html" title="Special:MyLanguage/Get started">시작하기</a>의 워크플로에 머지 뒤에 도는 스텝을 모두 넣은 것입니다. <code>workflow_dispatch</code> 실행은 고른 워크스페이스를 그 브랜치에서 환경이 승인하면 적용하고, <code>collapse</code> 스텝은 지난 플랜 댓글을 숨기고, 잡 요약에는 플랜이 접혀서 들어갑니다.
 </p>
 <div class="mw-highlight mw-highlight-lang-yaml mw-content-ltr mw-highlight-copy" dir="ltr"><pre><span></span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tofu</span>
@@ -640,9 +648,9 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <div id="citizen-page-aside-lastmod" class="citizen-page-aside__panel citizen-page-aside__panel--lastmod" data-order="10">
 	<div id="citizen-page-aside-lastmod-heading" class="citizen-page-aside__heading">마지막 수정</div>
 	<div class="citizen-page-aside__body">
-<a class="citizen-page-aside__link cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" href="https://github.com/femiwiki/terraform-github-tacos/commits/main/docs/Runs/ko.wikitext" title="이 문서는 2026년 10월 13일 (화) 11:10에 마지막으로 편집되었습니다.">
+<a class="citizen-page-aside__link cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" href="https://github.com/femiwiki/terraform-github-tacos/commits/main/docs/Runs/ko.wikitext" title="이 문서는 2026년 10월 13일 (화) 13:38에 마지막으로 편집되었습니다.">
 	<span class="citizen-ui-icon mw-ui-icon-history mw-ui-icon-wikimedia-history"></span>
-	<time id="citizen-page-aside-lastmod-time" datetime="2026-10-13T11:10:36Z">2026년 10월 13일 (화)</time>
+	<time id="citizen-page-aside-lastmod-time" datetime="2026-10-13T13:38:03Z">2026년 10월 13일 (화)</time>
 </a>
 </div>
 </div>
@@ -706,12 +714,27 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 			<ul id="toc-플랜_댓글-sublist" class="citizen-toc-list">
 			</ul>
 		</li>
+		<li id="toc-적용_로그"
+			class="citizen-toc-list-item citizen-toc-level-1">
+			<a class="citizen-toc-link citizen-page-aside__link cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" href="#적용_로그" role="button">
+				<div class="citizen-toc-content">
+					<div class="citizen-toc-text">
+						<span class="citizen-toc-numb">3</span>
+						<span class="citizen-toc-heading">적용 로그</span>
+					</div>
+					
+				</div>
+			</a>
+			
+			<ul id="toc-적용_로그-sublist" class="citizen-toc-list">
+			</ul>
+		</li>
 		<li id="toc-어느_커밋이_적용되나"
 			class="citizen-toc-list-item citizen-toc-level-1">
 			<a class="citizen-toc-link citizen-page-aside__link cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" href="#어느_커밋이_적용되나" role="button">
 				<div class="citizen-toc-content">
 					<div class="citizen-toc-text">
-						<span class="citizen-toc-numb">3</span>
+						<span class="citizen-toc-numb">4</span>
 						<span class="citizen-toc-heading">어느 커밋이 적용되나</span>
 					</div>
 					
@@ -726,7 +749,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 			<a class="citizen-toc-link citizen-page-aside__link cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" href="#잡_요약" role="button">
 				<div class="citizen-toc-content">
 					<div class="citizen-toc-text">
-						<span class="citizen-toc-numb">4</span>
+						<span class="citizen-toc-numb">5</span>
 						<span class="citizen-toc-heading">잡 요약</span>
 					</div>
 					
@@ -741,7 +764,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 			<a class="citizen-toc-link citizen-page-aside__link cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" href="#전체_워크플로" role="button">
 				<div class="citizen-toc-content">
 					<div class="citizen-toc-text">
-						<span class="citizen-toc-numb">5</span>
+						<span class="citizen-toc-numb">6</span>
 						<span class="citizen-toc-heading">전체 워크플로</span>
 					</div>
 					
@@ -765,7 +788,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 					<div class="page-info">
 		    <section id="footer-info-lastmod" class="page-info__item">
 		        <div class="page-info__label">마지막 수정</div>
-		        <div class="page-info__text"> 이 문서는 2026년 10월 13일 (화) 11:10에 마지막으로 편집되었습니다.</div>
+		        <div class="page-info__text"> 이 문서는 2026년 10월 13일 (화) 13:38에 마지막으로 편집되었습니다.</div>
 		    </section>
 		</div>
 </footer>		</div>
