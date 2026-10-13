@@ -29,3 +29,31 @@ resource "github_repository_environment" "this" {
     }
   }
 }
+
+# Makes the gate a required check of the default branch. A ruleset adds to
+# whatever branch protection the repository already has instead of replacing it.
+resource "github_repository_ruleset" "gate" {
+  count = var.gate_check == null ? 0 : 1
+
+  name        = "tacos gate"
+  repository  = var.repository
+  target      = "branch"
+  enforcement = "active"
+
+  conditions {
+    ref_name {
+      include = ["~DEFAULT_BRANCH"]
+      exclude = []
+    }
+  }
+
+  rules {
+    required_status_checks {
+      required_check {
+        context = var.gate_check
+        # The GitHub Actions app, so no other app can pass the check under the same name
+        integration_id = 15368
+      }
+    }
+  }
+}

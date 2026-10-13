@@ -141,7 +141,7 @@ jobs:
 
 <translate>
 <!--T:5-->
-Then make the gate job's name, <code>tofu gate</code>, a required status check of the default branch, so a pull request whose plan fails cannot merge.
+The module makes the gate job's name, <code>tofu gate</code>, a required check of the default branch through a ruleset, so a pull request whose plan fails cannot merge. If you name the gate job differently, give that name as the module's <code>gate_check</code>.
 
 <!--T:6-->
 == Open a pull request ==

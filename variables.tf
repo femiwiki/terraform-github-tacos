@@ -37,3 +37,9 @@ variable "can_admins_bypass" {
   type        = bool
   default     = false
 }
+
+variable "gate_check" {
+  description = "The name of the gate job, made a required check of the default branch through a ruleset. Null leaves the branch alone."
+  type        = string
+  default     = "tofu gate"
+}
