@@ -87,7 +87,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 	</li>
 	<li class="citizen-siteStats__item" id="citizen-siteStats__item--edits" role="listitem">
 		<span class="citizen-ui-icon mw-ui-icon-edit mw-ui-icon-wikimedia-edit" title="edits"></span>
-		<span>214</span>
+		<span>216</span>
 		<span class="citizen-siteStats__label">edits</span>
 	</li>
 </ul>
@@ -421,29 +421,21 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <p>See <a href="../Approvals/en.html" title="Special:MyLanguage/Approvals">Approvals</a> for who can approve and the permissions each job needs.
 </p>
 </div></section><section id="citizen-section-2" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="Add_the_workflow">Add the workflow</h2></div><div class="citizen-section-body">
-<p>Put this workflow in <code>.github/workflows/</code>, change the workspace list and add your credentials.
+<p>Put this workflow in <code>.github/workflows/</code>, change the workspace list and add your credentials. The <a href="../Runs/en.html#Full_workflow" title="Special:MyLanguage/Runs">full workflow</a> also applies a branch by hand and hides outdated plan comments.
 </p>
 <div class="mw-highlight mw-highlight-lang-yaml mw-content-ltr mw-highlight-copy" dir="ltr"><pre><span></span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tofu</span>
 <span class="nt">on</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">pull_request</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">push</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">branches</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">main</span><span class="p p-Indicator">]</span>
-<span class="w">  </span><span class="nt">workflow_dispatch</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">inputs</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">workspace</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">The workspace to apply from this branch, once its environment approves.</span>
-<span class="w">        </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">choice</span>
-<span class="w">        </span><span class="nt">options</span><span class="p">:</span><span class="w"> </span><span class="nl">&amp;workspaces</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">network</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">dns</span><span class="p p-Indicator">]</span>
 <span class="nt">permissions</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
 <span class="nt">jobs</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">plan</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ matrix.workspace }} plan</span>
-<span class="w">    </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">github.event_name != 'workflow_dispatch'</span>
 <span class="w">    </span><span class="nt">strategy</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">fail-fast</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 <span class="w">      </span><span class="nt">matrix</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">workspace</span><span class="p">:</span><span class="w"> </span><span class="nv">*workspaces</span>
+<span class="w">        </span><span class="nt">workspace</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">network</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">dns</span><span class="p p-Indicator">]</span>
 <span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu-latest</span>
 <span class="w">    </span><span class="nt">permissions</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">contents</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">read</span>
@@ -471,18 +463,10 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <span class="w">          </span><span class="nt">workspace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ matrix.workspace }}</span>
 <span class="w">          </span><span class="nt">changes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ steps.plan.outputs.changes }}</span>
 <span class="w">          </span><span class="nt">plan-json</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ steps.plan.outputs.json_plan_path }}</span>
-<span class="w">          </span><span class="nt">plan-text</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ steps.plan.outputs.text_plan_path }}</span>
-
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">femiwiki/terraform-github-tacos@v0.7.0</span>
-<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">always()</span>
-<span class="w">        </span><span class="nt">with</span><span class="p">:</span>
-<span class="w">          </span><span class="nt">step</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">collapse</span>
 
 <span class="w">  </span><span class="nt">pending</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">needs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">plan</span>
-<span class="w">    </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">>-</span>
-<span class="w">      </span><span class="no">!cancelled() &amp;&amp; (github.event_name == 'workflow_dispatch'</span>
-<span class="w">      </span><span class="no">|| (github.event_name == 'push' &amp;&amp; needs.plan.result == 'success'))</span>
+<span class="w">    </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">github.event_name == 'push'</span>
 <span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu-latest</span>
 <span class="w">    </span><span class="nt">permissions</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">actions</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">write</span>
@@ -494,14 +478,11 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <span class="w">        </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pending</span>
 <span class="w">        </span><span class="nt">with</span><span class="p">:</span>
 <span class="w">          </span><span class="nt">step</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pending</span>
-<span class="w">          </span><span class="nt">workspaces</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ inputs.workspace &amp;&amp; format('["{0}"]', inputs.workspace) || '' }}</span>
 
 <span class="w">  </span><span class="nt">apply</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ matrix.workspace }} apply</span>
 <span class="w">    </span><span class="nt">needs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pending</span>
-<span class="w">    </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">>-</span>
-<span class="w">      </span><span class="no">!cancelled() &amp;&amp; needs.pending.result == 'success'</span>
-<span class="w">      </span><span class="no">&amp;&amp; needs.pending.outputs.workspaces != '[]'</span>
+<span class="w">    </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">needs.pending.outputs.workspaces != '[]'</span>
 <span class="w">    </span><span class="nt">strategy</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">fail-fast</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 <span class="w">      </span><span class="nt">matrix</span><span class="p">:</span>
@@ -529,7 +510,6 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <span class="w">          </span><span class="nt">GITHUB_TOKEN</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ github.token }}</span>
 <span class="w">        </span><span class="nt">with</span><span class="p">:</span>
 <span class="w">          </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ matrix.workspace }}</span>
-<span class="w">          </span><span class="nt">auto_approve</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ github.event_name == 'workflow_dispatch' }}</span>
 
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">femiwiki/terraform-github-tacos@v0.7.0</span>
 <span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">always()</span>
@@ -538,12 +518,11 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <span class="w">          </span><span class="nt">workspace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ matrix.workspace }}</span>
 <span class="w">          </span><span class="nt">outcome</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ steps.apply.outcome }}</span>
 <span class="w">          </span><span class="nt">plan-json</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ steps.apply.outputs.json_plan_path }}</span>
-<span class="w">          </span><span class="nt">plan-text</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ steps.apply.outputs.text_plan_path }}</span>
 <span class="w">          </span><span class="nt">approver</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ steps.approver.outputs.approver }}</span>
 
 <span class="w">  </span><span class="c1"># Make this the one required check</span>
 <span class="w">  </span><span class="nt">gate</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ github.event_name == 'pull_request' &amp;&amp; 'tofu gate' || 'tofu gate (pull requests only)' }}</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tofu gate</span>
 <span class="w">    </span><span class="nt">needs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">plan</span>
 <span class="w">    </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">always() &amp;&amp; github.event_name == 'pull_request'</span>
 <span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu-latest</span>
@@ -579,9 +558,9 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <div id="citizen-page-aside-lastmod" class="citizen-page-aside__panel citizen-page-aside__panel--lastmod" data-order="10">
 	<div id="citizen-page-aside-lastmod-heading" class="citizen-page-aside__heading">Last modified</div>
 	<div class="citizen-page-aside__body">
-<a class="citizen-page-aside__link cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" href="https://github.com/femiwiki/terraform-github-tacos/commits/main/docs/Get%20started/en.wikitext" title="This page was last edited on 9 October 2026, at 15:08.">
+<a class="citizen-page-aside__link cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" href="https://github.com/femiwiki/terraform-github-tacos/commits/main/docs/Get%20started/en.wikitext" title="This page was last edited on 13 October 2026, at 11:10.">
 	<span class="citizen-ui-icon mw-ui-icon-history mw-ui-icon-wikimedia-history"></span>
-	<time id="citizen-page-aside-lastmod-time" datetime="2026-10-09T15:08:22Z">9 October 2026</time>
+	<time id="citizen-page-aside-lastmod-time" datetime="2026-10-13T11:10:36Z">13 October 2026</time>
 </a>
 </div>
 </div>
@@ -704,7 +683,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 					<div class="page-info">
 		    <section id="footer-info-lastmod" class="page-info__item">
 		        <div class="page-info__label">Last modified</div>
-		        <div class="page-info__text"> This page was last edited on 9 October 2026, at 15:08.</div>
+		        <div class="page-info__text"> This page was last edited on 13 October 2026, at 11:10.</div>
 		    </section>
 		</div>
 </footer>		</div>
