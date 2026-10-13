@@ -144,12 +144,16 @@ runs:
         key: ${{ steps.providers.outputs.key }}
 
     - if: inputs.step == 'plan'
-      shell: bash
+      uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3  # v9.0.0
       env:
-        GH_TOKEN: ${{ inputs.github-token }}
-        WORKSPACE: ${{ inputs.workspace }}
+        ACTION_PATH: ${{ github.action_path }}
+        PR: ${{ github.event.pull_request.number }}
         REQUIRE_UP_TO_DATE: ${{ inputs.require-up-to-date }}
-      run: '"$GITHUB_ACTION_PATH/scripts/plan.sh"'
+      with:
+        github-token: ${{ inputs.github-token }}
+        script: |
+          const { default: plan } = await import(`${process.env.ACTION_PATH}/scripts/plan.ts`)
+          await plan({ github, core, env: process.env })
 
     - id: changes
       if: inputs.step == 'changes'
@@ -190,13 +194,20 @@ runs:
 
     - id: apply
       if: inputs.step == 'apply'
-      shell: bash
+      uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3  # v9.0.0
       env:
-        GH_TOKEN: ${{ inputs.github-token }}
+        ACTION_PATH: ${{ github.action_path }}
+        PR: ${{ github.event.pull_request.number }}
+        PLANNED: ${{ github.event.pull_request.head.sha }}
+        DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         WORKSPACE: ${{ inputs.workspace }}
         REQUIRE_UP_TO_DATE: ${{ inputs.require-up-to-date }}
         APPLY_BEFORE_MERGE: ${{ inputs.apply-before-merge }}
-      run: '"$GITHUB_ACTION_PATH/scripts/apply.sh"'
+      with:
+        github-token: ${{ inputs.github-token }}
+        script: |
+          const { default: apply } = await import(`${process.env.ACTION_PATH}/scripts/apply.ts`)
+          await apply({ github, core, env: process.env })
 
     - id: result
       if: inputs.step == 'result'
