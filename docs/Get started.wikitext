@@ -24,7 +24,7 @@ See [[Special:MyLanguage/Approvals|Approvals]] for who can approve and the permi
 
 <!--T:4-->
 == Add the workflow ==
-Put this workflow in <code>.github/workflows/</code>, change the workspace list and add your credentials.
+Put this workflow in <code>.github/workflows/</code>, change the workspace list and add your credentials. The [[Special:MyLanguage/Runs#Full workflow|full workflow]] also applies a branch by hand and hides outdated plan comments.
 </translate>
 
 {{#tag:syntaxhighlight|<nowiki>
@@ -33,22 +33,14 @@ on:
   pull_request:
   push:
     branches: [main]
-  workflow_dispatch:
-    inputs:
-      workspace:
-        description: The workspace to apply from this branch, once its environment approves.
-        required: true
-        type: choice
-        options: &workspaces [network, dns]
 permissions: {}
 jobs:
   plan:
     name: ${{ matrix.workspace }} plan
-    if: github.event_name != 'workflow_dispatch'
     strategy:
       fail-fast: false
       matrix:
-        workspace: *workspaces
+        workspace: [network, dns]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -76,18 +68,10 @@ jobs:
           workspace: ${{ matrix.workspace }}
           changes: ${{ steps.plan.outputs.changes }}
           plan-json: ${{ steps.plan.outputs.json_plan_path }}
-          plan-text: ${{ steps.plan.outputs.text_plan_path }}
-
-      - uses: femiwiki/terraform-github-tacos@v</nowiki>{{Version}}<nowiki>
-        if: always()
-        with:
-          step: collapse
 
   pending:
     needs: plan
-    if: </nowiki>><nowiki>-
-      !cancelled() && (github.event_name == 'workflow_dispatch'
-      || (github.event_name == 'push' && needs.plan.result == 'success'))
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
       actions: write
@@ -99,14 +83,11 @@ jobs:
         id: pending
         with:
           step: pending
-          workspaces: ${{ inputs.workspace && format('["{0}"]', inputs.workspace) || '' }}
 
   apply:
     name: ${{ matrix.workspace }} apply
     needs: pending
-    if: </nowiki>><nowiki>-
-      !cancelled() && needs.pending.result == 'success'
-      && needs.pending.outputs.workspaces != '[]'
+    if: needs.pending.outputs.workspaces != '[]'
     strategy:
       fail-fast: false
       matrix:
@@ -134,7 +115,6 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           path: ${{ matrix.workspace }}
-          auto_approve: ${{ github.event_name == 'workflow_dispatch' }}
 
       - uses: femiwiki/terraform-github-tacos@v</nowiki>{{Version}}<nowiki>
         if: always()
@@ -143,12 +123,11 @@ jobs:
           workspace: ${{ matrix.workspace }}
           outcome: ${{ steps.apply.outcome }}
           plan-json: ${{ steps.apply.outputs.json_plan_path }}
-          plan-text: ${{ steps.apply.outputs.text_plan_path }}
           approver: ${{ steps.approver.outputs.approver }}
 
   # Make this the one required check
   gate:
-    name: ${{ github.event_name == 'pull_request' && 'tofu gate' || 'tofu gate (pull requests only)' }}
+    name: tofu gate
     needs: plan
     if: always() && github.event_name == 'pull_request'
     runs-on: ubuntu-latest
