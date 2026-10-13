@@ -47,6 +47,8 @@ module "tacos" {
 | <code>merge</code> || <code>actions: read</code>, <code>contents: write</code>, <code>deployments: read</code>, <code>pull-requests: write</code>
 |-
 | <code>collapse</code> || <code>pull-requests: write</code>
+|-
+| <code>log</code> || <code>actions: read</code>, <code>contents: read</code>, <code>pull-requests: write</code>
 |}
 </translate>
 

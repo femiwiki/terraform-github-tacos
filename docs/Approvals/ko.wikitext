@@ -7,7 +7,7 @@
 <!--T:3 @2d4742d5-->
 조직이라면 모듈이 팀까지 만들어 저장소 읽기 권한을 주고 리뷰어로 둘 수 있습니다.
 
-<!--T:2 @f7361b69-->
+<!--T:2 @8ebbae1e-->
 == 권한 ==
 {| class="wikitable"
 ! <code>step</code> !! 권한
@@ -21,4 +21,6 @@
 | <code>merge</code> || <code>actions: read</code>, <code>contents: write</code>, <code>deployments: read</code>, <code>pull-requests: write</code>
 |-
 | <code>collapse</code> || <code>pull-requests: write</code>
+|-
+| <code>log</code> || <code>actions: read</code>, <code>contents: read</code>, <code>pull-requests: write</code>
 |}
