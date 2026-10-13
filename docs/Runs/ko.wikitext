@@ -7,7 +7,7 @@
 <!--T:2 @da853d2b-->
 기본값은 HCP Terraform과 같은 순서로, 머지한 뒤에 적용합니다. 풀 리퀘스트에서는 플랜만 하고, 머지되면 기본 브랜치로의 푸시가 다시 플랜한 다음 환경이 승인하면 적용합니다. <code>auto-apply</code>에 있는 워크스페이스는 바로 적용합니다. <code>pending</code>, <code>apply</code>, <code>merge</code> 스텝에 <code>apply-before-merge</code>를 <code>"true"</code>로 주면 풀 리퀘스트를 먼저 적용하고, 적용이 성공하면 머지합니다.
 
-<!--T:3 @c3bc362d-->
+<!--T:3 @3a3e209a-->
 == 스텝 ==
 {| class="wikitable"
 ! <code>step</code> !! 잡 !! 하는 일
@@ -27,6 +27,8 @@
 | <code>merge</code> || 게이트 뒤, <code>apply-before-merge</code>일 때 || 비동기 머지 API로 풀 리퀘스트를 머지합니다. 스택이면 그 아래의 풀 리퀘스트도 함께 머지됩니다. 이번 실행에 적용할 것이 없으면, 앞선 실행이 승인을 받았거나 자동 적용 워크스페이스를 적용했을 때만 머지합니다. 적용 뒤 2분이 지나도 머지되지 않으면 실패합니다. 프로덕션이 기본 브랜치보다 앞서 있게 되기 때문입니다. <code>apply-before-merge</code>가 아니면 아무것도 하지 않습니다.
 |-
 | <code>collapse</code> || plan, 마지막 스텝, <code>if: always()</code> || <code>dflook/tofu-plan</code>이나 <code>dflook/terraform-plan</code>의 플랜 댓글을 워크스페이스마다 최신 하나만 남기고 오래된 것으로 숨깁니다. <code>**&lt;workspace&gt; apply: </code>로 시작하는 댓글도 같은 방식으로 숨깁니다.
+|-
+| <code>log</code> || 적용 잡 뒤의 잡 하나, 적용 잡에 <code>needs</code>, <code>if: always()</code> || <code>&lt;workspace&gt; apply</code> 잡마다 <code>log-step</code>의 출력을 풀 리퀘스트에 댓글로 남깁니다.
 |}
 
 <!--T:4 @ddca5da3-->
@@ -35,6 +37,10 @@ plan 잡의 <code>dflook/tofu-plan</code>이 워크스페이스마다 플랜을 
 
 <!--T:5 @bd574890-->
 적용 잡은 플랜을 새로 만들어 승인받은 것과 같을 때만 적용해야 합니다. <code>plan_path</code>나 <code>auto_approve</code> 없이 쓴 <code>dflook/tofu-apply</code>가 그렇게 동작합니다. 푸시에서는 dflook의 플랜이 머지된 풀 리퀘스트의 플랜 댓글을 기본 브랜치의 플랜으로 고쳐 쓰고, 적용은 그 댓글과 비교합니다.
+
+<!--T:9 @142147ca-->
+== 적용 로그 ==
+실행 로그는 만료되므로, <code>log</code> 스텝이 적용 출력을 적용한 풀 리퀘스트에 댓글로 남깁니다. 머지 뒤라면 그 커밋을 머지한 풀 리퀘스트입니다. 댓글에는 <code>log-step</code>(기본값 <code>dflook/tofu-apply</code>)을 <code>uses</code>하는 스텝의 출력이 접힌 그룹 없이 들어가고, 댓글에 다 들어가지 않으면 끝부분만 남습니다. 오래된 댓글은 <code>collapse</code> 스텝이 숨깁니다.
 
 <!--T:6 @26d4ba3c-->
 == 어느 커밋이 적용되나 ==

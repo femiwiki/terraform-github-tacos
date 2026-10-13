@@ -11,7 +11,7 @@ inputs:
   step:
     description: >-
       Which part of the flow this call is: plan, changes, pending, apply,
-      result, gate, merge or collapse. The README says which job each one goes in.
+      result, gate, merge, collapse or log. The README says which job each one goes in.
     required: true
   workspace:
     description: The workspace this job plans or applies. Used by plan, changes and apply.
@@ -71,6 +71,11 @@ inputs:
       pull request only plans, and the run for the push to the default branch
       plans again and applies. Used by pending, apply and merge.
     default: "false"
+  log-step:
+    description: >-
+      The action that applies, as `uses` names it without the version. Its
+      output in each `<workspace> apply` job is what gets kept. Used by log.
+    default: dflook/tofu-apply
   merge-method:
     description: squash, merge or rebase. Used by merge.
     default: squash
@@ -101,12 +106,12 @@ runs:
   steps:
     - name: Unknown step
       if: >-
-        !contains(fromJSON('["plan","changes","pending","apply","result","gate","merge","collapse"]'), inputs.step)
+        !contains(fromJSON('["plan","changes","pending","apply","result","gate","merge","collapse","log"]'), inputs.step)
       shell: bash
       env:
         STEP: ${{ inputs.step }}
       run: |
-        echo "::error::step must be plan, changes, pending, apply, result, gate, merge or collapse, not '$STEP'."
+        echo "::error::step must be plan, changes, pending, apply, result, gate, merge, collapse or log, not '$STEP'."
         exit 1
 
     - id: scope
@@ -245,3 +250,15 @@ runs:
         script: |
           const { default: collapse } = await import(`${process.env.ACTION_PATH}/scripts/collapse.ts`)
           await collapse({ github, core, env: process.env })
+
+    - if: inputs.step == 'log'
+      uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3  # v9.0.0
+      env:
+        ACTION_PATH: ${{ github.action_path }}
+        PR: ${{ github.event.pull_request.number }}
+        LOG_STEP: ${{ inputs.log-step }}
+      with:
+        github-token: ${{ inputs.github-token }}
+        script: |
+          const { default: log } = await import(`${process.env.ACTION_PATH}/scripts/log.ts`)
+          await log({ github, core, env: process.env })

@@ -109,6 +109,23 @@ jobs:
         with:
           step: collapse
 
+  log:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
+        with:
+          persist-credentials: false
+
+      # This run has no apply jobs, so reading them is all it does
+      - uses: ./
+        with:
+          step: log
+
   # Without apply-before-merge, a pull request's run must not offer an apply
   after-merge:
     if: github.event_name == 'pull_request'
