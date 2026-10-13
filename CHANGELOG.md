@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.8.0](https://github.com/femiwiki/terraform-github-tacos/compare/v0.7.0...v0.8.0) (2026-10-13)
+
+
+### Features
+
+* keep each apply's log on the pull request ([#82](https://github.com/femiwiki/terraform-github-tacos/issues/82)) ([4e7b71a](https://github.com/femiwiki/terraform-github-tacos/commit/4e7b71a029d486330120d691d561c88bc17e61e5)), closes [#4](https://github.com/femiwiki/terraform-github-tacos/issues/4)
+* optionally create the approvers' team ([#83](https://github.com/femiwiki/terraform-github-tacos/issues/83)) ([70b730a](https://github.com/femiwiki/terraform-github-tacos/commit/70b730ac912cd65fb04cdeae4196f911d2905582)), closes [#6](https://github.com/femiwiki/terraform-github-tacos/issues/6)
+* require the gate check from the module ([#81](https://github.com/femiwiki/terraform-github-tacos/issues/81)) ([57275f5](https://github.com/femiwiki/terraform-github-tacos/commit/57275f58f543d4d766131b3304f737882b0f71ef)), closes [#7](https://github.com/femiwiki/terraform-github-tacos/issues/7)
+
+
+### Bug Fixes
+
+* let shared-paths wildcards match dot paths ([#78](https://github.com/femiwiki/terraform-github-tacos/issues/78)) ([c1f91b5](https://github.com/femiwiki/terraform-github-tacos/commit/c1f91b5564a2eafaf984817c640ceba9f118b165))
+
 ## [0.7.0](https://github.com/femiwiki/terraform-github-tacos/compare/v0.6.1...v0.7.0) (2026-10-10)
 
 
