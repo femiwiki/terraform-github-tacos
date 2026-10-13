@@ -16,6 +16,7 @@ export const fakeCore = () => {
   const written = {
     failed: undefined as string | undefined,
     notices: [] as { message: string; title?: string }[],
+    warnings: [] as string[],
     outputs: {} as Record<string, unknown>,
     summary: () => readFileSync(file, 'utf8'),
   }
@@ -29,6 +30,9 @@ export const fakeCore = () => {
     },
     setOutput(name: string, value: unknown) {
       written.outputs[name] = value
+    },
+    warning(message: string) {
+      written.warnings.push(message)
     },
     info() {},
   }

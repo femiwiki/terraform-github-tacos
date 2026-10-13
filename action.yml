@@ -171,13 +171,19 @@ runs:
 
     - id: pending
       if: inputs.step == 'pending'
-      shell: bash
+      uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3  # v9.0.0
       env:
-        GH_TOKEN: ${{ inputs.github-token }}
+        ACTION_PATH: ${{ github.action_path }}
+        HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         WORKSPACES: ${{ inputs.workspaces }}
         AUTO_APPLY: ${{ inputs.auto-apply }}
         APPLY_BEFORE_MERGE: ${{ inputs.apply-before-merge }}
-      run: '"$GITHUB_ACTION_PATH/scripts/pending.sh"'
+      with:
+        github-token: ${{ inputs.github-token }}
+        script: |
+          const { default: pending } = await import(`${process.env.ACTION_PATH}/scripts/pending.ts`)
+          await pending({ github, core, env: process.env })
 
     - if: inputs.step == 'pending' && inputs.apply-before-merge == 'true' && github.event.pull_request
       uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3  # v9.0.0
