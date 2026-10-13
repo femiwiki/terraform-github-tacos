@@ -38,7 +38,7 @@ plan 잡의 <code>dflook/tofu-plan</code>이 워크스페이스마다 플랜을 
 <!--T:5 @bd574890-->
 적용 잡은 플랜을 새로 만들어 승인받은 것과 같을 때만 적용해야 합니다. <code>plan_path</code>나 <code>auto_approve</code> 없이 쓴 <code>dflook/tofu-apply</code>가 그렇게 동작합니다. 푸시에서는 dflook의 플랜이 머지된 풀 리퀘스트의 플랜 댓글을 기본 브랜치의 플랜으로 고쳐 쓰고, 적용은 그 댓글과 비교합니다.
 
-<!--T:9 @142147ca-->
+<!--T:10 @142147ca-->
 == 적용 로그 ==
 실행 로그는 만료되므로, <code>log</code> 스텝이 적용 출력을 적용한 풀 리퀘스트에 댓글로 남깁니다. 머지 뒤라면 그 커밋을 머지한 풀 리퀘스트입니다. 댓글에는 <code>log-step</code>(기본값 <code>dflook/tofu-apply</code>)을 <code>uses</code>하는 스텝의 출력이 접힌 그룹 없이 들어가고, 댓글에 다 들어가지 않으면 끝부분만 남습니다. 오래된 댓글은 <code>collapse</code> 스텝이 숨깁니다.
 
@@ -66,3 +66,7 @@ plan 잡의 <code>dflook/tofu-plan</code>이 워크스페이스마다 플랜을 
 |-
 | <code>merge</code> || 풀 리퀘스트가 머지됐는지, 안 됐다면 그 이유.
 |}
+
+<!--T:9 @b9e0403b-->
+== 전체 워크플로 ==
+[[Special:MyLanguage/Get started|시작하기]]의 워크플로에 머지 뒤에 도는 스텝을 모두 넣은 것입니다. <code>workflow_dispatch</code> 실행은 고른 워크스페이스를 그 브랜치에서 환경이 승인하면 적용하고, <code>collapse</code> 스텝은 지난 플랜 댓글을 숨기고, 잡 요약에는 플랜이 접혀서 들어갑니다.

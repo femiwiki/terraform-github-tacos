@@ -20,6 +20,17 @@ variable "reviewer_teams" {
   default     = []
 }
 
+variable "organization_team" {
+  description = "A team to create in the repository's organization, with read access to the repository, and add to the reviewers. Members and maintainers are GitHub usernames. Leave it null for a repository a user owns, since only organizations have teams."
+  type = object({
+    name        = string
+    description = optional(string)
+    members     = optional(set(string), [])
+    maintainers = optional(set(string), [])
+  })
+  default = null
+}
+
 variable "reviewer_users" {
   description = "IDs of the users whose approval starts an apply."
   type        = list(number)
@@ -36,4 +47,10 @@ variable "can_admins_bypass" {
   description = "Whether repository administrators may start an apply without an approval."
   type        = bool
   default     = false
+}
+
+variable "gate_check" {
+  description = "The name of the gate job, made a required check of the default branch through a ruleset. Null leaves the branch alone."
+  type        = string
+  default     = "tofu gate"
 }
