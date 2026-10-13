@@ -60,3 +60,7 @@ plan 잡의 <code>dflook/tofu-plan</code>이 워크스페이스마다 플랜을 
 |-
 | <code>merge</code> || 풀 리퀘스트가 머지됐는지, 안 됐다면 그 이유.
 |}
+
+<!--T:9 @b9e0403b-->
+== 전체 워크플로 ==
+[[Special:MyLanguage/Get started|시작하기]]의 워크플로에 머지 뒤에 도는 스텝을 모두 넣은 것입니다. <code>workflow_dispatch</code> 실행은 고른 워크스페이스를 그 브랜치에서 환경이 승인하면 적용하고, <code>collapse</code> 스텝은 지난 플랜 댓글을 숨기고, 잡 요약에는 플랜이 접혀서 들어갑니다.
