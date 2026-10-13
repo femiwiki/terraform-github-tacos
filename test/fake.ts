@@ -18,6 +18,7 @@ export const fakeCore = () => {
     notices: [] as { message: string; title?: string }[],
     warnings: [] as string[],
     outputs: {} as Record<string, unknown>,
+    variables: {} as Record<string, string>,
     summary: () => readFileSync(file, 'utf8'),
   }
   const core = {
@@ -30,6 +31,9 @@ export const fakeCore = () => {
     },
     setOutput(name: string, value: unknown) {
       written.outputs[name] = value
+    },
+    exportVariable(name: string, value: string) {
+      written.variables[name] = value
     },
     warning(message: string) {
       written.warnings.push(message)
