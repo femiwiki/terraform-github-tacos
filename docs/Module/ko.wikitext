@@ -4,7 +4,7 @@
 <!--T:1 @c4ad809c-->
 [[Special:MyLanguage/Approvals|승인]]에서 쓰는 모듈의 입력과 출력입니다.
 
-<!--T:2 @8c92de77-->
+<!--T:2 @5bc9b951-->
 == 입력 ==
 {| class="wikitable"
 ! 이름 !! 기본값 !! 설명
@@ -22,6 +22,8 @@
 | <code>prevent_self_review</code> || <code>false</code> || 변경을 푸시한 사람이 그 적용을 승인할 수 있는지. 한 사람이 둘 다 한다면 끄세요.
 |-
 | <code>can_admins_bypass</code> || <code>false</code> || 저장소 관리자가 승인 없이 적용을 시작할 수 있는지.
+|-
+| <code>gate_check</code> || <code>"tofu gate"</code> || 게이트 잡의 이름. 규칙 세트로 기본 브랜치의 필수 검사가 됩니다. <code>null</code>이면 브랜치를 건드리지 않습니다.
 |}
 
 <!--T:3 @b4660599-->

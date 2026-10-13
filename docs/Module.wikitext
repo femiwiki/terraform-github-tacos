@@ -21,6 +21,8 @@ The inputs and outputs of the module that [[Special:MyLanguage/Approvals|Approva
 | <code>prevent_self_review</code> || <code>false</code> || Whether the person who pushed the change may approve its apply. Leave it off when one person does both.
 |-
 | <code>can_admins_bypass</code> || <code>false</code> || Whether repository administrators may start an apply without an approval.
+|-
+| <code>gate_check</code> || <code>"tofu gate"</code> || The name of the gate job, made a required check of the default branch through a ruleset. <code>null</code> leaves the branch alone.
 |}
 
 <!--T:3-->
