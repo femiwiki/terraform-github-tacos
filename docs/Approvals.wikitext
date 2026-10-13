@@ -15,6 +15,24 @@ module "tacos" {
 </nowiki>|lang=hcl|copy=1}}
 
 <translate>
+<!--T:3-->
+In an organization the module can create the team as well, give it read access to the repository and make it the reviewer:
+</translate>
+
+{{#tag:syntaxhighlight|<nowiki>
+module "tacos" {
+  source = "github.com/femiwiki/terraform-github-tacos?ref=v</nowiki>{{Version}}<nowiki>"
+
+  repository   = "infra"
+  environments = ["network", "dns"]
+  organization_team = {
+    name        = "Deployer"
+    maintainers = ["octocat"]
+  }
+}
+</nowiki>|lang=hcl|copy=1}}
+
+<translate>
 <!--T:2-->
 == Permissions ==
 {| class="wikitable"
