@@ -1,7 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert'
 import changes from '../scripts/changes.ts'
-import { MARKER } from '../scripts/common.ts'
+import { MARKER, planDiff } from '../scripts/common.ts'
 import { fakeCore, tempFile } from './fake.ts'
 
 const plan = (...resourceChanges: object[]) => tempFile(JSON.stringify({ resource_changes: resourceChanges }))
@@ -37,7 +37,34 @@ test('a plan that only moves resources still has something to apply', async () =
 
 test('shows the plan text folded', async () => {
   const written = await run({ CHANGES: 'true', PLAN_TEXT: tempFile('+ resource "a" "b"') })
-  assert.match(written.summary(), /<details><summary>Plan<\/summary>\n\n```\n\+ resource "a" "b"\n```/)
+  assert.match(written.summary(), /<details><summary>Plan<\/summary>\n\n```diff\n\+ resource "a" "b"\n```/)
+})
+
+test('moves each action to the start of its line, and leaves heredoc bodies alone', () => {
+  const plan = [
+    '  # a.b will be updated in place',
+    '  ~ resource "a" "b" {',
+    '      + tags   = {}',
+    '      - name   = "old" -> null',
+    '      ~ policy = <<-EOT',
+    '          - item',
+    '        EOT',
+    '    }',
+    '-/+ resource "c" "d" {',
+    '  <= data "e" "f" {',
+  ].join('\n')
+  assert.strictEqual(planDiff(plan), [
+    '  # a.b will be updated in place',
+    '!~  resource "a" "b" {',
+    '+       tags   = {}',
+    '-       name   = "old" -> null',
+    '!~      policy = <<-EOT',
+    '          - item',
+    '        EOT',
+    '    }',
+    '-/+ resource "c" "d" {',
+    '  <= data "e" "f" {',
+  ].join('\n'))
 })
 
 test('fails without a workspace', async () => {
