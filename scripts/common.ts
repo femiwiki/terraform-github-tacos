@@ -40,6 +40,23 @@ export const addCountsTable = (summary: typeof Core.summary, counts: Counts) => 
 // A step summary may hold 1 MiB, and the plan shares it with the rest
 const PLAN_TEXT_LIMIT = 900_000
 
+// The plan with each action at the start of its line, in the same column, for diff highlighting
+// An update in place starts with `!`, which highlights as changed. Heredoc bodies stay as they are
+export const planDiff = (text: string): string => {
+  let heredoc: string | undefined
+  return text.split('\n').map((line) => {
+    if (heredoc) {
+      if (line.trim() === heredoc) heredoc = undefined
+      return line
+    }
+    heredoc = line.match(/<<-?(\w+)$/)?.[1]
+    const action = line.match(/^(\s+)([-+~]|-\/\+|\+\/-)( .*)$/)
+    if (!action) return line
+    const [, indent, symbol, rest] = action
+    return symbol === '~' ? `!~${indent.slice(1)}${rest}` : `${symbol}${indent}${rest}`
+  }).join('\n')
+}
+
 // The plan as text, folded, and cut short of what a step summary may hold
 export const addPlanText = (summary: typeof Core.summary, path: string | undefined) => {
   if (!path || !existsSync(path)) {
@@ -50,7 +67,7 @@ export const addPlanText = (summary: typeof Core.summary, path: string | undefin
   if (!text.endsWith('\n')) {
     text += '\n'
   }
-  summary.addRaw(`<details><summary>Plan</summary>\n\n\`\`\`\n${text}\`\`\`\n\n`)
+  summary.addRaw(`<details><summary>Plan</summary>\n\n\`\`\`diff\n${planDiff(text)}\`\`\`\n\n`)
   if (size > PLAN_TEXT_LIMIT) {
     summary.addRaw(`Cut at ${PLAN_TEXT_LIMIT} of ${size} bytes. The job log has the whole plan.\n\n`)
   }
