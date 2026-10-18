@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.1](https://github.com/femiwiki/terraform-github-tacos/compare/v0.8.0...v0.8.1) (2026-10-18)
+
+
+### Bug Fixes
+
+* write no job summary for a workspace the pull request leaves alone ([#90](https://github.com/femiwiki/terraform-github-tacos/issues/90)) ([d2d12b5](https://github.com/femiwiki/terraform-github-tacos/commit/d2d12b55a1dc1d8847592358a4a16e0559559a62))
+
 ## [0.8.0](https://github.com/femiwiki/terraform-github-tacos/compare/v0.7.0...v0.8.0) (2026-10-13)
 
 
