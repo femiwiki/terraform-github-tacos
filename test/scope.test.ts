@@ -27,7 +27,7 @@ test('plans a workspace whose directory changed', async () => {
 test('skips a workspace the pull request leaves alone', async () => {
   const { written } = await run(['network/vpc.tf', 'dnsx/a.tf'])
   assert.strictEqual(written.outputs.plan, false)
-  assert.match(written.summary(), /#1 leaves `dns` alone/)
+  assert.strictEqual(written.summary(), '')
 })
 
 test('plans every workspace when the calling workflow changed', async () => {

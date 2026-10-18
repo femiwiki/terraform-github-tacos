@@ -43,6 +43,7 @@ export default async ({ github, core, env }: { github: GitHub; core: typeof Core
     core.info(touched ? `${touched} is in ${workspace}'s paths.` : `#${env.PR} changes too many files to tell.`)
     return
   }
-  core.info(`#${env.PR} changes nothing in ${globs.join(', ')}.`)
-  await core.summary.addRaw(`### ${workspace} plan\n\n#${env.PR} leaves \`${workspace}\` alone, so it is not planned.\n`).write()
+  // No job summary: the run page folds summaries past the first few, and one
+  // per untouched workspace would push the planned ones out of sight
+  core.info(`#${env.PR} changes nothing in ${globs.join(', ')}, so ${workspace} is not planned.`)
 }
