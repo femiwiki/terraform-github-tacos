@@ -37,8 +37,16 @@ export const stepOutput = (log: string, uses: string) => {
   return lines.join('\n').trimEnd()
 }
 
-export default async ({ github, core, env, sleep = ms => new Promise(r => setTimeout(r, ms)) }: {
-  github: GitHub; core: typeof Core; env: NodeJS.ProcessEnv; sleep?: (ms: number) => Promise<unknown>
+export default async ({
+  github,
+  core,
+  env,
+  sleep = (ms) => new Promise((r) => setTimeout(r, ms)),
+}: {
+  github: GitHub
+  core: typeof Core
+  env: NodeJS.ProcessEnv
+  sleep?: (ms: number) => Promise<unknown>
 }) => {
   const [owner, repo] = (env.GITHUB_REPOSITORY ?? '').split('/')
   const uses = env.LOG_STEP ?? ''
@@ -47,7 +55,9 @@ export default async ({ github, core, env, sleep = ms => new Promise(r => setTim
   let issue_number = Number(env.PR)
   if (!issue_number) {
     const pulls = await github.request('GET /repos/{owner}/{repo}/commits/{commit_sha}/pulls', {
-      owner, repo, commit_sha: env.GITHUB_SHA,
+      owner,
+      repo,
+      commit_sha: env.GITHUB_SHA,
     })
     const merged = pulls.data.find((p: { merged_at: string | null }) => p.merged_at)
     if (!merged) {
@@ -58,9 +68,15 @@ export default async ({ github, core, env, sleep = ms => new Promise(r => setTim
   }
 
   const run = `${env.GITHUB_SERVER_URL}/${owner}/${repo}/actions/runs/${env.GITHUB_RUN_ID}`
-  const jobs: Job[] = await github.paginate('GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}/jobs', {
-    owner, repo, run_id: Number(env.GITHUB_RUN_ID), attempt_number: Number(env.GITHUB_RUN_ATTEMPT),
-  })
+  const jobs: Job[] = await github.paginate(
+    'GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}/jobs',
+    {
+      owner,
+      repo,
+      run_id: Number(env.GITHUB_RUN_ID),
+      attempt_number: Number(env.GITHUB_RUN_ATTEMPT),
+    },
+  )
   for (const job of jobs) {
     if (!job.name.endsWith(' apply')) continue
     const workspace = job.name.slice(0, -' apply'.length)
@@ -68,7 +84,11 @@ export default async ({ github, core, env, sleep = ms => new Promise(r => setTim
     let log: string | undefined
     for (let i = 1; log === undefined; i++) {
       try {
-        const { data } = await github.request('GET /repos/{owner}/{repo}/actions/jobs/{job_id}/logs', { owner, repo, job_id: job.id })
+        const { data } = await github.request('GET /repos/{owner}/{repo}/actions/jobs/{job_id}/logs', {
+          owner,
+          repo,
+          job_id: job.id,
+        })
         log = String(data)
       } catch (e) {
         if (i === TRIES) throw e
@@ -87,9 +107,15 @@ export default async ({ github, core, env, sleep = ms => new Promise(r => setTim
       note = ', the start cut to fit a comment'
     }
     // collapse finds this comment by how it starts
-    const body = `**${workspace} apply: ${job.conclusion}** in [${env.GITHUB_WORKFLOW} #${env.GITHUB_RUN_NUMBER}](${run})${note}\n\n`
-      + `<details><summary>Apply log</summary>\n\n\`\`\`\`\n${text}\n\`\`\`\`\n\n</details>`
-    await github.request('POST /repos/{owner}/{repo}/issues/{issue_number}/comments', { owner, repo, issue_number, body })
+    const body =
+      `**${workspace} apply: ${job.conclusion}** in [${env.GITHUB_WORKFLOW} #${env.GITHUB_RUN_NUMBER}](${run})${note}\n\n` +
+      `<details><summary>Apply log</summary>\n\n\`\`\`\`\n${text}\n\`\`\`\`\n\n</details>`
+    await github.request('POST /repos/{owner}/{repo}/issues/{issue_number}/comments', {
+      owner,
+      repo,
+      issue_number,
+      body,
+    })
     core.info(`${workspace}: kept the apply log on #${issue_number}.`)
   }
 }

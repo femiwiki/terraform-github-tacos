@@ -2,8 +2,16 @@
 // each workspace, so only the latest of each stays open.
 import type * as Core from '@actions/core'
 
-type Comment = { id: string; isMinimized: boolean; createdAt: string; body: string; author: { __typename: string } | null }
-type Page = { repository: { pullRequest: { comments: { pageInfo: { hasNextPage: boolean; endCursor: string }; nodes: Comment[] } } } }
+type Comment = {
+  id: string
+  isMinimized: boolean
+  createdAt: string
+  body: string
+  author: { __typename: string } | null
+}
+type Page = {
+  repository: { pullRequest: { comments: { pageInfo: { hasNextPage: boolean; endCursor: string }; nodes: Comment[] } } }
+}
 type GitHub = { graphql: <T>(query: string, variables: Record<string, unknown>) => Promise<T> }
 
 // dflook's plan comment names its path, and its workspace unless default.
@@ -24,7 +32,8 @@ export default async ({ github, core, env }: { github: GitHub; core: typeof Core
   const comments: Comment[] = []
   let after: string | null = null
   do {
-    const { repository } = await github.graphql<Page>(`
+    const { repository } = await github.graphql<Page>(
+      `
       query($owner: String!, $repo: String!, $pr: Int!, $after: String) {
         repository(owner: $owner, name: $repo) {
           pullRequest(number: $pr) {
@@ -34,13 +43,15 @@ export default async ({ github, core, env }: { github: GitHub; core: typeof Core
             }
           }
         }
-      }`, { owner, repo, pr: Number(env.PR), after })
+      }`,
+      { owner, repo, pr: Number(env.PR), after },
+    )
     const page: Page['repository']['pullRequest']['comments'] = repository.pullRequest.comments
     comments.push(...page.nodes)
     after = page.pageInfo.hasNextPage ? page.pageInfo.endCursor : null
   } while (after)
 
-  const ours = comments.filter(c => c.author?.__typename === 'Bot' && kind(c.body))
+  const ours = comments.filter((c) => c.author?.__typename === 'Bot' && kind(c.body))
   const newest = new Map<string, Comment>()
   for (const c of ours) {
     const k = kind(c.body)!
@@ -49,10 +60,13 @@ export default async ({ github, core, env }: { github: GitHub; core: typeof Core
   }
   for (const c of ours) {
     if (c.isMinimized || newest.get(kind(c.body)!) === c) continue
-    await github.graphql(`
+    await github.graphql(
+      `
       mutation($id: ID!) {
         minimizeComment(input: { subjectId: $id, classifier: OUTDATED }) { clientMutationId }
-      }`, { id: c.id })
+      }`,
+      { id: c.id },
+    )
     core.info(`Collapsed ${kind(c.body)} from ${c.createdAt}.`)
   }
 }

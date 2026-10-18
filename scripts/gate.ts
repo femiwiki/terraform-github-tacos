@@ -23,7 +23,13 @@ export default async ({ core, env }: { core: typeof Core; env: NodeJS.ProcessEnv
 
   await core.summary
     .addHeading('Gate', 3)
-    .addTable([[{ data: 'Job', header: true }, { data: 'Result', header: true }], ...rows])
+    .addTable([
+      [
+        { data: 'Job', header: true },
+        { data: 'Result', header: true },
+      ],
+      ...rows,
+    ])
     .write()
   if (failed.length > 0) {
     core.setFailed(failed.join(' '))

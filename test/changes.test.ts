@@ -1,5 +1,5 @@
-import { test } from 'node:test'
 import assert from 'node:assert'
+import { test } from 'node:test'
 import changes from '../scripts/changes.ts'
 import { MARKER, planDiff } from '../scripts/common.ts'
 import { fakeCore, tempFile } from './fake.ts'
@@ -53,18 +53,21 @@ test('moves each action to the start of its line, and leaves heredoc bodies alon
     '-/+ resource "c" "d" {',
     '  <= data "e" "f" {',
   ].join('\n')
-  assert.strictEqual(planDiff(plan), [
-    '  # a.b will be updated in place',
-    '!~  resource "a" "b" {',
-    '+       tags   = {}',
-    '-       name   = "old" -> null',
-    '!~      policy = <<-EOT',
-    '          - item',
-    '        EOT',
-    '    }',
-    '-/+ resource "c" "d" {',
-    '  <= data "e" "f" {',
-  ].join('\n'))
+  assert.strictEqual(
+    planDiff(plan),
+    [
+      '  # a.b will be updated in place',
+      '!~  resource "a" "b" {',
+      '+       tags   = {}',
+      '-       name   = "old" -> null',
+      '!~      policy = <<-EOT',
+      '          - item',
+      '        EOT',
+      '    }',
+      '-/+ resource "c" "d" {',
+      '  <= data "e" "f" {',
+    ].join('\n'),
+  )
 })
 
 test('fails without a workspace', async () => {

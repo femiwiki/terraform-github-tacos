@@ -29,13 +29,19 @@ export default async ({ github, core, env }: { github: GitHub; core: typeof Core
   // owner/repo/.github/workflows/tofu.yml@refs/pull/1/merge
   const workflow = (env.GITHUB_WORKFLOW_REF ?? '').split('@')[0].split('/').slice(2).join('/')
   const globs = [`${workspace}/**`, workflow, ...(env.SHARED_PATHS ?? '').split('\n')]
-    .map(g => g.trim()).filter(Boolean)
+    .map((g) => g.trim())
+    .filter(Boolean)
 
   const [owner, repo] = (env.GITHUB_REPOSITORY ?? '').split('/')
-  const files: string[] = (await github.paginate('GET /repos/{owner}/{repo}/pulls/{pull_number}/files', {
-    owner, repo, pull_number: Number(env.PR), per_page: 100,
-  })).map(f => f.filename)
-  const touched = files.find(f => globs.some(g => matches(f, g)))
+  const files: string[] = (
+    await github.paginate('GET /repos/{owner}/{repo}/pulls/{pull_number}/files', {
+      owner,
+      repo,
+      pull_number: Number(env.PR),
+      per_page: 100,
+    })
+  ).map((f) => f.filename)
+  const touched = files.find((f) => globs.some((g) => matches(f, g)))
   const plan = touched !== undefined || files.length >= FILES_LIMIT
 
   core.setOutput('plan', plan)

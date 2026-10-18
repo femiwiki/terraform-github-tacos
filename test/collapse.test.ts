@@ -1,12 +1,17 @@
-import { test } from 'node:test'
 import assert from 'node:assert'
+import { test } from 'node:test'
 import collapse, { kind } from '../scripts/collapse.ts'
 import { fakeCore } from './fake.ts'
 
 const bot = { __typename: 'Bot' }
 const user = { __typename: 'User' }
-const comment = (id: string, createdAt: string, body: string, author: object | null = bot, isMinimized = false) =>
-  ({ id, createdAt, body, author, isMinimized })
+const comment = (id: string, createdAt: string, body: string, author: object | null = bot, isMinimized = false) => ({
+  id,
+  createdAt,
+  body,
+  author,
+  isMinimized,
+})
 
 // Serves the comments in pages of two and keeps what was minimized
 const fakeGitHub = (comments: object[]) => {
@@ -20,7 +25,9 @@ const fakeGitHub = (comments: object[]) => {
       const start = Number(variables.after ?? 0)
       const nodes = comments.slice(start, start + 2)
       const hasNextPage = start + 2 < comments.length
-      return { repository: { pullRequest: { comments: { pageInfo: { hasNextPage, endCursor: String(start + 2) }, nodes } } } } as T
+      return {
+        repository: { pullRequest: { comments: { pageInfo: { hasNextPage, endCursor: String(start + 2) }, nodes } } },
+      } as T
     },
   }
   return { github, minimized }
@@ -33,7 +40,8 @@ const run = async (comments: object[]) => {
   return minimized
 }
 
-const plan = (path: string) => `<!-- dflook/terraform-github-actions {} -->\nOpenTofu plan in __${path}__\n<details open>`
+const plan = (path: string) =>
+  `<!-- dflook/terraform-github-actions {} -->\nOpenTofu plan in __${path}__\n<details open>`
 const apply = (workspace: string) => `**${workspace} apply: success** in [tofu #1](https://example.com)`
 
 test('names plan and apply comments by workspace', () => {

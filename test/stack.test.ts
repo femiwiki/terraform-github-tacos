@@ -1,20 +1,35 @@
-import { test } from 'node:test'
 import assert from 'node:assert'
+import { test } from 'node:test'
 import stack from '../scripts/stack.ts'
 import { fakeCore } from './fake.ts'
 import { fakeGitHub } from './github.ts'
 
 const run = async (pr: object, workspaces: string[], env: Record<string, string> = {}) => {
-  const { github, calls } = fakeGitHub({ 'GET /repos/{owner}/{repo}/pulls/{pull_number}': () => ({ number: 5, ...pr }) })
+  const { github, calls } = fakeGitHub({
+    'GET /repos/{owner}/{repo}/pulls/{pull_number}': () => ({ number: 5, ...pr }),
+  })
   const { core, written } = fakeCore()
-  await stack({ github, core, env: { APPLY_BEFORE_MERGE: 'true', PR: '5', GITHUB_REPOSITORY: 'o/r', WORKSPACES: JSON.stringify(workspaces), ...env } })
+  await stack({
+    github,
+    core,
+    env: {
+      APPLY_BEFORE_MERGE: 'true',
+      PR: '5',
+      GITHUB_REPOSITORY: 'o/r',
+      WORKSPACES: JSON.stringify(workspaces),
+      ...env,
+    },
+  })
   return { calls, written }
 }
 const upper = { stack: { position: 3, size: 3, base: { ref: 'main' } } }
 
 test('fails a stacked pull request that changes several workspaces', async () => {
   const { written } = await run(upper, ['aws', 'docker'])
-  assert.strictEqual(written.failed, '#5 is stacked on 2 pull requests and changes aws, docker, which may depend on each other. Apply the stack from the bottom.')
+  assert.strictEqual(
+    written.failed,
+    '#5 is stacked on 2 pull requests and changes aws, docker, which may depend on each other. Apply the stack from the bottom.',
+  )
 })
 
 test('lets a stacked pull request that changes one workspace apply the whole stack', async () => {

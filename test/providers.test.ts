@@ -1,6 +1,6 @@
-import { test } from 'node:test'
 import assert from 'node:assert'
 import { createHash } from 'node:crypto'
+import { test } from 'node:test'
 import providers from '../scripts/providers.ts'
 import { fakeCore } from './fake.ts'
 import { fakeGitHub, HttpError } from './github.ts'
@@ -12,26 +12,44 @@ const run = async (routes: Record<string, (p: Record<string, any>) => unknown>, 
   const { github, calls } = fakeGitHub(routes)
   const { core, written } = fakeCore()
   await providers({
-    github, core,
-    env: { GITHUB_REPOSITORY: 'o/r', GITHUB_SHA: 'abc', RUNNER_TEMP: '/tmp/r', RUNNER_OS: 'Linux', RUNNER_ARCH: 'X64', WORKSPACE: 'infra/dns', ...env },
+    github,
+    core,
+    env: {
+      GITHUB_REPOSITORY: 'o/r',
+      GITHUB_SHA: 'abc',
+      RUNNER_TEMP: '/tmp/r',
+      RUNNER_OS: 'Linux',
+      RUNNER_ARCH: 'X64',
+      WORKSPACE: 'infra/dns',
+      ...env,
+    },
   })
   return { calls, written }
 }
 
 test('keys the cache on the hash of the lock file at this commit', async () => {
-  const { calls, written } = await run({ 'GET /repos/{owner}/{repo}/contents/infra/dns/.terraform.lock.hcl': () => LOCK })
+  const { calls, written } = await run({
+    'GET /repos/{owner}/{repo}/contents/infra/dns/.terraform.lock.hcl': () => LOCK,
+  })
   assert.strictEqual(written.outputs.path, '/tmp/r/_github_home/.terraform.d/plugin-cache')
   assert.strictEqual(written.outputs.key, `terraform-github-tacos-providers-Linux-X64-${sha256(LOCK)}`)
   assert.strictEqual(calls[0].params.ref, 'abc')
 })
 
 test('finds the lock file of a workspace at the repository root', async () => {
-  const { written } = await run({ 'GET /repos/{owner}/{repo}/contents/.terraform.lock.hcl': () => LOCK }, { WORKSPACE: '.' })
+  const { written } = await run(
+    { 'GET /repos/{owner}/{repo}/contents/.terraform.lock.hcl': () => LOCK },
+    { WORKSPACE: '.' },
+  )
   assert.ok(written.outputs.key)
 })
 
 test('leaves the cache unkeyed without a lock file', async () => {
-  const { written } = await run({ 'GET /repos/{owner}/{repo}/contents/infra/dns/.terraform.lock.hcl': () => { throw new HttpError(404, 'Not Found') } })
+  const { written } = await run({
+    'GET /repos/{owner}/{repo}/contents/infra/dns/.terraform.lock.hcl': () => {
+      throw new HttpError(404, 'Not Found')
+    },
+  })
   assert.strictEqual(written.outputs.key, undefined)
   assert.ok(written.outputs.path)
 })

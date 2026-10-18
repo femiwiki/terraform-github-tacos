@@ -1,6 +1,6 @@
 // After planning: whether anything is left to apply, left where pending finds it.
 import type * as Core from '@actions/core'
-import { MARKER, addCountsTable, addPlanText, planCounts } from './common.ts'
+import { addCountsTable, addPlanText, MARKER, planCounts } from './common.ts'
 
 export default async ({ core, env }: { core: typeof Core; env: NodeJS.ProcessEnv }) => {
   const workspace = env.WORKSPACE
@@ -26,7 +26,7 @@ export default async ({ core, env }: { core: typeof Core; env: NodeJS.ProcessEnv
   addPlanText(core.summary, env.PLAN_TEXT)
   if (apply) {
     // Whether and for whom it waits is pending's to say, which knows auto-apply and apply-before-merge
-    core.summary.addRaw('Changes to apply. The run\'s To apply summary says who approves them, and when.\n')
+    core.summary.addRaw("Changes to apply. The run's To apply summary says who approves them, and when.\n")
   } else {
     core.summary.addRaw('Nothing to apply.\n')
   }

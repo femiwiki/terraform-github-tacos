@@ -1,19 +1,23 @@
-import { test } from 'node:test'
 import assert from 'node:assert'
+import { test } from 'node:test'
 import scope from '../scripts/scope.ts'
 import { fakeCore } from './fake.ts'
 import { fakeGitHub } from './github.ts'
 
 const run = async (files: string[], env: NodeJS.ProcessEnv = {}) => {
   const { github, calls } = fakeGitHub({
-    'GET /repos/{owner}/{repo}/pulls/{pull_number}/files': () => files.map(filename => ({ filename })),
+    'GET /repos/{owner}/{repo}/pulls/{pull_number}/files': () => files.map((filename) => ({ filename })),
   })
   const { core, written } = fakeCore()
   await scope({
-    github, core,
+    github,
+    core,
     env: {
-      PR: '1', WORKSPACE: 'dns', GITHUB_REPOSITORY: 'o/r',
-      GITHUB_WORKFLOW_REF: 'o/r/.github/workflows/tofu.yml@refs/pull/1/merge', ...env,
+      PR: '1',
+      WORKSPACE: 'dns',
+      GITHUB_REPOSITORY: 'o/r',
+      GITHUB_WORKFLOW_REF: 'o/r/.github/workflows/tofu.yml@refs/pull/1/merge',
+      ...env,
     },
   })
   return { written, calls }

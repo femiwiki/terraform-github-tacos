@@ -14,8 +14,8 @@ export default async ({ core, env }: { core: typeof Core; env: NodeJS.ProcessEnv
   const counts = planCounts(env.PLAN_JSON)
   const changed = counts.create + counts.update + counts.delete + counts.moved + counts.imported
 
-  let result
-  let line
+  let result: string
+  let line: string
   if (env.OUTCOME === 'success' && changed > 0) {
     result = 'applied'
     line = 'Applied.'

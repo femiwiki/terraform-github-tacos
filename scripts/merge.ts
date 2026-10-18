@@ -18,10 +18,20 @@ const VERSION = { 'x-github-api-version': '2026-03-10' }
 const TRIES = 12
 const INTERVAL = 10_000
 
-export default async ({ github, core, env, sleep = ms => new Promise(r => setTimeout(r, ms)) }: {
-  github: GitHub; core: typeof Core; env: NodeJS.ProcessEnv; sleep?: (ms: number) => Promise<unknown>
+export default async ({
+  github,
+  core,
+  env,
+  sleep = (ms) => new Promise((r) => setTimeout(r, ms)),
+}: {
+  github: GitHub
+  core: typeof Core
+  env: NodeJS.ProcessEnv
+  sleep?: (ms: number) => Promise<unknown>
 }) => {
-  const say = async (text: string) => { await core.summary.addHeading('Merge', 3).addRaw(text, true).write() }
+  const say = async (text: string) => {
+    await core.summary.addHeading('Merge', 3).addRaw(text, true).write()
+  }
   if (env.APPLY_BEFORE_MERGE !== 'true') {
     core.info('Applies follow the merge, so there is nothing for this step to merge.')
     return
@@ -46,18 +56,31 @@ export default async ({ github, core, env, sleep = ms => new Promise(r => setTim
   // A draft cannot be merged at all
   const { data } = await pr()
   if (data.draft) {
-    await github.graphql('mutation($id: ID!) { markPullRequestReadyForReview(input: { pullRequestId: $id }) { clientMutationId } }', { id: data.node_id })
+    await github.graphql(
+      'mutation($id: ID!) { markPullRequestReadyForReview(input: { pullRequestId: $id }) { clientMutationId } }',
+      { id: data.node_id },
+    )
   }
 
   const unmerged = async (why: string) => {
-    core.setFailed(`#${pull_number} was applied but ${why}, so production is ahead of ${env.DEFAULT_BRANCH}. Merge it by hand.`)
-    await say(`**#${pull_number} was applied but ${why}.** Merge it by hand so \`${env.DEFAULT_BRANCH}\` matches what is deployed.`)
+    core.setFailed(
+      `#${pull_number} was applied but ${why}, so production is ahead of ${env.DEFAULT_BRANCH}. Merge it by hand.`,
+    )
+    await say(
+      `**#${pull_number} was applied but ${why}.** Merge it by hand so \`${env.DEFAULT_BRANCH}\` matches what is deployed.`,
+    )
   }
   const submit = async (): Promise<Merge | undefined> => {
     try {
-      return (await github.request('PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge-async', {
-        owner, repo, pull_number, merge_method: env.METHOD, headers: VERSION,
-      })).data
+      return (
+        await github.request('PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge-async', {
+          owner,
+          repo,
+          pull_number,
+          merge_method: env.METHOD,
+          headers: VERSION,
+        })
+      ).data
     } catch (e) {
       const { status, message } = e as { status?: number; message?: string }
       // An earlier try is still going, without a request id to follow
@@ -67,9 +90,15 @@ export default async ({ github, core, env, sleep = ms => new Promise(r => setTim
   }
   const follow = async ({ details: { uuid } }: Merge): Promise<Merge> => {
     if (uuid) {
-      return (await github.request('GET /repos/{owner}/{repo}/pulls/{pull_number}/merge-async/{uuid}', {
-        owner, repo, pull_number, uuid, headers: VERSION,
-      })).data
+      return (
+        await github.request('GET /repos/{owner}/{repo}/pulls/{pull_number}/merge-async/{uuid}', {
+          owner,
+          repo,
+          pull_number,
+          uuid,
+          headers: VERSION,
+        })
+      ).data
     }
     return (await pr()).data.merged ? { status: 'merged', details: {} } : { status: 'pending', details: {} }
   }
@@ -88,7 +117,9 @@ export default async ({ github, core, env, sleep = ms => new Promise(r => setTim
       return
     }
   }
-  await unmerged(merge?.status === 'failed' ? `could not be merged: ${merge.details.message}` : 'has not merged in 2 minutes')
+  await unmerged(
+    merge?.status === 'failed' ? `could not be merged: ${merge.details.message}` : 'has not merged in 2 minutes',
+  )
 }
 
 // A run with nothing to apply merges only what an earlier run of this pull
@@ -96,24 +127,33 @@ export default async ({ github, core, env, sleep = ms => new Promise(r => setTim
 // workspace, which leaves a successful deployment and no approval
 const applied = async (github: GitHub, owner: string, repo: string, pull_number: number, run_id: number) => {
   const { data: run } = await github.request('GET /repos/{owner}/{repo}/actions/runs/{run_id}', { owner, repo, run_id })
-  const shas = (await github.paginate('GET /repos/{owner}/{repo}/pulls/{pull_number}/commits', { owner, repo, pull_number }))
-    .map(c => c.sha as string)
+  const shas = (
+    await github.paginate('GET /repos/{owner}/{repo}/pulls/{pull_number}/commits', { owner, repo, pull_number })
+  ).map((c) => c.sha as string)
   // This run first, since a runs listing missed it once (infra#1039); then by
   // commit, as a branch name can be reused by a later pull request
   const runs = [run_id]
   const deployed = new Set<number>()
   for (const head_sha of shas) {
     const listed = await github.paginate('GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/runs', {
-      owner, repo, workflow_id: run.workflow_id, head_sha,
+      owner,
+      repo,
+      workflow_id: run.workflow_id,
+      head_sha,
     })
-    runs.push(...listed.map(r => r.id as number))
-    const deployments = await github.paginate('GET /repos/{owner}/{repo}/deployments', { owner, repo, sha: head_sha })
-      .catch(() => { throw new Error('could not list deployments; the merge step needs deployments: read.') })
+    runs.push(...listed.map((r) => r.id as number))
+    const deployments = await github
+      .paginate('GET /repos/{owner}/{repo}/deployments', { owner, repo, sha: head_sha })
+      .catch(() => {
+        throw new Error('could not list deployments; the merge step needs deployments: read.')
+      })
     for (const deployment of deployments) {
       const statuses = await github.paginate('GET /repos/{owner}/{repo}/deployments/{deployment_id}/statuses', {
-        owner, repo, deployment_id: deployment.id,
+        owner,
+        repo,
+        deployment_id: deployment.id,
       })
-      for (const s of statuses.filter(s => s.state === 'success')) {
+      for (const s of statuses.filter((s) => s.state === 'success')) {
         const m = String(s.log_url ?? '').match(/\/actions\/runs\/(\d+)\//)
         if (m) deployed.add(Number(m[1]))
       }
@@ -121,8 +161,12 @@ const applied = async (github: GitHub, owner: string, repo: string, pull_number:
   }
   for (const id of runs) {
     if (deployed.has(id)) return true
-    const approvals = await github.paginate('GET /repos/{owner}/{repo}/actions/runs/{run_id}/approvals', { owner, repo, run_id: id })
-    if (approvals.some(a => a.state === 'approved')) return true
+    const approvals = await github.paginate('GET /repos/{owner}/{repo}/actions/runs/{run_id}/approvals', {
+      owner,
+      repo,
+      run_id: id,
+    })
+    if (approvals.some((a) => a.state === 'approved')) return true
   }
   return false
 }

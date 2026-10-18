@@ -44,17 +44,20 @@ const PLAN_TEXT_LIMIT = 900_000
 // An update in place starts with `!`, which highlights as changed. Heredoc bodies stay as they are
 export const planDiff = (text: string): string => {
   let heredoc: string | undefined
-  return text.split('\n').map((line) => {
-    if (heredoc) {
-      if (line.trim() === heredoc) heredoc = undefined
-      return line
-    }
-    heredoc = line.match(/<<-?(\w+)$/)?.[1]
-    const action = line.match(/^(\s+)([-+~]|-\/\+|\+\/-)( .*)$/)
-    if (!action) return line
-    const [, indent, symbol, rest] = action
-    return symbol === '~' ? `!~${indent.slice(1)}${rest}` : `${symbol}${indent}${rest}`
-  }).join('\n')
+  return text
+    .split('\n')
+    .map((line) => {
+      if (heredoc) {
+        if (line.trim() === heredoc) heredoc = undefined
+        return line
+      }
+      heredoc = line.match(/<<-?(\w+)$/)?.[1]
+      const action = line.match(/^(\s+)([-+~]|-\/\+|\+\/-)( .*)$/)
+      if (!action) return line
+      const [, indent, symbol, rest] = action
+      return symbol === '~' ? `!~${indent.slice(1)}${rest}` : `${symbol}${indent}${rest}`
+    })
+    .join('\n')
 }
 
 // The plan as text, folded, and cut short of what a step summary may hold
@@ -82,10 +85,18 @@ export const onPullRequest = (env: NodeJS.ProcessEnv) =>
   env.GITHUB_EVENT_NAME === 'pull_request' || env.GITHUB_EVENT_NAME === 'pull_request_review'
 
 // Why a head behind its base cannot be applied, or undefined when it is not behind
-export const behind = async (github: Pick<GitHub, 'request'>, env: NodeJS.ProcessEnv, base: string, head: string, then: string) => {
+export const behind = async (
+  github: Pick<GitHub, 'request'>,
+  env: NodeJS.ProcessEnv,
+  base: string,
+  head: string,
+  then: string,
+) => {
   const [owner, repo] = (env.GITHUB_REPOSITORY ?? '').split('/')
   const { data } = await github.request('GET /repos/{owner}/{repo}/compare/{basehead}', {
-    owner, repo, basehead: `${base}...${head}`,
+    owner,
+    repo,
+    basehead: `${base}...${head}`,
   })
   if (data.behind_by > 0) {
     return `#${env.PR} is ${data.behind_by} commits behind ${base}, so a plan from it describes a tree that no longer exists and applying it would undo what landed meanwhile. Update the branch, then ${then}.`

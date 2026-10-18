@@ -6,7 +6,15 @@ import { posix } from 'node:path'
 import type * as Core from '@actions/core'
 import type { GitHub } from './merge.ts'
 
-export default async ({ github, core, env }: { github: Pick<GitHub, 'request'>; core: typeof Core; env: NodeJS.ProcessEnv }) => {
+export default async ({
+  github,
+  core,
+  env,
+}: {
+  github: Pick<GitHub, 'request'>
+  core: typeof Core
+  env: NodeJS.ProcessEnv
+}) => {
   // dflook's container runs with HOME=/github/home, mounted from here, and keeps
   // its plugin cache under it
   core.setOutput('path', `${env.RUNNER_TEMP}/_github_home/.terraform.d/plugin-cache`)
@@ -26,7 +34,10 @@ export default async ({ github, core, env }: { github: Pick<GitHub, 'request'>; 
     // Each segment is encoded alone, so the slashes between them stay slashes
     const path = lock.split('/').map(encodeURIComponent).join('/')
     const { data } = await github.request(`GET /repos/{owner}/{repo}/contents/${path}`, {
-      owner, repo, ref: env.GITHUB_SHA, headers: { accept: 'application/vnd.github.raw' },
+      owner,
+      repo,
+      ref: env.GITHUB_SHA,
+      headers: { accept: 'application/vnd.github.raw' },
     })
     content = data
   } catch {

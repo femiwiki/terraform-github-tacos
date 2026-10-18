@@ -1,5 +1,5 @@
-import { test } from 'node:test'
 import assert from 'node:assert'
+import { test } from 'node:test'
 import plan from '../scripts/plan.ts'
 import { fakeCore } from './fake.ts'
 import { fakeGitHub } from './github.ts'
@@ -7,11 +7,16 @@ import { fakeGitHub } from './github.ts'
 const PULL = 'GET /repos/{owner}/{repo}/pulls/{pull_number}'
 const COMPARE = 'GET /repos/{owner}/{repo}/compare/{basehead}'
 
-const run = async (behindBy: number, env: Record<string, string> = {}, pr: object = { base: { ref: 'main' }, head: { sha: 'h' } }) => {
+const run = async (
+  behindBy: number,
+  env: Record<string, string> = {},
+  pr: object = { base: { ref: 'main' }, head: { sha: 'h' } },
+) => {
   const { github, calls } = fakeGitHub({ [PULL]: () => pr, [COMPARE]: () => ({ behind_by: behindBy }) })
   const { core, written } = fakeCore()
   await plan({
-    github, core,
+    github,
+    core,
     env: { REQUIRE_UP_TO_DATE: 'true', GITHUB_EVENT_NAME: 'pull_request', GITHUB_REPOSITORY: 'o/r', PR: '5', ...env },
   })
   return { calls, written }
