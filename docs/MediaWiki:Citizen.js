@@ -1,5 +1,5 @@
 // Show MediaWiki:Sidebar in the side column, since Citizen keeps it in a drawer.
-mw.hook("citizen.pageAside.register").add(function (data) {
+mw.hook("citizen.pageAside.register").add((data) => {
 	var body = data.register({
 		id: "tacos-nav",
 		label: mw.msg("navigation"),
@@ -10,16 +10,16 @@ mw.hook("citizen.pageAside.register").add(function (data) {
 	if (!body || !menu) {
 		return;
 	}
-	menu.querySelectorAll(".mw-portlet").forEach(function (portlet) {
+	menu.querySelectorAll(".mw-portlet").forEach((portlet) => {
 		var copy = portlet.cloneNode(true);
 		copy.removeAttribute("id");
-		copy.querySelectorAll("[id]").forEach(function (el) {
+		copy.querySelectorAll("[id]").forEach((el) => {
 			el.removeAttribute("id");
 		});
-		copy.querySelectorAll(".citizen-menu__heading").forEach(function (el) {
+		copy.querySelectorAll(".citizen-menu__heading").forEach((el) => {
 			el.classList.add("citizen-page-aside__heading");
 		});
-		copy.querySelectorAll("a[href]").forEach(function (a) {
+		copy.querySelectorAll("a[href]").forEach((a) => {
 			if (a.pathname === location.pathname) {
 				a.setAttribute("aria-current", "page");
 			}

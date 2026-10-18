@@ -117,7 +117,7 @@ export default async ({
 	// workspace listed in auto-apply may go without required reviewers.
 	const autoApply = (env.AUTO_APPLY ?? "").split(/\s+/);
 	for (const w of workspaces) {
-		let environment;
+		let environment: Environment;
 		try {
 			environment = (
 				await github.request(

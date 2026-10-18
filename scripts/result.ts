@@ -25,8 +25,8 @@ export default async ({
 		counts.moved +
 		counts.imported;
 
-	let result;
-	let line;
+	let result: string;
+	let line: string;
 	if (env.OUTCOME === "success" && changed > 0) {
 		result = "applied";
 		line = "Applied.";
