@@ -1,0 +1,32 @@
+---
+name: Bump the action in infra
+on:
+  push:
+    branches:
+      - main
+    # What a caller of the action runs; the module, docs and tests are not
+    paths:
+      - action.yml
+      - scripts/**
+permissions: {}
+jobs:
+  dispatch:
+    if: github.repository_owner == 'femiwiki'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {}
+    steps:
+      - uses: peter-murray/workflow-application-token-action@dad2b81e50ce3edeb5f3b7ffbd79f731368bd668  # v5.1.1
+        id: token
+        with:
+          application_id: ${{ vars.PAT_APPLICATION_ID }}
+          application_private_key: ${{ secrets.PAT_APPLICATION_PRIVATE_KEY }}
+
+      - name: Dispatch the bump to this commit
+        env:
+          GH_TOKEN: ${{ steps.token.outputs.token }}
+          SHA: ${{ github.sha }}
+        run: |
+          gh api repos/femiwiki/infra/dispatches \
+            -f event_type=bump-tacos \
+            -f "client_payload[sha]=$SHA"
