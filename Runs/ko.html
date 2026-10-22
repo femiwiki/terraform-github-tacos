@@ -402,13 +402,14 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 				<div id="contentSub" lang="ko" dir="ltr"><div id="mw-content-subtitle" lang="ko" dir="ltr"></div></div>
 				
 				
-				<div id="mw-content-text" class="mw-body-content"><div class="mw-pt-translate-header noprint" dir="ltr" lang="ko">이 문서는 <a href="../Runs.html" title="Runs">Runs</a> 문서를 <span class="plainlinks"><a rel="nofollow" class="external text" href="https://github.com/femiwiki/terraform-github-tacos/edit/main/docs/Runs/ko.wikitext">번역한 것</a></span>이며 번역은 82% 완료했습니다.</div><div class="mw-pt-translate-header" dir="ltr" lang="ko"><span class="mw-translate-fuzzy">오래된 번역은 이렇게 표시됩니다.</span></div><div class="mw-content-ltr mw-parser-output" lang="ko" dir="ltr"><section id="citizen-section-0" class="citizen-section"><div class="mw-pt-languages noprint navigation-not-searchable" lang="ko" dir="ltr"><div class="mw-pt-languages-label">다른 언어:</div><ul class="mw-pt-languages-list"><li><a href="../Runs.html" class="mw-pt-progress mw-pt-progress--complete" title="Runs (100% 번역함)" lang="en" dir="ltr">English</a></li>
+				<div id="mw-content-text" class="mw-body-content"><div class="mw-pt-translate-header noprint" dir="ltr" lang="ko">이 문서는 <a href="../Runs.html" title="Runs">Runs</a> 문서를 <span class="plainlinks"><a rel="nofollow" class="external text" href="https://github.com/femiwiki/terraform-github-tacos/edit/main/docs/Runs/ko.wikitext">번역한 것</a></span>이며 번역은 73% 완료했습니다.</div><div class="mw-pt-translate-header" dir="ltr" lang="ko"><span class="mw-translate-fuzzy">오래된 번역은 이렇게 표시됩니다.</span></div><div class="mw-content-ltr mw-parser-output" lang="ko" dir="ltr"><section id="citizen-section-0" class="citizen-section"><div class="mw-pt-languages noprint navigation-not-searchable" lang="ko" dir="ltr"><div class="mw-pt-languages-label">다른 언어:</div><ul class="mw-pt-languages-list"><li><a href="../Runs.html" class="mw-pt-progress mw-pt-progress--complete" title="Runs (100% 번역함)" lang="en" dir="ltr">English</a></li>
 <li><span class="mw-pt-languages-ui mw-pt-languages-selected mw-pt-progress mw-pt-progress--high" lang="ko" dir="ltr">한국어</span></li></ul></div>
 <p>워크플로는 잡마다 액션을 한 번씩 부르고, <code>step</code>에는 그 잡의 이름을 넣습니다. 적용 잡의 환경 이름은 워크스페이스 이름과 같습니다.
 </p><p>기본값은 HCP Terraform과 같은 순서로, 머지한 뒤에 적용합니다. 풀 리퀘스트에서는 플랜만 하고, 머지되면 기본 브랜치로의 푸시가 다시 플랜한 다음 환경이 승인하면 적용합니다. <code>auto-apply</code>에 있는 워크스페이스는 바로 적용합니다. <code>pending</code>, <code>apply</code>, <code>merge</code> 스텝에 <code>apply-before-merge</code>를 <code>"true"</code>로 주면 풀 리퀘스트를 먼저 적용하고, 적용이 성공하면 머지합니다.
 </p>
+<div class="mw-translate-fuzzy">
 <meta property="mw:PageProp/toc"/>
-</section><section id="citizen-section-1" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="스텝"><span id=".EC.8A.A4.ED.85.9D"></span>스텝</h2></div><div class="citizen-section-body">
+<div class="mw-heading mw-heading2"><h2 id="스텝"><span id=".EC.8A.A4.ED.85.9D"></span>스텝</h2></div>
 <table class="wikitable">
 <tbody><tr>
 <th><code>step</code></th>
@@ -460,17 +461,18 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <td>적용 잡 뒤의 잡 하나, 적용 잡에 <code>needs</code>, <code>if: always()</code></td>
 <td><code>&lt;workspace> apply</code> 잡마다 <code>log-step</code>의 출력을 풀 리퀘스트에 댓글로 남깁니다.
 </td></tr></tbody></table>
-</div></section><section id="citizen-section-2" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="플랜_댓글"><span id=".ED.94.8C.EB.9E.9C_.EB.8C.93.EA.B8.80"></span>플랜 댓글</h2></div><div class="citizen-section-body">
+</div>
+</section><section id="citizen-section-1" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="플랜_댓글"><span id=".ED.94.8C.EB.9E.9C_.EB.8C.93.EA.B8.80"></span>플랜 댓글</h2></div><div class="citizen-section-body">
 <p>plan 잡의 <code>dflook/tofu-plan</code>이 워크스페이스마다 플랜을 풀 리퀘스트에 댓글로 남깁니다. 다시 푸시하면 다시 플랜하고, <code>collapse</code> 스텝이 이전 플랜 댓글을 오래된 것으로 숨겨서 워크스페이스마다 최신 댓글만 펼쳐져 있습니다.
 </p><p>적용 잡은 플랜을 새로 만들어 승인받은 것과 같을 때만 적용해야 합니다. <code>plan_path</code>나 <code>auto_approve</code> 없이 쓴 <code>dflook/tofu-apply</code>가 그렇게 동작합니다. 푸시에서는 dflook의 플랜이 머지된 풀 리퀘스트의 플랜 댓글을 기본 브랜치의 플랜으로 고쳐 쓰고, 적용은 그 댓글과 비교합니다.
 </p>
-</div></section><section id="citizen-section-3" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="적용_로그"><span id=".EC.A0.81.EC.9A.A9_.EB.A1.9C.EA.B7.B8"></span>적용 로그</h2></div><div class="citizen-section-body">
+</div></section><section id="citizen-section-2" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="적용_로그"><span id=".EC.A0.81.EC.9A.A9_.EB.A1.9C.EA.B7.B8"></span>적용 로그</h2></div><div class="citizen-section-body">
 <p>실행 로그는 만료되므로, <code>log</code> 스텝이 적용 출력을 적용한 풀 리퀘스트에 댓글로 남깁니다. 머지 뒤라면 그 커밋을 머지한 풀 리퀘스트입니다. 댓글에는 <code>log-step</code>(기본값 <code>dflook/tofu-apply</code>)을 <code>uses</code>하는 스텝의 출력이 접힌 그룹 없이 들어가고, 댓글에 다 들어가지 않으면 끝부분만 남습니다. 오래된 댓글은 <code>collapse</code> 스텝이 숨깁니다.
 </p>
-</div></section><section id="citizen-section-4" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="어느_커밋이_적용되나"><span id=".EC.96.B4.EB.8A.90_.EC.BB.A4.EB.B0.8B.EC.9D.B4_.EC.A0.81.EC.9A.A9.EB.90.98.EB.82.98"></span>어느 커밋이 적용되나</h2></div><div class="citizen-section-body">
+</div></section><section id="citizen-section-3" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="어느_커밋이_적용되나"><span id=".EC.96.B4.EB.8A.90_.EC.BB.A4.EB.B0.8B.EC.9D.B4_.EC.A0.81.EC.9A.A9.EB.90.98.EB.82.98"></span>어느 커밋이 적용되나</h2></div><div class="citizen-section-body">
 <p>기본 브랜치의 최신 커밋만 적용됩니다. 그 플랜에 아직 적용되지 않은 앞선 커밋의 변경이 모두 들어 있기 때문입니다. 그래서 푸시 실행은 변경이 있는 워크스페이스를 모두 플랜해야 하고, <code>plan</code> 스텝의 <code>plan</code> 출력은 풀 리퀘스트가 아니면 언제나 <code>"true"</code>입니다. <code>workflow_dispatch</code> 적용처럼 플랜 뒤에 생긴 변경이 있으면 새 플랜이 달라져서 적용이 멈춥니다. 이때는 "Re-run all jobs"로 다시 플랜하면 됩니다. 풀 리퀘스트 없이 기본 브랜치에 푸시한 커밋은 플랜 댓글이 없으니 <code>workflow_dispatch</code>로 적용하세요.
 </p>
-</div></section><section id="citizen-section-5" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="잡_요약"><span id=".EC.9E.A1_.EC.9A.94.EC.95.BD"></span>잡 요약</h2></div><div class="citizen-section-body">
+</div></section><section id="citizen-section-4" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="잡_요약"><span id=".EC.9E.A1_.EC.9A.94.EC.95.BD"></span>잡 요약</h2></div><div class="citizen-section-body">
 <p>스텝마다 실행 페이지에 요약을 남겨서, 리뷰어가 로그를 열지 않고도 무엇을 승인하는지 볼 수 있습니다.
 </p>
 <div class="mw-translate-fuzzy">

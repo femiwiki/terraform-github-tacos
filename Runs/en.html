@@ -403,7 +403,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 				
 				
 				<div id="mw-content-text" class="mw-body-content"><div class="mw-pt-translate-header noprint" dir="ltr" lang="en"><a href="https://github.com/femiwiki/terraform-github-tacos/edit/main/docs/Runs/en.wikitext" title="Special:Translate">Translate this page</a></div><div class="mw-content-ltr mw-parser-output" lang="en" dir="ltr"><section id="citizen-section-0" class="citizen-section"><div class="mw-pt-languages noprint navigation-not-searchable" lang="en" dir="ltr"><div class="mw-pt-languages-label">Other languages:</div><ul class="mw-pt-languages-list"><li><a href="../Runs.html" class="mw-pt-languages-ui mw-pt-progress mw-pt-progress--complete" title="Runs (100% translated)" lang="en" dir="ltr">English</a></li>
-<li><a href="../Runs/ko.html" class="mw-pt-progress mw-pt-progress--high" title="실행 (82% translated)" lang="ko" dir="ltr">한국어</a></li></ul></div>
+<li><a href="../Runs/ko.html" class="mw-pt-progress mw-pt-progress--high" title="실행 (73% translated)" lang="ko" dir="ltr">한국어</a></li></ul></div>
 <p>Your workflow calls the action once in each job, with <code>step</code> set to the job it runs in. The apply job's environment has the same name as the workspace.
 </p><p>By default it applies after the merge, in HCP Terraform's order: a pull request only plans, and once it merges, the push to the default branch plans again and applies when the environment approves, or at once for a workspace in <code>auto-apply</code>. With <code>apply-before-merge</code> set to <code>"true"</code> on the <code>pending</code>, <code>apply</code> and <code>merge</code> steps, a pull request is applied first and merges once the apply succeeds.
 </p>
@@ -423,12 +423,12 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <tr>
 <td><code>changes</code></td>
 <td>plan, after planning</td>
-<td>Marks the workspace as having changes to apply.
+<td>Marks the workspace as having changes to apply, or nothing to apply.
 </td></tr>
 <tr>
 <td><code>pending</code></td>
 <td>one job after the plans</td>
-<td>Lists the workspaces to apply, and refuses an environment that is missing, or has no required reviewers unless its workspace is in <code>auto-apply</code>. Cancels older runs of the same branch that still wait for approval, unless one of their jobs is running. On a pull request it lists nothing, unless <code>apply-before-merge</code>, and then fails a pull request high in a <a href="../Apply-before-merge/en.html#Stacked_pull_requests" title="Special:MyLanguage/Apply-before-merge">stack</a> that changes more than one workspace.
+<td>Lists the workspaces to apply, waiting up to five minutes for a job that has not yet shown whether its workspace has changes, and refuses an environment that is missing, or has no required reviewers unless its workspace is in <code>auto-apply</code>. Cancels older runs of the same branch that still wait for approval, unless one of their jobs is running. On a pull request it lists nothing, unless <code>apply-before-merge</code>, and then fails a pull request high in a <a href="../Apply-before-merge/en.html#Stacked_pull_requests" title="Special:MyLanguage/Apply-before-merge">stack</a> that changes more than one workspace.
 </td></tr>
 <tr>
 <td><code>apply</code></td>
@@ -648,9 +648,9 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <div id="citizen-page-aside-lastmod" class="citizen-page-aside__panel citizen-page-aside__panel--lastmod" data-order="10">
 	<div id="citizen-page-aside-lastmod-heading" class="citizen-page-aside__heading">Last modified</div>
 	<div class="citizen-page-aside__body">
-<a class="citizen-page-aside__link cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" href="https://github.com/femiwiki/terraform-github-tacos/commits/main/docs/Runs/en.wikitext" title="This page was last edited on 22 October 2026, at 13:19.">
+<a class="citizen-page-aside__link cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" href="https://github.com/femiwiki/terraform-github-tacos/commits/main/docs/Runs/en.wikitext" title="This page was last edited on 22 October 2026, at 16:08.">
 	<span class="citizen-ui-icon mw-ui-icon-history mw-ui-icon-wikimedia-history"></span>
-	<time id="citizen-page-aside-lastmod-time" datetime="2026-10-22T13:19:40Z">22 October 2026</time>
+	<time id="citizen-page-aside-lastmod-time" datetime="2026-10-22T16:08:17Z">22 October 2026</time>
 </a>
 </div>
 </div>
@@ -788,7 +788,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 					<div class="page-info">
 		    <section id="footer-info-lastmod" class="page-info__item">
 		        <div class="page-info__label">Last modified</div>
-		        <div class="page-info__text"> This page was last edited on 22 October 2026, at 13:19.</div>
+		        <div class="page-info__text"> This page was last edited on 22 October 2026, at 16:08.</div>
 		    </section>
 		</div>
 </footer>		</div>
