@@ -94,7 +94,7 @@ export const addPlanText = (
 		text += "\n";
 	}
 	summary.addRaw(
-		`<details><summary>Plan</summary>\n\n\`\`\`diff\n${planDiff(text)}\`\`\`\n\n`,
+		`<details open><summary>Plan</summary>\n\n\`\`\`diff\n${planDiff(text)}\`\`\`\n\n`,
 	);
 	if (size > PLAN_TEXT_LIMIT) {
 		summary.addRaw(
