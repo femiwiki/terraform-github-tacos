@@ -1,5 +1,6 @@
 import assert from "node:assert";
 import { test } from "node:test";
+import { NOTHING } from "../scripts/common.ts";
 import scope from "../scripts/scope.ts";
 import { fakeCore } from "./fake.ts";
 import { fakeGitHub } from "./github.ts";
@@ -29,10 +30,11 @@ test("plans a workspace whose directory changed", async () => {
 	assert.strictEqual(written.outputs.plan, true);
 });
 
-test("skips a workspace the pull request leaves alone", async () => {
+test("skips a workspace the pull request leaves alone, and says so for pending", async () => {
 	const { written } = await run(["network/vpc.tf", "dnsx/a.tf"]);
 	assert.strictEqual(written.outputs.plan, false);
 	assert.strictEqual(written.summary(), "");
+	assert.deepStrictEqual(written.notices, [{ message: "dns", title: NOTHING }]);
 });
 
 test("plans every workspace when the calling workflow changed", async () => {

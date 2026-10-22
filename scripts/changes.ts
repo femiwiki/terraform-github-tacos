@@ -1,6 +1,12 @@
 // After planning: whether anything is left to apply, left where pending finds it.
 import type * as Core from "@actions/core";
-import { addCountsTable, addPlanText, MARKER, planCounts } from "./common.ts";
+import {
+	addCountsTable,
+	addPlanText,
+	MARKER,
+	NOTHING,
+	planCounts,
+} from "./common.ts";
 
 export default async ({
 	core,
@@ -23,6 +29,8 @@ export default async ({
 		core.notice(workspace, { title: MARKER });
 		core.info(`The plan has changes for ${workspace} to apply.`);
 	} else {
+		// So pending knows this job is done, rather than not yet readable
+		core.notice(workspace, { title: NOTHING });
 		core.info("The plan is empty.");
 	}
 	core.setOutput("apply", apply);

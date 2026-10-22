@@ -183,6 +183,7 @@ runs:
         WORKSPACES: ${{ inputs.workspaces }}
         AUTO_APPLY: ${{ inputs.auto-apply }}
         APPLY_BEFORE_MERGE: ${{ inputs.apply-before-merge }}
+        CHECK_RUN_ID: ${{ job.check_run_id }}
       with:
         github-token: ${{ inputs.github-token }}
         script: |

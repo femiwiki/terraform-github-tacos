@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import { test } from "node:test";
-import { MARKER } from "../scripts/common.ts";
+import { MARKER, NOTHING } from "../scripts/common.ts";
 import pending from "../scripts/pending.ts";
 import { fakeCore } from "./fake.ts";
 import { fakeGitHub, HttpError } from "./github.ts";
@@ -38,12 +38,21 @@ const routes = (more: Routes = {}): Routes => ({
 	...more,
 });
 
-const run = async (r: Routes, env: Record<string, string> = {}) => {
+const run = async (
+	r: Routes,
+	env: Record<string, string> = {},
+	clock = { now: 0, slept: [] as number[] },
+) => {
 	const { github, calls } = fakeGitHub(r);
 	const { core, written } = fakeCore();
 	await pending({
 		github,
 		core,
+		now: () => clock.now,
+		sleep: async (ms) => {
+			clock.slept.push(ms);
+			clock.now += ms;
+		},
 		env: {
 			GITHUB_EVENT_NAME: "pull_request",
 			GITHUB_REPOSITORY: "o/r",
@@ -110,18 +119,21 @@ test("finds workspaces from the changes annotations of this run", async () => {
 				{
 					id: 1,
 					name: "network changes",
+					status: "completed",
 					run_attempt: 1,
 					started_at: "2026-10-13T10:01:00Z",
 				},
 				{
 					id: 2,
 					name: "dns changes",
+					status: "completed",
 					run_attempt: 1,
 					started_at: "2026-10-13T10:01:00Z",
 				},
 				{
 					id: 3,
 					name: "other",
+					status: "completed",
 					run_attempt: 1,
 					started_at: "2026-10-13T10:01:00Z",
 				},
@@ -132,6 +144,136 @@ test("finds workspaces from the changes annotations of this run", async () => {
 	assert.deepStrictEqual(written.outputs.workspaces, ["dns", "network"]);
 });
 
+const COMPLETED = "2026-10-22T14:27:32Z";
+const planJob = (id: number, name: string) => ({
+	id,
+	name,
+	status: "completed",
+	run_attempt: 1,
+	started_at: "2026-10-22T14:25:48Z",
+	completed_at: COMPLETED,
+});
+
+test("reads a just completed job again until its verdict is listed", async () => {
+	let reads = 0;
+	const clock = { now: Date.parse(COMPLETED) + 6_000, slept: [] as number[] };
+	const { written } = await run(
+		routes({
+			[JOBS]: () => [planJob(1, "aws plan"), planJob(2, "dns plan")],
+			[ANNOTATIONS]: (p) => {
+				if (p.check_run_id === 2)
+					return [
+						{ annotation_level: "notice", title: NOTHING, message: "dns" },
+					];
+				reads++;
+				return reads < 3
+					? []
+					: [{ annotation_level: "notice", title: MARKER, message: "aws" }];
+			},
+		}),
+		{},
+		clock,
+	);
+	assert.strictEqual(written.failed, undefined);
+	assert.deepStrictEqual(written.outputs.workspaces, ["aws"]);
+	assert.strictEqual(clock.slept.length, 2);
+});
+
+test("stops waiting on a job without a verdict once it has settled", async () => {
+	const clock = { now: Date.parse(COMPLETED) + 6_000, slept: [] as number[] };
+	const { written } = await run(
+		routes({
+			[JOBS]: () => [planJob(1, "lint")],
+			[ANNOTATIONS]: () => [],
+		}),
+		{},
+		clock,
+	);
+	assert.deepStrictEqual(written.outputs.workspaces, []);
+	assert.ok(clock.now - Date.parse(COMPLETED) >= 300_000);
+	assert.ok(clock.now - Date.parse(COMPLETED) < 310_000);
+});
+
+test("does not wait on a job that completed long ago", async () => {
+	const clock = { now: Date.parse(COMPLETED) + 600_000, slept: [] as number[] };
+	await run(
+		routes({
+			[JOBS]: () => [planJob(1, "lint")],
+			[ANNOTATIONS]: () => [],
+		}),
+		{},
+		clock,
+	);
+	assert.deepStrictEqual(clock.slept, []);
+});
+
+test("reads a job the list still shows as queued", async () => {
+	let lists = 0;
+	const clock = { now: Date.parse(COMPLETED) + 6_000, slept: [] as number[] };
+	const { written } = await run(
+		routes({
+			[JOBS]: () => {
+				lists++;
+				return [
+					lists < 3
+						? {
+								...planJob(1, "aws plan"),
+								status: "queued",
+								completed_at: null,
+							}
+						: planJob(1, "aws plan"),
+					{
+						...planJob(2, "pending"),
+						status: "in_progress",
+						completed_at: null,
+						runner_name: "runner 7",
+					},
+				];
+			},
+			[ANNOTATIONS]: () => [
+				{ annotation_level: "notice", title: MARKER, message: "aws" },
+			],
+		}),
+		{ RUNNER_NAME: "runner 7" },
+		clock,
+	);
+	assert.strictEqual(written.failed, undefined);
+	assert.deepStrictEqual(written.outputs.workspaces, ["aws"]);
+	assert.deepStrictEqual(clock.slept, []);
+});
+
+test("does not wait on its own job, even listed as queued", async () => {
+	const clock = { now: Date.parse(COMPLETED), slept: [] as number[] };
+	const { written } = await run(
+		routes({
+			[JOBS]: () => [
+				{ ...planJob(3, "annotated"), status: "queued", completed_at: null },
+			],
+		}),
+		{ CHECK_RUN_ID: "3" },
+		clock,
+	);
+	assert.strictEqual(written.failed, undefined);
+	assert.deepStrictEqual(clock.slept, []);
+});
+
+test("stops waiting on a job never listed as completed", async () => {
+	const clock = { now: Date.parse(COMPLETED), slept: [] as number[] };
+	const { written } = await run(
+		routes({
+			[JOBS]: () => [
+				{ ...planJob(1, "lint"), status: "queued", completed_at: null },
+			],
+		}),
+		{},
+		clock,
+	);
+	assert.strictEqual(written.failed, undefined);
+	assert.deepStrictEqual(written.outputs.workspaces, []);
+	assert.ok(clock.slept.length * 5_000 >= 300_000);
+	assert.ok(clock.slept.length * 5_000 < 310_000);
+});
+
 test("reads a job copied into a re-run from the attempt that ran it", async () => {
 	const { calls } = await run(
 		routes({
@@ -139,12 +281,15 @@ test("reads a job copied into a re-run from the attempt that ran it", async () =
 				{
 					id: 1,
 					name: "dns changes",
+					status: "completed",
+					completed_at: "2026-10-13T10:02:00Z",
 					run_attempt: 1,
 					started_at: "2026-10-13T10:01:00Z",
 				},
 				{
 					id: 4,
 					name: "dns changes",
+					status: "completed",
 					run_attempt: 2,
 					started_at: "2026-10-13T10:01:00Z",
 				},
@@ -152,6 +297,7 @@ test("reads a job copied into a re-run from the attempt that ran it", async () =
 			[ATTEMPT]: () => ({ run_started_at: "2026-10-13T11:00:00Z" }),
 		}),
 		{ GITHUB_RUN_ATTEMPT: "2" },
+		{ now: Date.parse("2026-10-13T11:05:00Z"), slept: [] },
 	);
 	assert.deepStrictEqual(
 		calls
@@ -168,6 +314,7 @@ test("fails when a copied job came from an attempt that is not listed", async ()
 				{
 					id: 4,
 					name: "dns changes",
+					status: "completed",
 					run_attempt: 2,
 					started_at: "2026-10-13T10:01:00Z",
 				},

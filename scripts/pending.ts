@@ -1,6 +1,6 @@
 // Which workspaces to apply, each behind an environment that asks first.
 import type * as Core from "@actions/core";
-import { MARKER, onPullRequest } from "./common.ts";
+import { MARKER, NOTHING, onPullRequest } from "./common.ts";
 import type { GitHub } from "./merge.ts";
 
 type Job = {
@@ -9,17 +9,32 @@ type Job = {
 	status: string;
 	run_attempt: number;
 	started_at: string | null;
+	completed_at?: string | null;
+	runner_name?: string | null;
 };
+
+type Wait = {
+	sleep: (ms: number) => Promise<unknown>;
+	now: () => number;
+};
+
+// A job's annotations can be listed some seconds after the job completes, so a
+// job without a verdict is read again until this long after it completed, or
+// after pending started, whichever comes first
+const SETTLE = 300_000;
+const INTERVAL = 5_000;
 
 export default async ({
 	github,
 	core,
 	env,
+	sleep = (ms) => new Promise((r) => setTimeout(r, ms)),
+	now = Date.now,
 }: {
 	github: Pick<GitHub, "request" | "paginate">;
 	core: typeof Core;
 	env: NodeJS.ProcessEnv;
-}) => {
+} & Partial<Wait>) => {
 	const [owner, repo] = (env.GITHUB_REPOSITORY ?? "").split("/");
 	const runId = Number(env.GITHUB_RUN_ID);
 	const attempt = Number(env.GITHUB_RUN_ATTEMPT);
@@ -97,7 +112,16 @@ export default async ({
 	if (env.WORKSPACES) {
 		workspaces = JSON.parse(env.WORKSPACES);
 	} else {
-		const found = await annotated(github, core, owner, repo, runId, attempt);
+		const found = await annotated(
+			github,
+			core,
+			owner,
+			repo,
+			runId,
+			attempt,
+			{ id: Number(env.CHECK_RUN_ID), runner: env.RUNNER_NAME },
+			{ sleep, now },
+		);
 		if (!found) return;
 		workspaces = found;
 	}
@@ -190,6 +214,8 @@ const annotated = async (
 	repo: string,
 	runId: number,
 	attempt: number,
+	self: { id: number; runner: string | undefined },
+	{ sleep, now }: Wait,
 ) => {
 	const { data } = await github.request(
 		"GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}",
@@ -201,56 +227,90 @@ const annotated = async (
 		},
 	);
 	const started: string = data.run_started_at;
-	const jobs: Job[] = await github.paginate(
-		"GET /repos/{owner}/{repo}/actions/runs/{run_id}/jobs",
-		{
-			owner,
-			repo,
-			run_id: runId,
-			filter: "all",
-			per_page: 100,
-		},
-	);
 
-	const groups = new Map<string, Job[]>();
-	for (const job of jobs) {
-		const key = JSON.stringify([job.name, job.started_at]);
-		groups.set(key, [...(groups.get(key) ?? []), job]);
-	}
-	const ids = [];
-	for (const group of groups.values()) {
-		if (!group.some((j) => j.run_attempt === attempt)) continue;
-		const first = group.reduce((a, b) =>
-			b.run_attempt < a.run_attempt ? b : a,
-		);
-		if (
-			first.run_attempt === attempt &&
-			first.started_at !== null &&
-			first.started_at < started
-		) {
-			core.setFailed(
-				`${first.name} was copied from an earlier attempt that is not listed, so its changes are unknown. Re-run all jobs.`,
-			);
-			return;
-		}
-		ids.push(first.id);
-	}
-
+	// Each workspace a plan job plans or skips leaves one of the two verdicts.
+	// A job without one either is no plan job or has not had its annotations
+	// listed yet, and only time tells them apart. The jobs list can show a job
+	// as running minutes after it completed, so that is no help.
+	const begun = now();
+	const read = new Set<number>();
 	const found = new Set<string>();
-	for (const id of ids) {
-		const annotations = await github.paginate(
-			"GET /repos/{owner}/{repo}/check-runs/{check_run_id}/annotations",
+	for (;;) {
+		const jobs: Job[] = await github.paginate(
+			"GET /repos/{owner}/{repo}/actions/runs/{run_id}/jobs",
 			{
 				owner,
 				repo,
-				check_run_id: id,
+				run_id: runId,
+				filter: "all",
 				per_page: 100,
 			},
 		);
-		for (const a of annotations) {
-			if (a.annotation_level === "notice" && a.title === MARKER && a.message)
-				found.add(a.message);
+		const groups = new Map<string, Job[]>();
+		for (const job of jobs) {
+			const key = JSON.stringify([job.name, job.started_at]);
+			groups.set(key, [...(groups.get(key) ?? []), job]);
 		}
+		const later: Job[] = [];
+		for (const group of groups.values()) {
+			if (!group.some((j) => j.run_attempt === attempt)) continue;
+			const first = group.reduce((a, b) =>
+				b.run_attempt < a.run_attempt ? b : a,
+			);
+			if (
+				first.run_attempt === attempt &&
+				first.started_at !== null &&
+				first.started_at < started
+			) {
+				core.setFailed(
+					`${first.name} was copied from an earlier attempt that is not listed, so its changes are unknown. Re-run all jobs.`,
+				);
+				return;
+			}
+			if (read.has(first.id)) continue;
+			// This job, which runs pending, and which the list may not show running yet
+			if (
+				first.id === self.id ||
+				(first.status !== "completed" &&
+					self.runner &&
+					first.runner_name === self.runner)
+			)
+				continue;
+			const at = now();
+			const annotations = await github.paginate(
+				"GET /repos/{owner}/{repo}/check-runs/{check_run_id}/annotations",
+				{
+					owner,
+					repo,
+					check_run_id: first.id,
+					per_page: 100,
+				},
+			);
+			const verdicts = annotations.filter(
+				(a: { annotation_level: string; title: string; message: string }) =>
+					a.annotation_level === "notice" &&
+					(a.title === MARKER || a.title === NOTHING) &&
+					a.message,
+			);
+			for (const a of verdicts) {
+				if (a.title === MARKER) found.add(a.message);
+			}
+			const completed = Date.parse(first.completed_at ?? "");
+			if (
+				verdicts.length > 0 ||
+				at - completed >= SETTLE ||
+				at - begun >= SETTLE
+			) {
+				read.add(first.id);
+			} else {
+				later.push(first);
+			}
+		}
+		if (later.length === 0) break;
+		core.info(
+			`Waiting for ${later.map((j) => j.name).join(", ")} to show what ${later.length === 1 ? "it" : "they"} planned`,
+		);
+		await sleep(INTERVAL);
 	}
 	return [...found].sort();
 };

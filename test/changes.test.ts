@@ -1,7 +1,7 @@
 import assert from "node:assert";
 import { test } from "node:test";
 import changes from "../scripts/changes.ts";
-import { MARKER, planDiff } from "../scripts/common.ts";
+import { MARKER, NOTHING, planDiff } from "../scripts/common.ts";
 import { fakeCore, tempFile } from "./fake.ts";
 
 const plan = (...resourceChanges: object[]) =>
@@ -24,10 +24,10 @@ test("a plan with changes leaves the marker, and no claim about approval", async
 	assert.doesNotMatch(written.summary(), /[Ww]ait/);
 });
 
-test("an empty plan has nothing to apply", async () => {
+test("an empty plan has nothing to apply, and says so for pending", async () => {
 	const written = await run({ CHANGES: "false", PLAN_JSON: plan() });
 	assert.strictEqual(written.outputs.apply, false);
-	assert.deepStrictEqual(written.notices, []);
+	assert.deepStrictEqual(written.notices, [{ message: "dns", title: NOTHING }]);
 	assert.match(written.summary(), /Nothing to apply\./);
 });
 
