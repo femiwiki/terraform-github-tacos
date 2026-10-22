@@ -119,18 +119,21 @@ test("finds workspaces from the changes annotations of this run", async () => {
 				{
 					id: 1,
 					name: "network changes",
+					status: "completed",
 					run_attempt: 1,
 					started_at: "2026-10-13T10:01:00Z",
 				},
 				{
 					id: 2,
 					name: "dns changes",
+					status: "completed",
 					run_attempt: 1,
 					started_at: "2026-10-13T10:01:00Z",
 				},
 				{
 					id: 3,
 					name: "other",
+					status: "completed",
 					run_attempt: 1,
 					started_at: "2026-10-13T10:01:00Z",
 				},
@@ -145,6 +148,7 @@ const COMPLETED = "2026-10-22T14:27:32Z";
 const planJob = (id: number, name: string) => ({
 	id,
 	name,
+	status: "completed",
 	run_attempt: 1,
 	started_at: "2026-10-22T14:25:48Z",
 	completed_at: COMPLETED,
@@ -203,6 +207,63 @@ test("does not wait on a job that completed long ago", async () => {
 	assert.deepStrictEqual(clock.slept, []);
 });
 
+test("waits for a job GitHub has not yet listed as completed", async () => {
+	let lists = 0;
+	const clock = { now: Date.parse(COMPLETED) + 6_000, slept: [] as number[] };
+	const { written } = await run(
+		routes({
+			[JOBS]: () => {
+				lists++;
+				return [
+					lists < 3
+						? {
+								...planJob(1, "aws plan"),
+								status: "queued",
+								completed_at: null,
+							}
+						: planJob(1, "aws plan"),
+					{
+						...planJob(2, "pending"),
+						status: "in_progress",
+						completed_at: null,
+						runner_name: "runner 7",
+					},
+				];
+			},
+			[ANNOTATIONS]: () => [
+				{ annotation_level: "notice", title: MARKER, message: "aws" },
+			],
+		}),
+		{ RUNNER_NAME: "runner 7" },
+		clock,
+	);
+	assert.strictEqual(written.failed, undefined);
+	assert.deepStrictEqual(written.outputs.workspaces, ["aws"]);
+	assert.strictEqual(clock.slept.length, 2);
+});
+
+test("fails when a job is never listed as completed", async () => {
+	const clock = { now: Date.parse(COMPLETED), slept: [] as number[] };
+	const { written } = await run(
+		routes({
+			[JOBS]: () => [
+				{
+					...planJob(1, "preview changes"),
+					status: "queued",
+					completed_at: null,
+				},
+			],
+		}),
+		{},
+		clock,
+	);
+	assert.match(
+		written.failed!,
+		/^preview changes is still not listed as completed/,
+	);
+	assert.strictEqual(written.outputs.workspaces, undefined);
+});
+
 test("reads a job copied into a re-run from the attempt that ran it", async () => {
 	const { calls } = await run(
 		routes({
@@ -210,12 +271,14 @@ test("reads a job copied into a re-run from the attempt that ran it", async () =
 				{
 					id: 1,
 					name: "dns changes",
+					status: "completed",
 					run_attempt: 1,
 					started_at: "2026-10-13T10:01:00Z",
 				},
 				{
 					id: 4,
 					name: "dns changes",
+					status: "completed",
 					run_attempt: 2,
 					started_at: "2026-10-13T10:01:00Z",
 				},
@@ -239,6 +302,7 @@ test("fails when a copied job came from an attempt that is not listed", async ()
 				{
 					id: 4,
 					name: "dns changes",
+					status: "completed",
 					run_attempt: 2,
 					started_at: "2026-10-13T10:01:00Z",
 				},
