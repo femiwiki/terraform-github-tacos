@@ -402,8 +402,8 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 				<div id="contentSub" lang="ko" dir="ltr"><div id="mw-content-subtitle" lang="ko" dir="ltr"></div></div>
 				
 				
-				<div id="mw-content-text" class="mw-body-content"><div class="mw-pt-translate-header noprint" dir="ltr" lang="ko">이 문서는 <a href="../Runs.html" title="Runs">Runs</a> 문서를 <span class="plainlinks"><a rel="nofollow" class="external text" href="https://github.com/femiwiki/terraform-github-tacos/edit/main/docs/Runs/ko.wikitext">번역한 것</a></span>이며 번역은 100% 완료했습니다.</div><div class="mw-content-ltr mw-parser-output" lang="ko" dir="ltr"><section id="citizen-section-0" class="citizen-section"><div class="mw-pt-languages noprint navigation-not-searchable" lang="ko" dir="ltr"><div class="mw-pt-languages-label">다른 언어:</div><ul class="mw-pt-languages-list"><li><a href="../Runs.html" class="mw-pt-progress mw-pt-progress--complete" title="Runs (100% 번역함)" lang="en" dir="ltr">English</a></li>
-<li><span class="mw-pt-languages-ui mw-pt-languages-selected mw-pt-progress mw-pt-progress--complete" lang="ko" dir="ltr">한국어</span></li></ul></div>
+				<div id="mw-content-text" class="mw-body-content"><div class="mw-pt-translate-header noprint" dir="ltr" lang="ko">이 문서는 <a href="../Runs.html" title="Runs">Runs</a> 문서를 <span class="plainlinks"><a rel="nofollow" class="external text" href="https://github.com/femiwiki/terraform-github-tacos/edit/main/docs/Runs/ko.wikitext">번역한 것</a></span>이며 번역은 82% 완료했습니다.</div><div class="mw-pt-translate-header" dir="ltr" lang="ko"><span class="mw-translate-fuzzy">오래된 번역은 이렇게 표시됩니다.</span></div><div class="mw-content-ltr mw-parser-output" lang="ko" dir="ltr"><section id="citizen-section-0" class="citizen-section"><div class="mw-pt-languages noprint navigation-not-searchable" lang="ko" dir="ltr"><div class="mw-pt-languages-label">다른 언어:</div><ul class="mw-pt-languages-list"><li><a href="../Runs.html" class="mw-pt-progress mw-pt-progress--complete" title="Runs (100% 번역함)" lang="en" dir="ltr">English</a></li>
+<li><span class="mw-pt-languages-ui mw-pt-languages-selected mw-pt-progress mw-pt-progress--high" lang="ko" dir="ltr">한국어</span></li></ul></div>
 <p>워크플로는 잡마다 액션을 한 번씩 부르고, <code>step</code>에는 그 잡의 이름을 넣습니다. 적용 잡의 환경 이름은 워크스페이스 이름과 같습니다.
 </p><p>기본값은 HCP Terraform과 같은 순서로, 머지한 뒤에 적용합니다. 풀 리퀘스트에서는 플랜만 하고, 머지되면 기본 브랜치로의 푸시가 다시 플랜한 다음 환경이 승인하면 적용합니다. <code>auto-apply</code>에 있는 워크스페이스는 바로 적용합니다. <code>pending</code>, <code>apply</code>, <code>merge</code> 스텝에 <code>apply-before-merge</code>를 <code>"true"</code>로 주면 풀 리퀘스트를 먼저 적용하고, 적용이 성공하면 머지합니다.
 </p>
@@ -473,6 +473,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 </div></section><section id="citizen-section-5" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="잡_요약"><span id=".EC.9E.A1_.EC.9A.94.EC.95.BD"></span>잡 요약</h2></div><div class="citizen-section-body">
 <p>스텝마다 실행 페이지에 요약을 남겨서, 리뷰어가 로그를 열지 않고도 무엇을 승인하는지 볼 수 있습니다.
 </p>
+<div class="mw-translate-fuzzy">
 <table class="wikitable">
 <tbody><tr>
 <th><code>step</code></th>
@@ -502,9 +503,12 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <td><code>merge</code></td>
 <td>풀 리퀘스트가 머지됐는지, 안 됐다면 그 이유.
 </td></tr></tbody></table>
-</div></section><section id="citizen-section-6" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="전체_워크플로"><span id=".EC.A0.84.EC.B2.B4_.EC.9B.8C.ED.81.AC.ED.94.8C.EB.A1.9C"></span>전체 워크플로</h2></div><div class="citizen-section-body">
+</div>
+<div class="mw-translate-fuzzy">
+<div class="mw-heading mw-heading2"><h2 id="전체_워크플로"><span id=".EC.A0.84.EC.B2.B4_.EC.9B.8C.ED.81.AC.ED.94.8C.EB.A1.9C"></span>전체 워크플로</h2></div>
 <p><a href="../Get_started/ko.html" title="Special:MyLanguage/Get started">시작하기</a>의 워크플로에 머지 뒤에 도는 스텝을 모두 넣은 것입니다. <code>workflow_dispatch</code> 실행은 고른 워크스페이스를 그 브랜치에서 환경이 승인하면 적용하고, <code>collapse</code> 스텝은 지난 플랜 댓글을 숨기고, 잡 요약에는 플랜이 접혀서 들어갑니다.
 </p>
+</div>
 <div class="mw-highlight mw-highlight-lang-yaml mw-content-ltr mw-highlight-copy" dir="ltr"><pre><span></span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tofu</span>
 <span class="nt">on</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">pull_request</span><span class="p">:</span>
