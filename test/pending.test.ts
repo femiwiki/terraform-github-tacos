@@ -207,7 +207,7 @@ test("does not wait on a job that completed long ago", async () => {
 	assert.deepStrictEqual(clock.slept, []);
 });
 
-test("waits for a job GitHub has not yet listed as completed", async () => {
+test("reads a job the list still shows as queued", async () => {
 	let lists = 0;
 	const clock = { now: Date.parse(COMPLETED) + 6_000, slept: [] as number[] };
 	const { written } = await run(
@@ -239,7 +239,7 @@ test("waits for a job GitHub has not yet listed as completed", async () => {
 	);
 	assert.strictEqual(written.failed, undefined);
 	assert.deepStrictEqual(written.outputs.workspaces, ["aws"]);
-	assert.strictEqual(clock.slept.length, 2);
+	assert.deepStrictEqual(clock.slept, []);
 });
 
 test("does not wait on its own job, even listed as queued", async () => {
@@ -257,26 +257,21 @@ test("does not wait on its own job, even listed as queued", async () => {
 	assert.deepStrictEqual(clock.slept, []);
 });
 
-test("fails when a job is never listed as completed", async () => {
+test("stops waiting on a job never listed as completed", async () => {
 	const clock = { now: Date.parse(COMPLETED), slept: [] as number[] };
 	const { written } = await run(
 		routes({
 			[JOBS]: () => [
-				{
-					...planJob(1, "preview changes"),
-					status: "queued",
-					completed_at: null,
-				},
+				{ ...planJob(1, "lint"), status: "queued", completed_at: null },
 			],
 		}),
 		{},
 		clock,
 	);
-	assert.match(
-		written.failed!,
-		/^preview changes is still not listed as completed/,
-	);
-	assert.strictEqual(written.outputs.workspaces, undefined);
+	assert.strictEqual(written.failed, undefined);
+	assert.deepStrictEqual(written.outputs.workspaces, []);
+	assert.ok(clock.slept.length * 5_000 >= 120_000);
+	assert.ok(clock.slept.length * 5_000 < 130_000);
 });
 
 test("reads a job copied into a re-run from the attempt that ran it", async () => {
@@ -287,6 +282,7 @@ test("reads a job copied into a re-run from the attempt that ran it", async () =
 					id: 1,
 					name: "dns changes",
 					status: "completed",
+					completed_at: "2026-10-13T10:02:00Z",
 					run_attempt: 1,
 					started_at: "2026-10-13T10:01:00Z",
 				},
@@ -301,6 +297,7 @@ test("reads a job copied into a re-run from the attempt that ran it", async () =
 			[ATTEMPT]: () => ({ run_started_at: "2026-10-13T11:00:00Z" }),
 		}),
 		{ GITHUB_RUN_ATTEMPT: "2" },
+		{ now: Date.parse("2026-10-13T11:05:00Z"), slept: [] },
 	);
 	assert.deepStrictEqual(
 		calls

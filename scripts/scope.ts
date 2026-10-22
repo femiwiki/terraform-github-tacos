@@ -2,6 +2,7 @@
 // job can leave alone the workspaces it does not.
 import { posix } from "node:path";
 import type * as Core from "@actions/core";
+import { NOTHING } from "./common.ts";
 import type { GitHub } from "./merge.ts";
 
 // The pull request files API lists no more than this, so a longer list may
@@ -78,4 +79,6 @@ export default async ({
 	core.info(
 		`#${env.PR} changes nothing in ${globs.join(", ")}, so ${workspace} is not planned.`,
 	);
+	// So pending knows this job is done, as changes would say after a plan
+	core.notice(workspace, { title: NOTHING });
 };

@@ -18,9 +18,9 @@ type Wait = {
 	now: () => number;
 };
 
-// A job's annotations can be listed some seconds after the job completes, and
-// its status later still, so a job without the changes step's verdict is read
-// again until this long after it completed, or after pending started
+// A job's annotations can be listed some seconds after the job completes, so a
+// job without a verdict is read again until this long after it completed, or
+// after pending started, whichever comes first
 const SETTLE = 120_000;
 const INTERVAL = 5_000;
 
@@ -228,11 +228,11 @@ const annotated = async (
 	);
 	const started: string = data.run_started_at;
 
-	// Each workspace planned leaves one of the two verdicts. A job without one
-	// either never planned or has not had its annotations listed yet, and only
-	// time tells them apart. A job not yet listed as completed may be one whose
-	// status GitHub has not caught up with, so its changes are unknown.
-	const deadline = now() + SETTLE;
+	// Each workspace a plan job plans or skips leaves one of the two verdicts.
+	// A job without one either is no plan job or has not had its annotations
+	// listed yet, and only time tells them apart. The jobs list can show a job
+	// as running minutes after it completed, so that is no help.
+	const begun = now();
 	const read = new Set<number>();
 	const found = new Set<string>();
 	for (;;) {
@@ -276,10 +276,6 @@ const annotated = async (
 					first.runner_name === self.runner)
 			)
 				continue;
-			if (first.status !== "completed") {
-				later.push(first);
-				continue;
-			}
 			const at = now();
 			const annotations = await github.paginate(
 				"GET /repos/{owner}/{repo}/check-runs/{check_run_id}/annotations",
@@ -300,20 +296,17 @@ const annotated = async (
 				if (a.title === MARKER) found.add(a.message);
 			}
 			const completed = Date.parse(first.completed_at ?? "");
-			if (verdicts.length === 0 && at - completed < SETTLE) {
-				later.push(first);
-			} else {
+			if (
+				verdicts.length > 0 ||
+				at - completed >= SETTLE ||
+				at - begun >= SETTLE
+			) {
 				read.add(first.id);
+			} else {
+				later.push(first);
 			}
 		}
 		if (later.length === 0) break;
-		const unfinished = later.filter((j) => j.status !== "completed");
-		if (unfinished.length > 0 && now() >= deadline) {
-			core.setFailed(
-				`${unfinished.map((j) => j.name).join(", ")} ${unfinished.length === 1 ? "is" : "are"} still not listed as completed, so ${unfinished.length === 1 ? "its" : "their"} changes are unknown. pending has to run after every other job of the run; if ${unfinished.length === 1 ? "it has" : "they have"} finished, re-run all jobs.`,
-			);
-			return;
-		}
 		core.info(
 			`Waiting for ${later.map((j) => j.name).join(", ")} to show what ${later.length === 1 ? "it" : "they"} planned`,
 		);
