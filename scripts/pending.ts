@@ -1,6 +1,6 @@
 // Which workspaces to apply, each behind an environment that asks first.
 import type * as Core from "@actions/core";
-import { MARKER, onPullRequest } from "./common.ts";
+import { MARKER, NOTHING, onPullRequest } from "./common.ts";
 import type { GitHub } from "./merge.ts";
 
 type Job = {
@@ -9,17 +9,30 @@ type Job = {
 	status: string;
 	run_attempt: number;
 	started_at: string | null;
+	completed_at?: string | null;
 };
+
+type Wait = {
+	sleep: (ms: number) => Promise<unknown>;
+	now: () => number;
+};
+
+// A job's annotations can be listed some seconds after the job completes, so a
+// job without the changes step's verdict is read again until this long after
+const SETTLE = 120_000;
+const INTERVAL = 5_000;
 
 export default async ({
 	github,
 	core,
 	env,
+	sleep = (ms) => new Promise((r) => setTimeout(r, ms)),
+	now = Date.now,
 }: {
 	github: Pick<GitHub, "request" | "paginate">;
 	core: typeof Core;
 	env: NodeJS.ProcessEnv;
-}) => {
+} & Partial<Wait>) => {
 	const [owner, repo] = (env.GITHUB_REPOSITORY ?? "").split("/");
 	const runId = Number(env.GITHUB_RUN_ID);
 	const attempt = Number(env.GITHUB_RUN_ATTEMPT);
@@ -97,7 +110,10 @@ export default async ({
 	if (env.WORKSPACES) {
 		workspaces = JSON.parse(env.WORKSPACES);
 	} else {
-		const found = await annotated(github, core, owner, repo, runId, attempt);
+		const found = await annotated(github, core, owner, repo, runId, attempt, {
+			sleep,
+			now,
+		});
 		if (!found) return;
 		workspaces = found;
 	}
@@ -190,6 +206,7 @@ const annotated = async (
 	repo: string,
 	runId: number,
 	attempt: number,
+	{ sleep, now }: Wait,
 ) => {
 	const { data } = await github.request(
 		"GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}",
@@ -217,7 +234,7 @@ const annotated = async (
 		const key = JSON.stringify([job.name, job.started_at]);
 		groups.set(key, [...(groups.get(key) ?? []), job]);
 	}
-	const ids = [];
+	const firsts: Job[] = [];
 	for (const group of groups.values()) {
 		if (!group.some((j) => j.run_attempt === attempt)) continue;
 		const first = group.reduce((a, b) =>
@@ -233,24 +250,45 @@ const annotated = async (
 			);
 			return;
 		}
-		ids.push(first.id);
+		firsts.push(first);
 	}
 
+	// Each workspace planned leaves one of the two verdicts. A job without one
+	// either never planned or has not had its annotations listed yet, and only
+	// time tells them apart.
 	const found = new Set<string>();
-	for (const id of ids) {
-		const annotations = await github.paginate(
-			"GET /repos/{owner}/{repo}/check-runs/{check_run_id}/annotations",
-			{
-				owner,
-				repo,
-				check_run_id: id,
-				per_page: 100,
-			},
-		);
-		for (const a of annotations) {
-			if (a.annotation_level === "notice" && a.title === MARKER && a.message)
-				found.add(a.message);
+	let unread = firsts;
+	for (;;) {
+		const later: Job[] = [];
+		for (const job of unread) {
+			const read = now();
+			const annotations = await github.paginate(
+				"GET /repos/{owner}/{repo}/check-runs/{check_run_id}/annotations",
+				{
+					owner,
+					repo,
+					check_run_id: job.id,
+					per_page: 100,
+				},
+			);
+			const verdicts = annotations.filter(
+				(a: { annotation_level: string; title: string; message: string }) =>
+					a.annotation_level === "notice" &&
+					(a.title === MARKER || a.title === NOTHING) &&
+					a.message,
+			);
+			for (const a of verdicts) {
+				if (a.title === MARKER) found.add(a.message);
+			}
+			const completed = job.completed_at ? Date.parse(job.completed_at) : NaN;
+			if (verdicts.length === 0 && read - completed < SETTLE) later.push(job);
 		}
+		if (later.length === 0) break;
+		core.info(
+			`Waiting for the annotations of ${later.map((j) => j.name).join(", ")}`,
+		);
+		await sleep(INTERVAL);
+		unread = later;
 	}
 	return [...found].sort();
 };

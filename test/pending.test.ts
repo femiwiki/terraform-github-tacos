@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import { test } from "node:test";
-import { MARKER } from "../scripts/common.ts";
+import { MARKER, NOTHING } from "../scripts/common.ts";
 import pending from "../scripts/pending.ts";
 import { fakeCore } from "./fake.ts";
 import { fakeGitHub, HttpError } from "./github.ts";
@@ -38,12 +38,21 @@ const routes = (more: Routes = {}): Routes => ({
 	...more,
 });
 
-const run = async (r: Routes, env: Record<string, string> = {}) => {
+const run = async (
+	r: Routes,
+	env: Record<string, string> = {},
+	clock = { now: 0, slept: [] as number[] },
+) => {
 	const { github, calls } = fakeGitHub(r);
 	const { core, written } = fakeCore();
 	await pending({
 		github,
 		core,
+		now: () => clock.now,
+		sleep: async (ms) => {
+			clock.slept.push(ms);
+			clock.now += ms;
+		},
 		env: {
 			GITHUB_EVENT_NAME: "pull_request",
 			GITHUB_REPOSITORY: "o/r",
@@ -130,6 +139,68 @@ test("finds workspaces from the changes annotations of this run", async () => {
 		}),
 	);
 	assert.deepStrictEqual(written.outputs.workspaces, ["dns", "network"]);
+});
+
+const COMPLETED = "2026-10-22T14:27:32Z";
+const planJob = (id: number, name: string) => ({
+	id,
+	name,
+	run_attempt: 1,
+	started_at: "2026-10-22T14:25:48Z",
+	completed_at: COMPLETED,
+});
+
+test("reads a just completed job again until its verdict is listed", async () => {
+	let reads = 0;
+	const clock = { now: Date.parse(COMPLETED) + 6_000, slept: [] as number[] };
+	const { written } = await run(
+		routes({
+			[JOBS]: () => [planJob(1, "aws plan"), planJob(2, "dns plan")],
+			[ANNOTATIONS]: (p) => {
+				if (p.check_run_id === 2)
+					return [
+						{ annotation_level: "notice", title: NOTHING, message: "dns" },
+					];
+				reads++;
+				return reads < 3
+					? []
+					: [{ annotation_level: "notice", title: MARKER, message: "aws" }];
+			},
+		}),
+		{},
+		clock,
+	);
+	assert.strictEqual(written.failed, undefined);
+	assert.deepStrictEqual(written.outputs.workspaces, ["aws"]);
+	assert.strictEqual(clock.slept.length, 2);
+});
+
+test("stops waiting on a job without a verdict once it has settled", async () => {
+	const clock = { now: Date.parse(COMPLETED) + 6_000, slept: [] as number[] };
+	const { written } = await run(
+		routes({
+			[JOBS]: () => [planJob(1, "lint")],
+			[ANNOTATIONS]: () => [],
+		}),
+		{},
+		clock,
+	);
+	assert.deepStrictEqual(written.outputs.workspaces, []);
+	assert.ok(clock.now - Date.parse(COMPLETED) >= 120_000);
+	assert.ok(clock.now - Date.parse(COMPLETED) < 130_000);
+});
+
+test("does not wait on a job that completed long ago", async () => {
+	const clock = { now: Date.parse(COMPLETED) + 600_000, slept: [] as number[] };
+	await run(
+		routes({
+			[JOBS]: () => [planJob(1, "lint")],
+			[ANNOTATIONS]: () => [],
+		}),
+		{},
+		clock,
+	);
+	assert.deepStrictEqual(clock.slept, []);
 });
 
 test("reads a job copied into a re-run from the attempt that ran it", async () => {

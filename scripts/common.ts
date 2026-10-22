@@ -3,8 +3,10 @@ import { existsSync, readFileSync, statSync } from "node:fs";
 import type * as Core from "@actions/core";
 import type { GitHub } from "./merge.ts";
 
-// The annotation the changes step leaves and the pending step looks for
+// The annotations the changes step leaves and the pending step looks for, one
+// of the two for each workspace it plans
 export const MARKER = "Changes to apply";
+export const NOTHING = "Nothing to apply";
 
 export type Counts = {
 	create: number;
