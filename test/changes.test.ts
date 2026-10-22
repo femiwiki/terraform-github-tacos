@@ -36,14 +36,14 @@ test("a plan that only moves resources still has something to apply", async () =
 	assert.strictEqual(written.outputs.apply, true);
 });
 
-test("shows the plan text folded", async () => {
+test("shows the plan text open", async () => {
 	const written = await run({
 		CHANGES: "true",
 		PLAN_TEXT: tempFile('+ resource "a" "b"'),
 	});
 	assert.match(
 		written.summary(),
-		/<details><summary>Plan<\/summary>\n\n```diff\n\+ resource "a" "b"\n```/,
+		/<details open><summary>Plan<\/summary>\n\n```diff\n\+ resource "a" "b"\n```/,
 	);
 });
 
