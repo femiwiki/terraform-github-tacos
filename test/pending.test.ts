@@ -190,8 +190,8 @@ test("stops waiting on a job without a verdict once it has settled", async () =>
 		clock,
 	);
 	assert.deepStrictEqual(written.outputs.workspaces, []);
-	assert.ok(clock.now - Date.parse(COMPLETED) >= 120_000);
-	assert.ok(clock.now - Date.parse(COMPLETED) < 130_000);
+	assert.ok(clock.now - Date.parse(COMPLETED) >= 300_000);
+	assert.ok(clock.now - Date.parse(COMPLETED) < 310_000);
 });
 
 test("does not wait on a job that completed long ago", async () => {
@@ -270,8 +270,8 @@ test("stops waiting on a job never listed as completed", async () => {
 	);
 	assert.strictEqual(written.failed, undefined);
 	assert.deepStrictEqual(written.outputs.workspaces, []);
-	assert.ok(clock.slept.length * 5_000 >= 120_000);
-	assert.ok(clock.slept.length * 5_000 < 130_000);
+	assert.ok(clock.slept.length * 5_000 >= 300_000);
+	assert.ok(clock.slept.length * 5_000 < 310_000);
 });
 
 test("reads a job copied into a re-run from the attempt that ran it", async () => {

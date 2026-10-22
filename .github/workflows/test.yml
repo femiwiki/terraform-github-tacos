@@ -267,7 +267,7 @@ jobs:
   annotated:
     needs: annotate
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     permissions:
       actions: read
       checks: read

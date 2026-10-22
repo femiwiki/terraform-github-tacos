@@ -21,7 +21,7 @@ type Wait = {
 // A job's annotations can be listed some seconds after the job completes, so a
 // job without a verdict is read again until this long after it completed, or
 // after pending started, whichever comes first
-const SETTLE = 120_000;
+const SETTLE = 300_000;
 const INTERVAL = 5_000;
 
 export default async ({
