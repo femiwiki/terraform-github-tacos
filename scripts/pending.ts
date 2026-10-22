@@ -119,7 +119,7 @@ export default async ({
 			repo,
 			runId,
 			attempt,
-			env.RUNNER_NAME,
+			{ id: Number(env.CHECK_RUN_ID), runner: env.RUNNER_NAME },
 			{ sleep, now },
 		);
 		if (!found) return;
@@ -214,7 +214,7 @@ const annotated = async (
 	repo: string,
 	runId: number,
 	attempt: number,
-	runner: string | undefined,
+	self: { id: number; runner: string | undefined },
 	{ sleep, now }: Wait,
 ) => {
 	const { data } = await github.request(
@@ -268,11 +268,12 @@ const annotated = async (
 				return;
 			}
 			if (read.has(first.id)) continue;
-			// This job, which runs pending
+			// This job, which runs pending, and which the list may not show running yet
 			if (
-				first.status !== "completed" &&
-				runner &&
-				first.runner_name === runner
+				first.id === self.id ||
+				(first.status !== "completed" &&
+					self.runner &&
+					first.runner_name === self.runner)
 			)
 				continue;
 			if (first.status !== "completed") {

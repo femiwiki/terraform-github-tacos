@@ -242,6 +242,21 @@ test("waits for a job GitHub has not yet listed as completed", async () => {
 	assert.strictEqual(clock.slept.length, 2);
 });
 
+test("does not wait on its own job, even listed as queued", async () => {
+	const clock = { now: Date.parse(COMPLETED), slept: [] as number[] };
+	const { written } = await run(
+		routes({
+			[JOBS]: () => [
+				{ ...planJob(3, "annotated"), status: "queued", completed_at: null },
+			],
+		}),
+		{ CHECK_RUN_ID: "3" },
+		clock,
+	);
+	assert.strictEqual(written.failed, undefined);
+	assert.deepStrictEqual(clock.slept, []);
+});
+
 test("fails when a job is never listed as completed", async () => {
 	const clock = { now: Date.parse(COMPLETED), slept: [] as number[] };
 	const { written } = await run(
