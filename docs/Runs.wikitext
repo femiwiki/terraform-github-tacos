@@ -53,7 +53,7 @@ Each step writes a summary on the run page, so a reviewer can see what they are 
 {| class="wikitable"
 ! <code>step</code> !! Summary
 |-
-| <code>changes</code> || How many resources the plan adds, changes, destroys, moves and imports, the plan itself folded, and whether it waits for an approval.
+| <code>changes</code> || How many resources the plan adds, changes, destroys, moves and imports, the plan itself, and whether it waits for an approval.
 |-
 | <code>pending</code> || Each environment to apply and who can approve it.
 |-
@@ -68,7 +68,7 @@ Each step writes a summary on the run page, so a reviewer can see what they are 
 
 <!--T:9-->
 == Full workflow ==
-This is the workflow of [[Special:MyLanguage/Get started|Get started]] with every step that runs after the merge. A <code>workflow_dispatch</code> run applies the chosen workspace from its branch once the environment approves, the <code>collapse</code> step hides outdated plan comments, and the job summaries show each plan folded.
+This is the workflow of [[Special:MyLanguage/Get started|Get started]] with every step that runs after the merge. A <code>workflow_dispatch</code> run applies the chosen workspace from its branch once the environment approves, the <code>collapse</code> step hides outdated plan comments, and the job summaries show each plan.
 </translate>
 
 {{#tag:syntaxhighlight|<nowiki>

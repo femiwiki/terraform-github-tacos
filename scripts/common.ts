@@ -80,7 +80,7 @@ export const planDiff = (text: string): string => {
 		.join("\n");
 };
 
-// The plan as text, folded, and cut short of what a step summary may hold
+// The plan as text, open, and cut short of what a step summary may hold
 export const addPlanText = (
 	summary: typeof Core.summary,
 	path: string | undefined,
@@ -94,7 +94,7 @@ export const addPlanText = (
 		text += "\n";
 	}
 	summary.addRaw(
-		`<details><summary>Plan</summary>\n\n\`\`\`diff\n${planDiff(text)}\`\`\`\n\n`,
+		`<details open><summary>Plan</summary>\n\n\`\`\`diff\n${planDiff(text)}\`\`\`\n\n`,
 	);
 	if (size > PLAN_TEXT_LIMIT) {
 		summary.addRaw(
