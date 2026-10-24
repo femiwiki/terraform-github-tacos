@@ -404,7 +404,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 				
 				<div id="mw-content-text" class="mw-body-content"><div class="mw-pt-translate-header noprint" dir="ltr" lang="ko">이 문서는 <a href="../Dependabot.html" title="Dependabot">Dependabot</a> 문서를 <span class="plainlinks"><a rel="nofollow" class="external text" href="https://github.com/femiwiki/terraform-github-tacos/edit/main/docs/Dependabot/ko.wikitext">번역한 것</a></span>이며 번역은 100% 완료했습니다.</div><div class="mw-content-ltr mw-parser-output" lang="ko" dir="ltr"><section id="citizen-section-0" class="citizen-section"><div class="mw-pt-languages noprint navigation-not-searchable" lang="ko" dir="ltr"><div class="mw-pt-languages-label">다른 언어:</div><ul class="mw-pt-languages-list"><li><a href="../Dependabot.html" class="mw-pt-progress mw-pt-progress--complete" title="Dependabot (100% 번역함)" lang="en" dir="ltr">English</a></li>
 <li><span class="mw-pt-languages-ui mw-pt-languages-selected mw-pt-progress mw-pt-progress--complete" lang="ko" dir="ltr">한국어</span></li></ul></div>
-<p>Dependabot이 시작한 워크플로 실행은 Actions 시크릿이 아니라 Dependabot 시크릿을 받습니다. 그래서 Dependabot 시크릿을 하나도 두지 않았다면 Dependabot 풀 리퀘스트의 플랜은 모두 실패합니다. 반면 사람이 그 풀 리퀘스트를 리뷰해서 시작된 실행은 Actions 시크릿을 받고, 액션도 이를 풀 리퀘스트 실행처럼 다룹니다. 그래서 이 문서가 권하는 방법은 Dependabot이 시작한 실행에서는 플랜을 건너뛰고, 머지할 수 있는 사람이 승인하면 플랜하는 것입니다.
+<p>Dependabot이 시작한 워크플로 실행은 Actions 시크릿이 아니라 Dependabot 시크릿을 받습니다. 그래서 Dependabot 시크릿을 하나도 두지 않았다면 Dependabot 풀 리퀘스트의 플랜은 모두 실패합니다. 반면 사람이 그 풀 리퀘스트를 리뷰해서 시작된 실행은 Actions 시크릿을 받고, 액션도 이를 풀 리퀘스트 실행처럼 다룹니다. 그래서 이 문서가 권하는 방법은 Dependabot이 시작한 실행에서는 플랜을 건너뛰고, 멤버나 협업자가 헤드 커밋을 승인하면 플랜하는 것입니다.
 </p>
 <div class="mw-highlight mw-highlight-lang-yaml mw-content-ltr mw-highlight-copy" dir="ltr"><pre><span></span><span class="nt">on</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">pull_request</span><span class="p">:</span>
@@ -418,6 +418,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <span class="w">      </span><span class="no">|| (github.event_name == 'pull_request_review'</span>
 <span class="w">      </span><span class="no">&amp;&amp; github.event.review.state == 'approved'</span>
 <span class="w">      </span><span class="no">&amp;&amp; github.event.pull_request.user.login == 'dependabot[bot]'</span>
+<span class="w">      </span><span class="no">&amp;&amp; github.event.review.commit_id == github.event.pull_request.head.sha</span>
 <span class="w">      </span><span class="no">&amp;&amp; contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.review.author_association))</span>
 <span class="w">    </span><span class="c1"># ...</span>
 
@@ -430,7 +431,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <span class="w">    </span><span class="c1"># ...</span>
 </pre></div>
 <p>Dependabot이 시작한 실행에서는 플랜을 건너뛰니 게이트가 실패하고, 풀 리퀘스트를 머지할 수 없습니다. 승인하면 같은 헤드 커밋에서 플랜하는 실행이 새로 시작되고, 그 실행의 게이트가 실패한 게이트를 대신합니다. Dependabot이 새 커밋을 올리면 다음 승인까지 게이트는 다시 실패합니다. 다른 리뷰로 시작된 실행은 할 일이 없고 게이트도 없습니다.
-</p><p>공개 저장소의 풀 리퀘스트는 누구나 리뷰할 수 있고, 플랜은 업데이트된 의존성을 시크릿과 함께 실행합니다. 그래서 머지할 수 있는 사람의 승인만 셉니다. 플랜에 나온 변경은 그래도 환경의 리뷰어를 기다립니다.
+</p><p>공개 저장소의 풀 리퀘스트는 누구나 리뷰할 수 있고, 플랜은 업데이트된 의존성을 시크릿과 함께 실행합니다. 그래서 조직 멤버와 저장소 협업자의 승인만 셉니다. 머지할 수 없는 사람도 여기에 들어가니, 멤버와 협업자는 시크릿을 맡길 수 있는 사람으로만 두세요. 승인은 헤드 커밋에 한 것이어야 합니다. 그렇지 않으면 리뷰어가 변경 내용을 읽는 사이 Dependabot이 푸시한 릴리스가 아무도 읽지 않은 채 플랜됩니다. 플랜에 나온 변경은 그래도 환경의 리뷰어를 기다립니다.
 </p>
 </section><section id="citizen-section-1" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="다른_방법"><span id=".EB.8B.A4.EB.A5.B8_.EB.B0.A9.EB.B2.95"></span>다른 방법</h2></div><div class="citizen-section-body">
 <ul><li><b>플랜용 시크릿을 Dependabot 시크릿으로 복사하기.</b> 예를 들어 <code>github_dependabot_secret</code>을 씁니다. 그러면 Dependabot 풀 리퀘스트가 알아서 플랜되지만, 아무도 변경 내용을 읽기 전에 업데이트된 의존성이 그 시크릿을 들고 실행됩니다. <code>dependabot.yml</code>에 쿨다운을 두면 갓 나온 릴리스를 며칠 피할 수 있습니다. 관리 권한이 있는 GitHub 앱 키처럼 플랜보다 훨씬 많은 일을 할 수 있는 시크릿은 빼세요.</li>
@@ -450,9 +451,9 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <div id="citizen-page-aside-lastmod" class="citizen-page-aside__panel citizen-page-aside__panel--lastmod" data-order="10">
 	<div id="citizen-page-aside-lastmod-heading" class="citizen-page-aside__heading">마지막 수정</div>
 	<div class="citizen-page-aside__body">
-<a class="citizen-page-aside__link cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" href="https://github.com/femiwiki/terraform-github-tacos/commits/main/docs/Dependabot/ko.wikitext" title="이 문서는 2026년 10월 6일 (화) 12:55에 마지막으로 편집되었습니다.">
+<a class="citizen-page-aside__link cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" href="https://github.com/femiwiki/terraform-github-tacos/commits/main/docs/Dependabot/ko.wikitext" title="이 문서는 2026년 10월 24일 (토) 02:26에 마지막으로 편집되었습니다.">
 	<span class="citizen-ui-icon mw-ui-icon-history mw-ui-icon-wikimedia-history"></span>
-	<time id="citizen-page-aside-lastmod-time" datetime="2026-10-06T12:55:09Z">2026년 10월 6일 (화)</time>
+	<time id="citizen-page-aside-lastmod-time" datetime="2026-10-24T02:26:24Z">2026년 10월 24일 (토)</time>
 </a>
 </div>
 </div>
@@ -515,7 +516,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 					<div class="page-info">
 		    <section id="footer-info-lastmod" class="page-info__item">
 		        <div class="page-info__label">마지막 수정</div>
-		        <div class="page-info__text"> 이 문서는 2026년 10월 6일 (화) 12:55에 마지막으로 편집되었습니다.</div>
+		        <div class="page-info__text"> 이 문서는 2026년 10월 24일 (토) 02:26에 마지막으로 편집되었습니다.</div>
 		    </section>
 		</div>
 </footer>		</div>
