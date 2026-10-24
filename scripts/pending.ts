@@ -62,11 +62,11 @@ export default async ({
 		branch = env.GITHUB_REF_NAME;
 	}
 	if (branch) {
-		const { data: run } = await github.request(
+		const { data: run } = await github.request<{ workflow_id: number }>(
 			"GET /repos/{owner}/{repo}/actions/runs/{run_id}",
 			{ owner, repo, run_id: runId },
 		);
-		const waiting = await github.paginate(
+		const waiting = await github.paginate<{ id: number }>(
 			"GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/runs",
 			{
 				owner,
@@ -79,7 +79,7 @@ export default async ({
 			},
 		);
 		for (const older of waiting.filter((r) => r.id < runId)) {
-			const jobs: Job[] = await github.paginate(
+			const jobs = await github.paginate<Job>(
 				"GET /repos/{owner}/{repo}/actions/runs/{run_id}/jobs",
 				{
 					owner,
@@ -144,7 +144,7 @@ export default async ({
 		let environment: Environment;
 		try {
 			environment = (
-				await github.request(
+				await github.request<Environment>(
 					"GET /repos/{owner}/{repo}/environments/{environment_name}",
 					{
 						owner,
@@ -217,7 +217,7 @@ const annotated = async (
 	self: { id: number; runner: string | undefined },
 	{ sleep, now }: Wait,
 ) => {
-	const { data } = await github.request(
+	const { data } = await github.request<{ run_started_at: string }>(
 		"GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}",
 		{
 			owner,
@@ -277,17 +277,18 @@ const annotated = async (
 			)
 				continue;
 			const at = now();
-			const annotations = await github.paginate(
-				"GET /repos/{owner}/{repo}/check-runs/{check_run_id}/annotations",
-				{
-					owner,
-					repo,
-					check_run_id: first.id,
-					per_page: 100,
-				},
-			);
+			const annotations = await github.paginate<{
+				annotation_level: string;
+				title: string;
+				message: string;
+			}>("GET /repos/{owner}/{repo}/check-runs/{check_run_id}/annotations", {
+				owner,
+				repo,
+				check_run_id: first.id,
+				per_page: 100,
+			});
 			const verdicts = annotations.filter(
-				(a: { annotation_level: string; title: string; message: string }) =>
+				(a) =>
 					a.annotation_level === "notice" &&
 					(a.title === MARKER || a.title === NOTHING) &&
 					a.message,

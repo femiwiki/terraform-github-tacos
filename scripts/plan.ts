@@ -23,15 +23,16 @@ export default async ({
 		return;
 	}
 	const [owner, repo] = (env.GITHUB_REPOSITORY ?? "").split("/");
-	const { data: pr } = await github.request(
-		"GET /repos/{owner}/{repo}/pulls/{pull_number}",
-		{
-			owner,
-			repo,
-			pull_number: Number(env.PR),
-			headers: STACK_API,
-		},
-	);
+	const { data: pr } = await github.request<{
+		head: { sha: string };
+		base: { ref: string };
+		stack?: { base: { ref: string } };
+	}>("GET /repos/{owner}/{repo}/pulls/{pull_number}", {
+		owner,
+		repo,
+		pull_number: Number(env.PR),
+		headers: STACK_API,
+	});
 	const base: string = pr.stack?.base.ref ?? pr.base.ref;
 	const why = await behind(github, env, base, pr.head.sha, "plan again");
 	if (why) {

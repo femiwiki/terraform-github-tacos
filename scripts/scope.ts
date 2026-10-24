@@ -52,7 +52,7 @@ export default async ({
 
 	const [owner, repo] = (env.GITHUB_REPOSITORY ?? "").split("/");
 	const files: string[] = (
-		await github.paginate(
+		await github.paginate<{ filename: string }>(
 			"GET /repos/{owner}/{repo}/pulls/{pull_number}/files",
 			{
 				owner,

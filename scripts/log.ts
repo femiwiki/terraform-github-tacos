@@ -54,14 +54,13 @@ export default async ({
 	// After the merge, the apply's pull request is the one that merged this commit
 	let issue_number = Number(env.PR);
 	if (!issue_number) {
-		const pulls = await github.request(
-			"GET /repos/{owner}/{repo}/commits/{commit_sha}/pulls",
-			{
-				owner,
-				repo,
-				commit_sha: env.GITHUB_SHA,
-			},
-		);
+		const pulls = await github.request<
+			{ merged_at: string | null; number: number }[]
+		>("GET /repos/{owner}/{repo}/commits/{commit_sha}/pulls", {
+			owner,
+			repo,
+			commit_sha: env.GITHUB_SHA,
+		});
 		const merged = pulls.data.find(
 			(p: { merged_at: string | null }) => p.merged_at,
 		);
@@ -75,7 +74,7 @@ export default async ({
 	}
 
 	const run = `${env.GITHUB_SERVER_URL}/${owner}/${repo}/actions/runs/${env.GITHUB_RUN_ID}`;
-	const jobs: Job[] = await github.paginate(
+	const jobs = await github.paginate<Job>(
 		"GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}/jobs",
 		{
 			owner,

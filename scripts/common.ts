@@ -123,7 +123,7 @@ export const behind = async (
 	then: string,
 ) => {
 	const [owner, repo] = (env.GITHUB_REPOSITORY ?? "").split("/");
-	const { data } = await github.request(
+	const { data } = await github.request<{ behind_by: number }>(
 		"GET /repos/{owner}/{repo}/compare/{basehead}",
 		{
 			owner,

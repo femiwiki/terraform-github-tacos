@@ -5,11 +5,11 @@ import type * as Core from "@actions/core";
 
 type Params = Record<string, unknown>;
 export type GitHub = {
-	request: (
+	request: <T = unknown>(
 		route: string,
 		params?: Params,
-	) => Promise<{ status: number; data: any }>;
-	paginate: (route: string, params?: Params) => Promise<any[]>;
+	) => Promise<{ status: number; data: T }>;
+	paginate: <T = unknown>(route: string, params?: Params) => Promise<T[]>;
 	graphql: (query: string, variables: Params) => Promise<unknown>;
 };
 type Merge = {
@@ -51,11 +51,14 @@ export default async ({
 	const [owner, repo] = (env.GITHUB_REPOSITORY ?? "").split("/");
 	const pull_number = Number(env.PR);
 	const pr = () =>
-		github.request("GET /repos/{owner}/{repo}/pulls/{pull_number}", {
-			owner,
-			repo,
-			pull_number,
-		});
+		github.request<{ merged: boolean; draft: boolean; node_id: string }>(
+			"GET /repos/{owner}/{repo}/pulls/{pull_number}",
+			{
+				owner,
+				repo,
+				pull_number,
+			},
+		);
 
 	if ((await pr()).data.merged) {
 		await say(`#${pull_number} was already merged.`);
@@ -98,7 +101,7 @@ export default async ({
 	const submit = async (): Promise<Merge | undefined> => {
 		try {
 			return (
-				await github.request(
+				await github.request<Merge>(
 					"PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge-async",
 					{
 						owner,
@@ -119,7 +122,7 @@ export default async ({
 	const follow = async ({ details: { uuid } }: Merge): Promise<Merge> => {
 		if (uuid) {
 			return (
-				await github.request(
+				await github.request<Merge>(
 					"GET /repos/{owner}/{repo}/pulls/{pull_number}/merge-async/{uuid}",
 					{
 						owner,
@@ -170,22 +173,22 @@ const applied = async (
 	pull_number: number,
 	run_id: number,
 ) => {
-	const { data: run } = await github.request(
+	const { data: run } = await github.request<{ workflow_id: number }>(
 		"GET /repos/{owner}/{repo}/actions/runs/{run_id}",
 		{ owner, repo, run_id },
 	);
 	const shas = (
-		await github.paginate(
+		await github.paginate<{ sha: string }>(
 			"GET /repos/{owner}/{repo}/pulls/{pull_number}/commits",
 			{ owner, repo, pull_number },
 		)
-	).map((c) => c.sha as string);
+	).map((c) => c.sha);
 	// This run first, since a runs listing missed it once (infra#1039); then by
 	// commit, as a branch name can be reused by a later pull request
 	const runs = [run_id];
 	const deployed = new Set<number>();
 	for (const head_sha of shas) {
-		const listed = await github.paginate(
+		const listed = await github.paginate<{ id: number }>(
 			"GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/runs",
 			{
 				owner,
@@ -194,9 +197,9 @@ const applied = async (
 				head_sha,
 			},
 		);
-		runs.push(...listed.map((r) => r.id as number));
+		runs.push(...listed.map((r) => r.id));
 		const deployments = await github
-			.paginate("GET /repos/{owner}/{repo}/deployments", {
+			.paginate<{ id: number }>("GET /repos/{owner}/{repo}/deployments", {
 				owner,
 				repo,
 				sha: head_sha,
@@ -207,14 +210,14 @@ const applied = async (
 				);
 			});
 		for (const deployment of deployments) {
-			const statuses = await github.paginate(
-				"GET /repos/{owner}/{repo}/deployments/{deployment_id}/statuses",
-				{
-					owner,
-					repo,
-					deployment_id: deployment.id,
-				},
-			);
+			const statuses = await github.paginate<{
+				state: string;
+				log_url?: string;
+			}>("GET /repos/{owner}/{repo}/deployments/{deployment_id}/statuses", {
+				owner,
+				repo,
+				deployment_id: deployment.id,
+			});
 			for (const s of statuses.filter((s) => s.state === "success")) {
 				const m = String(s.log_url ?? "").match(/\/actions\/runs\/(\d+)\//);
 				if (m) deployed.add(Number(m[1]));
@@ -223,7 +226,7 @@ const applied = async (
 	}
 	for (const id of runs) {
 		if (deployed.has(id)) return true;
-		const approvals = await github.paginate(
+		const approvals = await github.paginate<{ state: string }>(
 			"GET /repos/{owner}/{repo}/actions/runs/{run_id}/approvals",
 			{ owner, repo, run_id: id },
 		);
