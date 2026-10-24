@@ -61,7 +61,7 @@ test("merges through the async API and follows the request", async () => {
 	assert.match(written.summary(), /Merged #5\./);
 	assert.deepStrictEqual(calls.slice(-2), [MERGE, FOLLOW]);
 	assert.strictEqual(
-		params.find((c) => c.route === MERGE)!.params.merge_method,
+		params.find((c) => c.route === MERGE)?.params.merge_method,
 		"squash",
 	);
 });
@@ -130,7 +130,7 @@ test("fails when it has not merged in 2 minutes", async () => {
 		routes({ [FOLLOW]: () => ({ status: "pending", details: { uuid: "u" } }) }),
 	);
 	assert.match(
-		written.failed!,
+		written.failed ?? "",
 		/^#5 was applied but has not merged in 2 minutes/,
 	);
 });
@@ -146,7 +146,7 @@ test("fails at once when the merge cannot be asked for", async () => {
 		}),
 	);
 	assert.strictEqual(tries, 1);
-	assert.match(written.failed!, /could not be merged: nope/);
+	assert.match(written.failed ?? "", /could not be merged: nope/);
 });
 
 test("watches the pull request when a merge is already going", async () => {

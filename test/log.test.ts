@@ -124,7 +124,7 @@ test("keeps the end of a long log", async () => {
 		`${"x".repeat(70_000)}\nApply complete!`,
 	);
 	const calls = await run(routes({ [LOGS]: () => long }));
-	const body = calls.find((c) => c.route === COMMENT)!.params.body as string;
+	const body = calls.find((c) => c.route === COMMENT)?.params.body as string;
 	assert.match(body, /, the start cut to fit a comment/);
 	assert.match(body, /Apply complete!/);
 	assert.ok(body.length < 65_536);

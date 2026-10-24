@@ -51,7 +51,7 @@ test("passes a branch up to date with its base", async () => {
 test("fails a branch behind its base", async () => {
 	const { written } = await run(2);
 	assert.match(
-		written.failed!,
+		written.failed ?? "",
 		/^#5 is 2 commits behind main.*then plan again\.$/,
 	);
 });

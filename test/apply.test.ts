@@ -55,7 +55,7 @@ test("applies the pull request it planned and names the approver", async () => {
 test("refuses a pull request without apply-before-merge", async () => {
 	const { calls, written } = await run(routes(), { APPLY_BEFORE_MERGE: "" });
 	assert.deepStrictEqual(calls, []);
-	assert.match(written.failed!, /is applied after it merges/);
+	assert.match(written.failed ?? "", /is applied after it merges/);
 });
 
 test("names the person who started the run when nobody approved", async () => {
@@ -83,7 +83,7 @@ test("refuses a merged pull request", async () => {
 			}),
 		}),
 	);
-	assert.match(written.failed!, /^#5 has merged/);
+	assert.match(written.failed ?? "", /^#5 has merged/);
 });
 
 test("refuses a pull request that moved since the plan", async () => {
@@ -96,7 +96,7 @@ test("refuses a pull request that moved since the plan", async () => {
 			}),
 		}),
 	);
-	assert.match(written.failed!, /^#5 is at new now, not h/);
+	assert.match(written.failed ?? "", /^#5 is at new now, not h/);
 });
 
 test("refuses a pull request on another branch outside a native stack", async () => {
@@ -109,7 +109,7 @@ test("refuses a pull request on another branch outside a native stack", async ()
 			}),
 		}),
 	);
-	assert.match(written.failed!, /^#5 targets below rather than main/);
+	assert.match(written.failed ?? "", /^#5 targets below rather than main/);
 });
 
 test("applies a pull request in a native stack on the default branch", async () => {
@@ -128,7 +128,10 @@ test("with require-up-to-date, refuses a pull request behind its base", async ()
 		routes({ [COMPARE]: () => ({ behind_by: 1 }) }),
 		{ REQUIRE_UP_TO_DATE: "true" },
 	);
-	assert.match(written.failed!, /behind main.*then approve the new run\.$/);
+	assert.match(
+		written.failed ?? "",
+		/behind main.*then approve the new run\.$/,
+	);
 });
 
 test("on a push, refuses a commit that is no longer the head", async () => {
@@ -136,7 +139,7 @@ test("on a push, refuses a commit that is no longer the head", async () => {
 		routes({ [COMMIT]: () => ({ sha: "newer" }) }),
 		{ GITHUB_EVENT_NAME: "push", PR: "", PLANNED: "" },
 	);
-	assert.match(written.failed!, /^main is at newer now, not h/);
+	assert.match(written.failed ?? "", /^main is at newer now, not h/);
 });
 
 test("on a push, applies the head and says so in the summary", async () => {
