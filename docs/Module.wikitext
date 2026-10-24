@@ -20,7 +20,7 @@ The inputs and outputs of the module that [[Special:MyLanguage/Approvals|Approva
 |-
 | <code>organization_team</code> || <code>null</code> || A team to create in the repository's organization, with read access to the repository, and add to the reviewers: <code>name</code>, and optionally <code>description</code>, <code>members</code> and <code>maintainers</code> as GitHub usernames. Leave it out for a repository a user owns, since only organizations have teams.
 |-
-| <code>prevent_self_review</code> || <code>false</code> || Whether the person who pushed the change may approve its apply. Leave it off when one person does both.
+| <code>prevent_self_review</code> || <code>false</code> || Whether the person who started the run is barred from approving its apply. Leave it off when one person does both.
 |-
 | <code>can_admins_bypass</code> || <code>false</code> || Whether repository administrators may start an apply without an approval.
 |-

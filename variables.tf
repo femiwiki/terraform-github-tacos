@@ -38,7 +38,7 @@ variable "reviewer_users" {
 }
 
 variable "prevent_self_review" {
-  description = "Whether the person who pushed the change may approve its apply. Leave it off when one person does both."
+  description = "Whether the person who started the run is barred from approving its apply. Leave it off when one person does both."
   type        = bool
   default     = false
 }
