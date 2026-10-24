@@ -24,11 +24,11 @@ export const fakeGitHub = (routes: Record<string, Handler>) => {
 		return handler(params as Args);
 	};
 	const github: GitHub = {
-		async request(route, params) {
-			return { status: 200, data: await answer(route, params) };
+		async request<T>(route: string, params?: Record<string, unknown>) {
+			return { status: 200, data: (await answer(route, params)) as T };
 		},
-		async paginate(route, params) {
-			return (await answer(route, params)) as unknown[];
+		async paginate<T>(route: string, params?: Record<string, unknown>) {
+			return (await answer(route, params)) as T[];
 		},
 		async graphql(query, variables) {
 			return answer(

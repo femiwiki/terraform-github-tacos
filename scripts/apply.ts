@@ -26,14 +26,13 @@ export default async ({
 
 	let approved: string | undefined;
 	try {
-		const { data: approvals } = await github.request(
-			"GET /repos/{owner}/{repo}/actions/runs/{run_id}/approvals",
-			{
-				owner,
-				repo,
-				run_id: Number(env.GITHUB_RUN_ID),
-			},
-		);
+		const { data: approvals } = await github.request<
+			{ state: string; user: { login: string } }[]
+		>("GET /repos/{owner}/{repo}/actions/runs/{run_id}/approvals", {
+			owner,
+			repo,
+			run_id: Number(env.GITHUB_RUN_ID),
+		});
 		approved = approvals
 			.filter((a: { state: string }) => a.state === "approved")
 			.at(-1)?.user.login;
@@ -46,15 +45,17 @@ export default async ({
 	let subject = env.GITHUB_REF_NAME;
 	if (onPr) {
 		subject = `#${env.PR}`;
-		const { data: pr } = await github.request(
-			"GET /repos/{owner}/{repo}/pulls/{pull_number}",
-			{
-				owner,
-				repo,
-				pull_number: Number(env.PR),
-				headers: STACK_API,
-			},
-		);
+		const { data: pr } = await github.request<{
+			merged: boolean;
+			head: { sha: string };
+			base: { ref: string };
+			stack?: { base: { ref: string } };
+		}>("GET /repos/{owner}/{repo}/pulls/{pull_number}", {
+			owner,
+			repo,
+			pull_number: Number(env.PR),
+			headers: STACK_API,
+		});
 		if (pr.merged) {
 			core.setFailed(
 				`#${env.PR} has merged, so there is no pull request left to apply. Apply ${defaultBranch} with workflow_dispatch instead.`,
@@ -90,7 +91,7 @@ export default async ({
 	} else if (env.GITHUB_EVENT_NAME === "push") {
 		// Only the newest commit applies, since its plan carries every older one's
 		// changes; pending cancels the older runs that wait
-		const { data: commit } = await github.request(
+		const { data: commit } = await github.request<{ sha: string }>(
 			"GET /repos/{owner}/{repo}/commits/{ref}",
 			{
 				owner,

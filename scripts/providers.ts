@@ -38,7 +38,7 @@ export default async ({
 	try {
 		// Each segment is encoded alone, so the slashes between them stay slashes
 		const path = lock.split("/").map(encodeURIComponent).join("/");
-		const { data } = await github.request(
+		const { data } = await github.request<string>(
 			`GET /repos/{owner}/{repo}/contents/${path}`,
 			{
 				owner,

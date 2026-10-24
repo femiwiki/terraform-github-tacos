@@ -16,17 +16,16 @@ export default async ({
 }) => {
 	if (env.APPLY_BEFORE_MERGE !== "true" || !env.PR) return;
 	const [owner, repo] = (env.GITHUB_REPOSITORY ?? "").split("/");
-	const { data: pr } = await github.request(
-		"GET /repos/{owner}/{repo}/pulls/{pull_number}",
-		{
-			owner,
-			repo,
-			pull_number: Number(env.PR),
-			headers: { "x-github-api-version": "2026-03-10" },
-		},
-	);
-	const stack: { position: number; base: { ref: string } } | undefined =
-		pr.stack;
+	const { data: pr } = await github.request<{
+		number: number;
+		stack?: { position: number; base: { ref: string } };
+	}>("GET /repos/{owner}/{repo}/pulls/{pull_number}", {
+		owner,
+		repo,
+		pull_number: Number(env.PR),
+		headers: { "x-github-api-version": "2026-03-10" },
+	});
+	const stack = pr.stack;
 	if (!stack || stack.position === 1) return;
 	const workspaces: string[] = JSON.parse(env.WORKSPACES || "[]");
 	if (workspaces.length === 0) return;
