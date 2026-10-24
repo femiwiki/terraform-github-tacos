@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.9.1](https://github.com/femiwiki/terraform-github-tacos/compare/v0.9.0...v0.9.1) (2026-10-24)
+
+
+### Bug Fixes
+
+* say prevent_self_review stops the run's starter from approving ([#100](https://github.com/femiwiki/terraform-github-tacos/issues/100)) ([0397518](https://github.com/femiwiki/terraform-github-tacos/commit/039751888ea9125c22966dc1a575d62218e9bdab))
+* show the plan open in job summaries ([#97](https://github.com/femiwiki/terraform-github-tacos/issues/97)) ([e044dfd](https://github.com/femiwiki/terraform-github-tacos/commit/e044dfdd39d1b5cec51d5efbcd821d32de36a977))
+* wait for the changes annotations before listing nothing to apply ([#99](https://github.com/femiwiki/terraform-github-tacos/issues/99)) ([3550dda](https://github.com/femiwiki/terraform-github-tacos/commit/3550dda0f7bd9d99a3b09326dd31d8c253a90893))
+
 ## [0.9.0](https://github.com/femiwiki/terraform-github-tacos/compare/v0.8.0...v0.9.0) (2026-10-18)
 
 
