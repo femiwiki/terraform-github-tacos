@@ -1,7 +1,7 @@
 <languages />
 <translate>
 <!--T:1-->
-A workflow run that Dependabot starts gets Dependabot secrets, not Actions secrets, so with none set every plan in a Dependabot pull request fails. A run started by a person's review of that pull request gets the Actions secrets, and the action handles it like a pull request run. So the way this page recommends is to skip the plans in Dependabot's own runs and plan when someone who can merge approves:
+A workflow run that Dependabot starts gets Dependabot secrets, not Actions secrets, so with none set every plan in a Dependabot pull request fails. A run started by a person's review of that pull request gets the Actions secrets, and the action handles it like a pull request run. So the way this page recommends is to skip the plans in Dependabot's own runs and plan when a member or collaborator approves the head commit:
 </translate>
 
 <syntaxhighlight lang="yaml" copy>
@@ -17,6 +17,7 @@ jobs:
       || (github.event_name == 'pull_request_review'
       && github.event.review.state == 'approved'
       && github.event.pull_request.user.login == 'dependabot[bot]'
+      && github.event.review.commit_id == github.event.pull_request.head.sha
       && contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.review.author_association))
     # ...
 
@@ -34,7 +35,7 @@ jobs:
 In Dependabot's own run the plans are skipped, so the gate fails and the pull request cannot merge. The approval starts a run that plans, and its gate, on the same head commit, replaces the failed one. A new commit from Dependabot fails the gate again until the next approval. Any other review starts a run with nothing to do and no gate.
 
 <!--T:3-->
-Only people who can merge count, since anyone may review a public repository's pull request, and the plan runs the updated dependency with the secrets. Changes in that plan still wait for their environment's reviewers.
+Only the organization's members and the repository's collaborators count, since anyone may review a public repository's pull request, and the plan runs the updated dependency with the secrets. That includes those who cannot merge, so keep both to people you would trust with the secrets. The approval must be of the head commit as well, or a release Dependabot pushes while the reviewer reads the diff plans unread. Changes in that plan still wait for their environment's reviewers.
 
 <!--T:4-->
 == Other ways ==
