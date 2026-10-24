@@ -2,7 +2,8 @@
 // from a handler and keeping what was called.
 import type { GitHub } from "../scripts/merge.ts";
 
-type Handler = (params: Record<string, any>) => unknown;
+export type Args = Record<string, string | number>;
+type Handler = (params: Args) => unknown;
 export class HttpError extends Error {
 	status: number;
 	constructor(status: number, message: string) {
@@ -12,19 +13,22 @@ export class HttpError extends Error {
 }
 
 export const fakeGitHub = (routes: Record<string, Handler>) => {
-	const calls: { route: string; params: Record<string, any> }[] = [];
-	const answer = async (route: string, params: Record<string, any> = {}) => {
+	const calls: { route: string; params: Record<string, unknown> }[] = [];
+	const answer = async (
+		route: string,
+		params: Record<string, unknown> = {},
+	) => {
 		calls.push({ route, params });
 		const handler = routes[route];
 		if (!handler) throw new Error(`unexpected ${route}`);
-		return handler(params);
+		return handler(params as Args);
 	};
 	const github: GitHub = {
 		async request(route, params) {
 			return { status: 200, data: await answer(route, params) };
 		},
 		async paginate(route, params) {
-			return (await answer(route, params)) as any[];
+			return (await answer(route, params)) as unknown[];
 		},
 		async graphql(query, variables) {
 			return answer(

@@ -3,7 +3,7 @@ import { test } from "node:test";
 import { MARKER, NOTHING } from "../scripts/common.ts";
 import pending from "../scripts/pending.ts";
 import { fakeCore } from "./fake.ts";
-import { fakeGitHub, HttpError } from "./github.ts";
+import { type Args, fakeGitHub, HttpError } from "./github.ts";
 
 const RUN = "GET /repos/{owner}/{repo}/actions/runs/{run_id}";
 const WAITING =
@@ -26,7 +26,7 @@ const reviewed = {
 };
 const unprotected = { protection_rules: [] };
 
-type Routes = Record<string, (p: Record<string, any>) => unknown>;
+type Routes = Record<string, (p: Args) => unknown>;
 const routes = (more: Routes = {}): Routes => ({
 	[RUN]: () => ({ workflow_id: 7 }),
 	[WAITING]: () => [],
@@ -89,7 +89,7 @@ test("cancels older runs of the branch that wait, but not one that is applying",
 	const { calls, written } = await run(
 		routes({
 			[WAITING]: () => [{ id: 8 }, { id: 9 }, { id: 11 }],
-			[JOBS]: (p) => jobs[p.run_id],
+			[JOBS]: (p) => jobs[Number(p.run_id)],
 		}),
 		{ WORKSPACES: "[]" },
 	);
@@ -138,7 +138,7 @@ test("finds workspaces from the changes annotations of this run", async () => {
 					started_at: "2026-10-13T10:01:00Z",
 				},
 			],
-			[ANNOTATIONS]: (p) => annotations[p.check_run_id],
+			[ANNOTATIONS]: (p) => annotations[Number(p.check_run_id)],
 		}),
 	);
 	assert.deepStrictEqual(written.outputs.workspaces, ["dns", "network"]);

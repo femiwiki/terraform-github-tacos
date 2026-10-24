@@ -2,14 +2,14 @@ import assert from "node:assert";
 import { test } from "node:test";
 import apply from "../scripts/apply.ts";
 import { fakeCore } from "./fake.ts";
-import { fakeGitHub, HttpError } from "./github.ts";
+import { type Args, fakeGitHub, HttpError } from "./github.ts";
 
 const APPROVALS = "GET /repos/{owner}/{repo}/actions/runs/{run_id}/approvals";
 const PULL = "GET /repos/{owner}/{repo}/pulls/{pull_number}";
 const COMPARE = "GET /repos/{owner}/{repo}/compare/{basehead}";
 const COMMIT = "GET /repos/{owner}/{repo}/commits/{ref}";
 
-type Routes = Record<string, (p: Record<string, any>) => unknown>;
+type Routes = Record<string, (p: Args) => unknown>;
 const routes = (more: Routes = {}): Routes => ({
 	[APPROVALS]: () => [{ state: "approved", user: { login: "someone" } }],
 	[PULL]: () => ({ merged: false, head: { sha: "h" }, base: { ref: "main" } }),
