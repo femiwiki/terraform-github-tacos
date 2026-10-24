@@ -87,7 +87,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 	</li>
 	<li class="citizen-siteStats__item" id="citizen-siteStats__item--edits" role="listitem">
 		<span class="citizen-ui-icon mw-ui-icon-edit mw-ui-icon-wikimedia-edit" title="edits"></span>
-		<span>220</span>
+		<span>226</span>
 		<span class="citizen-siteStats__label">edits</span>
 	</li>
 </ul>
@@ -457,6 +457,39 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <td><code>log</code></td>
 <td><code>actions: read</code>, <code>contents: read</code>, <code>pull-requests: write</code>
 </td></tr></tbody></table>
+</div></section><section id="citizen-section-2" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="What_the_reviewers_do_not_guard">What the reviewers do not guard</h2></div><div class="citizen-section-body">
+<p>The reviewers guard the applies, not the plans. A pull request's run uses the workflow from the pull request's own branch, so whoever can push a branch to the repository can change that workflow and read every repository secret the plans use, before anyone reviews it. Pull requests from forks get no secrets, so this is about branches in the repository itself.
+</p><p>Keep the list of those who can push branches short, and count apps and bots in it: a leaked key of an app that pushes branches, such as one that brings pull requests up to date, works the same as a person's account. Put a secret that only an apply needs in that workspace's environment, where the reviewers do guard it.
+</p><p>What a plan secret exposes, and what to do once it may have leaked:
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th>Secret</th>
+<th>What a leak exposes</th>
+<th>What to do
+</th></tr>
+<tr>
+<td>A state's encryption passphrase</td>
+<td>Everything in that state, including any secret a resource keeps there</td>
+<td>Change the passphrase, keeping the old one as a fallback until an apply rewrites the state, then change the secrets the state held
+</td></tr>
+<tr>
+<td>A static cloud key for plans</td>
+<td>Whatever its policy allows, until someone revokes it</td>
+<td>Revoke the key and make a new one; plan with a role the run assumes through OIDC instead, which leaves nothing that outlives the run
+</td></tr>
+<tr>
+<td>A provider token or GitHub App key for plans</td>
+<td>Everything its scopes allow, which for a GitHub provider often includes writing repository settings</td>
+<td>Revoke it in the provider or the app's settings and make a new one; give the plan's token read scopes where the provider can plan with them
+</td></tr>
+<tr>
+<td>A password manager's service account token</td>
+<td>Every item in every vault it can read</td>
+<td>Revoke the token, then change every item it could read
+</td></tr></tbody></table>
+<p>Then find the run that read them in the Actions logs and the organization's audit log, and take away the branch-pushing access that started it.
+</p>
 <style data-mw-deduplicate="TemplateStyles:r49">.mw-parser-output .tacos-prevnext{display:grid;grid-template-columns:1fr 1fr;gap:1em;margin-top:2em}.mw-parser-output .tacos-prevnext a{display:flex;flex-direction:column;gap:0.25em;height:100%;box-sizing:border-box;padding:0.75em 1em;border:1px solid var(--border-color-base);border-radius:8px;text-decoration:none}.mw-parser-output .tacos-prevnext a:hover{border:1px solid var(--color-progressive);background-color:var(--color-surface-2)}.mw-parser-output .tacos-prevnext-next{grid-column:2;text-align:right}.mw-parser-output .tacos-prevnext-label{font-size:0.875em;color:var(--color-subtle)}.mw-parser-output .tacos-prevnext-title{font-weight:600}</style><div class="tacos-prevnext"><div class="tacos-prevnext-prev"><a href="../Auto_apply/en.html" title="Special:MyLanguage/Auto apply"><span class="tacos-prevnext-label">Previous</span><span class="tacos-prevnext-title">Auto apply</span></a></div><div class="tacos-prevnext-next"><a href="../Dependabot/en.html" title="Special:MyLanguage/Dependabot"><span class="tacos-prevnext-label">Next</span><span class="tacos-prevnext-title">Dependabot</span></a></div></div>
 
 </div></section></div>
@@ -469,9 +502,9 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <div id="citizen-page-aside-lastmod" class="citizen-page-aside__panel citizen-page-aside__panel--lastmod" data-order="10">
 	<div id="citizen-page-aside-lastmod-heading" class="citizen-page-aside__heading">Last modified</div>
 	<div class="citizen-page-aside__body">
-<a class="citizen-page-aside__link cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" href="https://github.com/femiwiki/terraform-github-tacos/commits/main/docs/Approvals/en.wikitext" title="This page was last edited on 13 October 2026, at 13:38.">
+<a class="citizen-page-aside__link cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" href="https://github.com/femiwiki/terraform-github-tacos/commits/main/docs/Approvals/en.wikitext" title="This page was last edited on 24 October 2026, at 17:54.">
 	<span class="citizen-ui-icon mw-ui-icon-history mw-ui-icon-wikimedia-history"></span>
-	<time id="citizen-page-aside-lastmod-time" datetime="2026-10-13T13:38:03Z">13 October 2026</time>
+	<time id="citizen-page-aside-lastmod-time" datetime="2026-10-24T17:54:38Z">24 October 2026</time>
 </a>
 </div>
 </div>
@@ -520,6 +553,21 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 			<ul id="toc-Permissions-sublist" class="citizen-toc-list">
 			</ul>
 		</li>
+		<li id="toc-What_the_reviewers_do_not_guard"
+			class="citizen-toc-list-item citizen-toc-level-1">
+			<a class="citizen-toc-link citizen-page-aside__link cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" href="#What_the_reviewers_do_not_guard" role="button">
+				<div class="citizen-toc-content">
+					<div class="citizen-toc-text">
+						<span class="citizen-toc-numb">2</span>
+						<span class="citizen-toc-heading">What the reviewers do not guard</span>
+					</div>
+					
+				</div>
+			</a>
+			
+			<ul id="toc-What_the_reviewers_do_not_guard-sublist" class="citizen-toc-list">
+			</ul>
+		</li>
 	</ul>
 			</div>		</div>
 	</div>
@@ -534,7 +582,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 					<div class="page-info">
 		    <section id="footer-info-lastmod" class="page-info__item">
 		        <div class="page-info__label">Last modified</div>
-		        <div class="page-info__text"> This page was last edited on 13 October 2026, at 13:38.</div>
+		        <div class="page-info__text"> This page was last edited on 24 October 2026, at 17:54.</div>
 		    </section>
 		</div>
 </footer>		</div>
