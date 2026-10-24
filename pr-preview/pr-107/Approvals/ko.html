@@ -87,7 +87,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 	</li>
 	<li class="citizen-siteStats__item" id="citizen-siteStats__item--edits" role="listitem">
 		<span class="citizen-ui-icon mw-ui-icon-edit mw-ui-icon-wikimedia-edit" title="편집"></span>
-		<span>224</span>
+		<span>226</span>
 		<span class="citizen-siteStats__label">편집</span>
 	</li>
 </ul>
@@ -460,6 +460,35 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 </div></section><section id="citizen-section-2" class="citizen-section"><div class="mw-heading mw-heading2 citizen-section-heading"><h2 id="리뷰어가_지키지_않는_것"><span id=".EB.A6.AC.EB.B7.B0.EC.96.B4.EA.B0.80_.EC.A7.80.ED.82.A4.EC.A7.80_.EC.95.8A.EB.8A.94_.EA.B2.83"></span>리뷰어가 지키지 않는 것</h2></div><div class="citizen-section-body">
 <p>리뷰어가 지키는 것은 적용이지 plan이 아닙니다. 풀 리퀘스트의 런은 그 풀 리퀘스트 브랜치에 있는 워크플로를 쓰므로, 저장소에 브랜치를 올릴 수 있는 누구든 그 워크플로를 고쳐서 plan이 쓰는 저장소 비밀을 모두, 누가 리뷰하기도 전에 읽을 수 있습니다. 포크에서 온 풀 리퀘스트는 비밀을 받지 못하므로, 이 이야기는 저장소 안의 브랜치에 관한 것입니다.
 </p><p>브랜치를 올릴 수 있는 주체는 적게 두고, 그 수에 앱과 봇도 넣으세요. 풀 리퀘스트를 최신으로 맞춰 주는 앱처럼 브랜치를 올리는 앱의 키가 새면 사람의 계정이 털린 것과 같습니다. 적용에만 필요한 비밀은 그 워크스페이스의 환경에 두세요. 그곳은 리뷰어가 지킵니다.
+</p><p>plan 비밀마다 새면 드러나는 것과, 샜을지도 모를 때 할 일은 이렇습니다.
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th>비밀</th>
+<th>새면 드러나는 것</th>
+<th>할 일
+</th></tr>
+<tr>
+<td>state 암호화 암호</td>
+<td>그 state에 든 모든 것. 자원이 state에 넣어 두는 비밀도 포함</td>
+<td>암호를 바꾸되 적용이 state를 다시 쓸 때까지 옛 암호를 대체 키로 남겨 두고, 그다음 그 state에 있던 비밀을 바꿉니다
+</td></tr>
+<tr>
+<td>plan용 고정 클라우드 키</td>
+<td>누가 폐기할 때까지 그 정책이 허락하는 모든 것</td>
+<td>키를 폐기하고 새로 만듭니다. 대신 런이 OIDC로 맡는 역할로 plan하면 런이 끝난 뒤 남는 것이 없습니다
+</td></tr>
+<tr>
+<td>plan용 프로바이더 토큰이나 GitHub 앱 키</td>
+<td>그 권한이 허락하는 모든 것. GitHub 프로바이더라면 저장소 설정 쓰기까지인 경우가 많습니다</td>
+<td>프로바이더나 앱 설정에서 폐기하고 새로 만듭니다. 프로바이더가 읽기 권한으로 plan할 수 있으면 plan 토큰엔 읽기 권한만 줍니다
+</td></tr>
+<tr>
+<td>비밀번호 관리자의 서비스 계정 토큰</td>
+<td>그 토큰이 읽을 수 있는 모든 금고의 모든 항목</td>
+<td>토큰을 폐기하고, 읽을 수 있던 항목을 모두 바꿉니다
+</td></tr></tbody></table>
+<p>그다음 Actions 로그와 조직 감사 로그에서 비밀을 읽은 런을 찾고, 그 런을 시작한 브랜치 푸시 권한을 거둡니다.
 </p>
 <style data-mw-deduplicate="TemplateStyles:r49">.mw-parser-output .tacos-prevnext{display:grid;grid-template-columns:1fr 1fr;gap:1em;margin-top:2em}.mw-parser-output .tacos-prevnext a{display:flex;flex-direction:column;gap:0.25em;height:100%;box-sizing:border-box;padding:0.75em 1em;border:1px solid var(--border-color-base);border-radius:8px;text-decoration:none}.mw-parser-output .tacos-prevnext a:hover{border:1px solid var(--color-progressive);background-color:var(--color-surface-2)}.mw-parser-output .tacos-prevnext-next{grid-column:2;text-align:right}.mw-parser-output .tacos-prevnext-label{font-size:0.875em;color:var(--color-subtle)}.mw-parser-output .tacos-prevnext-title{font-weight:600}</style><div class="tacos-prevnext"><div class="tacos-prevnext-prev"><a href="../Auto_apply/ko.html" title="Special:MyLanguage/Auto apply"><span class="tacos-prevnext-label">이전</span><span class="tacos-prevnext-title">자동 적용</span></a></div><div class="tacos-prevnext-next"><a href="../Dependabot/ko.html" title="Special:MyLanguage/Dependabot"><span class="tacos-prevnext-label">다음</span><span class="tacos-prevnext-title">Dependabot</span></a></div></div>
 
@@ -473,9 +502,9 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 <div id="citizen-page-aside-lastmod" class="citizen-page-aside__panel citizen-page-aside__panel--lastmod" data-order="10">
 	<div id="citizen-page-aside-lastmod-heading" class="citizen-page-aside__heading">마지막 수정</div>
 	<div class="citizen-page-aside__body">
-<a class="citizen-page-aside__link cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" href="https://github.com/femiwiki/terraform-github-tacos/commits/main/docs/Approvals/ko.wikitext" title="이 문서는 2026년 10월 24일 (토) 17:10에 마지막으로 편집되었습니다.">
+<a class="citizen-page-aside__link cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" href="https://github.com/femiwiki/terraform-github-tacos/commits/main/docs/Approvals/ko.wikitext" title="이 문서는 2026년 10월 24일 (토) 17:32에 마지막으로 편집되었습니다.">
 	<span class="citizen-ui-icon mw-ui-icon-history mw-ui-icon-wikimedia-history"></span>
-	<time id="citizen-page-aside-lastmod-time" datetime="2026-10-24T17:10:22Z">2026년 10월 24일 (토)</time>
+	<time id="citizen-page-aside-lastmod-time" datetime="2026-10-24T17:32:13Z">2026년 10월 24일 (토)</time>
 </a>
 </div>
 </div>
@@ -553,7 +582,7 @@ RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.option
 					<div class="page-info">
 		    <section id="footer-info-lastmod" class="page-info__item">
 		        <div class="page-info__label">마지막 수정</div>
-		        <div class="page-info__text"> 이 문서는 2026년 10월 24일 (토) 17:10에 마지막으로 편집되었습니다.</div>
+		        <div class="page-info__text"> 이 문서는 2026년 10월 24일 (토) 17:32에 마지막으로 편집되었습니다.</div>
 		    </section>
 		</div>
 </footer>		</div>
