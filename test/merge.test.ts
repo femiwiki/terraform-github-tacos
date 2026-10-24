@@ -2,7 +2,7 @@ import assert from "node:assert";
 import { test } from "node:test";
 import merge from "../scripts/merge.ts";
 import { fakeCore } from "./fake.ts";
-import { fakeGitHub, HttpError } from "./github.ts";
+import { type Args, fakeGitHub, HttpError } from "./github.ts";
 
 const MERGE = "PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge-async";
 const FOLLOW =
@@ -10,9 +10,7 @@ const FOLLOW =
 const PULL = "GET /repos/{owner}/{repo}/pulls/{pull_number}";
 
 // Run 1 is this run, approved unless a route says otherwise
-const routes = (
-	more: Record<string, (p: Record<string, any>) => unknown> = {},
-) => ({
+const routes = (more: Record<string, (p: Args) => unknown> = {}) => ({
 	[PULL]: () => ({ merged: false, draft: false, node_id: "PR_1" }),
 	"GET /repos/{owner}/{repo}/actions/runs/{run_id}": () => ({ workflow_id: 7 }),
 	"GET /repos/{owner}/{repo}/pulls/{pull_number}/commits": () => [{ sha: "a" }],

@@ -3,13 +3,13 @@ import { createHash } from "node:crypto";
 import { test } from "node:test";
 import providers from "../scripts/providers.ts";
 import { fakeCore } from "./fake.ts";
-import { fakeGitHub, HttpError } from "./github.ts";
+import { type Args, fakeGitHub, HttpError } from "./github.ts";
 
 const LOCK = 'provider "registry.opentofu.org/hashicorp/aws" {}\n';
 const sha256 = (s: string) => createHash("sha256").update(s).digest("hex");
 
 const run = async (
-	routes: Record<string, (p: Record<string, any>) => unknown>,
+	routes: Record<string, (p: Args) => unknown>,
 	env: Record<string, string> = {},
 ) => {
 	const { github, calls } = fakeGitHub(routes);

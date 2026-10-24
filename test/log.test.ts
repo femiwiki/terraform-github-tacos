@@ -2,7 +2,7 @@ import assert from "node:assert";
 import { test } from "node:test";
 import log, { stepOutput } from "../scripts/log.ts";
 import { fakeCore } from "./fake.ts";
-import { fakeGitHub, HttpError } from "./github.ts";
+import { type Args, fakeGitHub, HttpError } from "./github.ts";
 
 const JOBS =
 	"GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}/jobs";
@@ -35,9 +35,7 @@ test("keeps only the named step, without its groups or commands", () => {
 	assert.strictEqual(stepOutput(jobLog, "dflook/terraform-apply"), "");
 });
 
-const routes = (
-	more: Record<string, (p: Record<string, any>) => unknown> = {},
-) => ({
+const routes = (more: Record<string, (p: Args) => unknown> = {}) => ({
 	[JOBS]: () => [
 		{ id: 1, name: "dns plan", conclusion: "success" },
 		{ id: 2, name: "dns apply", conclusion: "success" },
@@ -78,7 +76,7 @@ test("comments each apply job on the pull request", async () => {
 	const calls = await run(routes());
 	const comments = calls
 		.filter((c) => c.route === COMMENT)
-		.map((c) => c.params);
+		.map((c) => c.params as { issue_number: number; body: string });
 	assert.deepStrictEqual(
 		comments.map((c) => c.issue_number),
 		[5, 5],
@@ -126,7 +124,7 @@ test("keeps the end of a long log", async () => {
 		`${"x".repeat(70_000)}\nApply complete!`,
 	);
 	const calls = await run(routes({ [LOGS]: () => long }));
-	const body: string = calls.find((c) => c.route === COMMENT)!.params.body;
+	const body = calls.find((c) => c.route === COMMENT)!.params.body as string;
 	assert.match(body, /, the start cut to fit a comment/);
 	assert.match(body, /Apply complete!/);
 	assert.ok(body.length < 65_536);
