@@ -99,7 +99,7 @@ test("cancels older runs of the branch that wait, but not one that is applying",
 	assert.deepStrictEqual(cancelled, [8]);
 	assert.match(written.warnings[0], /run 9 .* is applying/);
 	assert.strictEqual(
-		calls.find((c) => c.route === WAITING)!.params.branch,
+		calls.find((c) => c.route === WAITING)?.params.branch,
 		"feature",
 	);
 });
@@ -324,7 +324,7 @@ test("fails when a copied job came from an attempt that is not listed", async ()
 		{ GITHUB_RUN_ATTEMPT: "2" },
 	);
 	assert.match(
-		written.failed!,
+		written.failed ?? "",
 		/^dns changes was copied from an earlier attempt/,
 	);
 });
@@ -338,7 +338,7 @@ test("stops at an environment that does not exist", async () => {
 		}),
 		{ WORKSPACES: '["dns"]' },
 	);
-	assert.match(written.failed!, /the dns environment does not exist/);
+	assert.match(written.failed ?? "", /the dns environment does not exist/);
 	assert.match(written.summary(), /no environment, so this run stops here/);
 	assert.strictEqual(written.outputs.workspaces, undefined);
 });
@@ -347,7 +347,7 @@ test("stops at an environment without required reviewers", async () => {
 	const { written } = await run(routes({ [ENVIRONMENT]: () => unprotected }), {
 		WORKSPACES: '["dns"]',
 	});
-	assert.match(written.failed!, /has no required reviewers/);
+	assert.match(written.failed ?? "", /has no required reviewers/);
 });
 
 test("lets an auto-apply workspace through without reviewers", async () => {

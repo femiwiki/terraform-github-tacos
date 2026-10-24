@@ -71,17 +71,17 @@ export default async ({
 		after = page.pageInfo.hasNextPage ? page.pageInfo.endCursor : null;
 	} while (after);
 
-	const ours = comments.filter(
-		(c) => c.author?.__typename === "Bot" && kind(c.body),
-	);
+	const ours = comments.flatMap((c) => {
+		const k = c.author?.__typename === "Bot" ? kind(c.body) : undefined;
+		return k ? [{ c, k }] : [];
+	});
 	const newest = new Map<string, Comment>();
-	for (const c of ours) {
-		const k = kind(c.body)!;
+	for (const { c, k } of ours) {
 		const seen = newest.get(k);
 		if (!seen || seen.createdAt < c.createdAt) newest.set(k, c);
 	}
-	for (const c of ours) {
-		if (c.isMinimized || newest.get(kind(c.body)!) === c) continue;
+	for (const { c, k } of ours) {
+		if (c.isMinimized || newest.get(k) === c) continue;
 		await github.graphql(
 			`
       mutation($id: ID!) {
@@ -89,6 +89,6 @@ export default async ({
       }`,
 			{ id: c.id },
 		);
-		core.info(`Collapsed ${kind(c.body)} from ${c.createdAt}.`);
+		core.info(`Collapsed ${k} from ${c.createdAt}.`);
 	}
 };
