@@ -50,6 +50,28 @@ module "tacos" {
 |-
 | <code>log</code> || <code>actions: read</code>, <code>contents: read</code>, <code>pull-requests: write</code>
 |}
+
+<!--T:4-->
+== What the reviewers do not guard ==
+The reviewers guard the applies, not the plans. A pull request's run uses the workflow from the pull request's own branch, so whoever can push a branch to the repository can change that workflow and read every repository secret the plans use, before anyone reviews it. Pull requests from forks get no secrets, so this is about branches in the repository itself.
+
+<!--T:5-->
+Keep the list of those who can push branches short, and count apps and bots in it: a leaked key of an app that pushes branches, such as one that brings pull requests up to date, works the same as a person's account. Put a secret that only an apply needs in that workspace's environment, where the reviewers do guard it.
+
+<!--T:6-->
+What a plan secret exposes, and what to do once it may have leaked:
+{| class="wikitable"
+! Secret !! What a leak exposes !! What to do
+|-
+| A state's encryption passphrase || Everything in that state, including any secret a resource keeps there || Change the passphrase, keeping the old one as a fallback until an apply rewrites the state, then change the secrets the state held
+|-
+| A static cloud key for plans || Whatever its policy allows, until someone revokes it || Revoke the key and make a new one; plan with a role the run assumes through OIDC instead, which leaves nothing that outlives the run
+|-
+| A provider token or GitHub App key for plans || Everything its scopes allow, which for a GitHub provider often includes writing repository settings || Revoke it in the provider or the app's settings and make a new one; give the plan's token read scopes where the provider can plan with them
+|-
+| A password manager's service account token || Every item in every vault it can read || Revoke the token, then change every item it could read
+|}
+Then find the run that read them in the Actions logs and the organization's audit log, and take away the branch-pushing access that started it.
 </translate>
 
 {{Prevnext}}
