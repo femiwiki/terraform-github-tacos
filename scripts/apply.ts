@@ -47,6 +47,7 @@ export default async ({
 		subject = `#${env.PR}`;
 		const { data: pr } = await github.request<{
 			merged: boolean;
+			state: string;
 			head: { sha: string };
 			base: { ref: string };
 			stack?: { base: { ref: string } };
@@ -59,6 +60,14 @@ export default async ({
 		if (pr.merged) {
 			core.setFailed(
 				`#${env.PR} has merged, so there is no pull request left to apply. Apply ${defaultBranch} with workflow_dispatch instead.`,
+			);
+			return;
+		}
+		// Its run can still wait for approval, and applying it would leave
+		// production ahead of a branch that is never going to merge
+		if (pr.state === "closed") {
+			core.setFailed(
+				`#${env.PR} is closed, so applying it would deploy what ${defaultBranch} will never have. Reopen it to apply.`,
 			);
 			return;
 		}

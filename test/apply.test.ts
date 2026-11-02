@@ -86,6 +86,20 @@ test("refuses a merged pull request", async () => {
 	assert.match(written.failed ?? "", /^#5 has merged/);
 });
 
+test("refuses a closed pull request", async () => {
+	const { written } = await run(
+		routes({
+			[PULL]: () => ({
+				merged: false,
+				state: "closed",
+				head: { sha: "h" },
+				base: { ref: "main" },
+			}),
+		}),
+	);
+	assert.match(written.failed ?? "", /^#5 is closed/);
+});
+
 test("refuses a pull request that moved since the plan", async () => {
 	const { written } = await run(
 		routes({
