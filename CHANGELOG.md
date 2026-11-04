@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.2](https://github.com/femiwiki/terraform-github-tacos/compare/v0.9.1...v0.9.2) (2026-11-04)
+
+
+### Bug Fixes
+
+* refuse to apply a closed pull request ([#109](https://github.com/femiwiki/terraform-github-tacos/issues/109)) ([f73efe1](https://github.com/femiwiki/terraform-github-tacos/commit/f73efe1487e411ec4dc728f823f7829c95bd6adb))
+
 ## [0.9.1](https://github.com/femiwiki/terraform-github-tacos/compare/v0.9.0...v0.9.1) (2026-10-24)
 
 
