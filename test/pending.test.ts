@@ -307,6 +307,49 @@ test("reads a job copied into a re-run from the attempt that ran it", async () =
 	);
 });
 
+test("reads a job of an earlier attempt whose copy is not listed yet", async () => {
+	const annotations: Record<number, object[]> = {
+		1: [{ annotation_level: "notice", title: MARKER, message: "docker" }],
+		2: [{ annotation_level: "notice", title: MARKER, message: "aws" }],
+	};
+	const { written } = await run(
+		routes({
+			[JOBS]: () => [
+				{
+					id: 1,
+					name: "docker plan",
+					status: "completed",
+					completed_at: "2026-10-13T10:02:00Z",
+					run_attempt: 1,
+					started_at: "2026-10-13T10:01:00Z",
+				},
+				{
+					id: 2,
+					name: "aws plan",
+					status: "completed",
+					completed_at: "2026-10-13T10:02:00Z",
+					run_attempt: 1,
+					started_at: "2026-10-13T10:01:00Z",
+				},
+				{
+					id: 3,
+					name: "aws plan",
+					status: "completed",
+					completed_at: "2026-10-13T11:02:00Z",
+					run_attempt: 2,
+					started_at: "2026-10-13T11:01:00Z",
+				},
+			],
+			[ANNOTATIONS]: (p) => annotations[Number(p.check_run_id)] ?? [],
+			[ATTEMPT]: () => ({ run_started_at: "2026-10-13T11:00:00Z" }),
+		}),
+		{ GITHUB_RUN_ATTEMPT: "2" },
+		{ now: Date.parse("2026-10-13T11:10:00Z"), slept: [] },
+	);
+	assert.strictEqual(written.failed, undefined);
+	assert.deepStrictEqual(written.outputs.workspaces, ["docker"]);
+});
+
 test("fails when a copied job came from an attempt that is not listed", async () => {
 	const { written } = await run(
 		routes({

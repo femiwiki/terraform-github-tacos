@@ -251,9 +251,19 @@ const annotated = async (
 			const key = JSON.stringify([job.name, job.started_at]);
 			groups.set(key, [...(groups.get(key) ?? []), job]);
 		}
-		const later: Job[] = [];
+		// A job each name ran last. "Re-run failed jobs" can list the copies of
+		// the other jobs only after pending starts, so a job without a copy in
+		// this attempt yet still counts.
+		const latest = new Map<string, Job[]>();
 		for (const group of groups.values()) {
-			if (!group.some((j) => j.run_attempt === attempt)) continue;
+			const at = group[0].started_at ?? "~";
+			const kept = latest.get(group[0].name);
+			if (!kept || at > (kept[0].started_at ?? "~")) {
+				latest.set(group[0].name, group);
+			}
+		}
+		const later: Job[] = [];
+		for (const group of latest.values()) {
 			const first = group.reduce((a, b) =>
 				b.run_attempt < a.run_attempt ? b : a,
 			);
