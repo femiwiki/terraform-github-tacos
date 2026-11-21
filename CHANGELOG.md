@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.3](https://github.com/femiwiki/terraform-github-tacos/compare/v0.9.2...v0.9.3) (2026-11-21)
+
+
+### Bug Fixes
+
+* **pending:** read a job whose copy into a re-run is not listed yet ([#122](https://github.com/femiwiki/terraform-github-tacos/issues/122)) ([6ae59c4](https://github.com/femiwiki/terraform-github-tacos/commit/6ae59c4d0a1bf6fea2f17b77a52ed90fd5a5761b)), closes [#121](https://github.com/femiwiki/terraform-github-tacos/issues/121)
+
 ## [0.9.2](https://github.com/femiwiki/terraform-github-tacos/compare/v0.9.1...v0.9.2) (2026-11-04)
 
 
